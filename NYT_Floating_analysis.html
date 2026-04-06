@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>"Floating" — Literary Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1714;
+    --ink2: #4a4642;
+    --ink3: #8a8480;
+    --paper: #faf8f4;
+    --paper2: #f2ede4;
+    --paper3: #e8e0d0;
+    --rust: #8b3a2a;
+    --rust-light: #c8604a;
+    --rust-pale: #f4e6e2;
+    --teal: #2a5f5a;
+    --teal-light: #4a9090;
+    --teal-pale: #e2efee;
+    --gold: #7a5a20;
+    --gold-pale: #f5edd8;
+    --tab-h: 48px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 2.5rem 2rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--rust-light), var(--teal-light), var(--gold));
+  }
+  .header-label {
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--paper3);
+    margin-bottom: .6rem;
+  }
+  header h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    font-weight: 600;
+    line-height: 1.15;
+    margin-bottom: .35rem;
+  }
+  header p {
+    font-size: .9rem;
+    color: var(--paper3);
+    font-style: italic;
+  }
+  nav {
+    background: var(--paper2);
+    border-bottom: 1px solid var(--paper3);
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex-shrink: 0;
+    padding: 0 1.4rem;
+    height: var(--tab-h);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-family: 'Source Serif 4', serif;
+    font-size: .82rem;
+    letter-spacing: .04em;
+    color: var(--ink3);
+    cursor: pointer;
+    transition: color .2s, border-color .2s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active { color: var(--rust); border-bottom-color: var(--rust); font-weight: 400; }
+  .tab-panel { display: none; padding: 2.5rem 2rem 4rem; max-width: 860px; margin: 0 auto; }
+  .tab-panel.active { display: block; }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.55rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    color: var(--ink);
+  }
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--rust);
+    margin: 1.8rem 0 .6rem;
+  }
+  p { margin-bottom: 1rem; color: var(--ink2); }
+  .callout {
+    border-left: 3px solid var(--rust-light);
+    background: var(--rust-pale);
+    padding: .85rem 1.1rem;
+    margin: 1.5rem 0;
+    font-size: .92rem;
+    color: var(--ink);
+    font-style: italic;
+  }
+
+  /* ── TAB 1: Character Relationships ── */
+  .char-svg-wrap { width: 100%; overflow-x: auto; }
+  svg.rel { width: 100%; min-width: 560px; }
+
+  /* ── TAB 2: Fabula / Sjuzhet ── */
+  .timeline-wrap { position: relative; margin: 2rem 0; }
+  .tl-label {
+    font-size: .72rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: .4rem;
+  }
+  .tl-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: .5rem;
+  }
+  .tl-track {
+    flex: 1;
+    display: flex;
+    gap: 3px;
+    background: var(--paper3);
+    border-radius: 4px;
+    overflow: hidden;
+    min-height: 40px;
+  }
+  .tl-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .7rem;
+    line-height: 1.2;
+    padding: 4px 6px;
+    text-align: center;
+    cursor: default;
+    transition: opacity .15s;
+    color: #fff;
+    font-family: 'Source Serif 4', serif;
+  }
+  .tl-seg:hover { opacity: .82; }
+  .ev-childhood { background: var(--teal); }
+  .ev-marriage  { background: #6b4a90; }
+  .ev-divorce   { background: var(--rust); }
+  .ev-brief     { background: var(--gold); }
+  .ev-meeting   { background: var(--teal-light); }
+  .ev-reveal    { background: #4a7a40; }
+  .ev-wait      { background: #c09040; }
+  .ev-summer    { background: #8a4a60; }
+  .ev-autumn    { background: #5a6a3a; }
+  .ev-health    { background: #4a5a8a; }
+  .ev-mortgage  { background: #8a3060; }
+  .ev-close     { background: var(--rust-light); }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1rem;
+    margin-top: 1.2rem;
+    font-size: .78rem;
+    color: var(--ink2);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .gap-label {
+    background: var(--paper2);
+    border-radius: 3px;
+    padding: .5rem .85rem;
+    font-size: .82rem;
+    color: var(--ink3);
+    font-style: italic;
+    margin: .4rem 0 .8rem;
+    display: inline-block;
+  }
+  table.comp {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .88rem;
+    margin: 1.5rem 0;
+  }
+  table.comp th {
+    text-align: left;
+    padding: .5rem .75rem;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Source Serif 4', serif;
+    font-weight: 400;
+    font-size: .75rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  table.comp td {
+    padding: .55rem .75rem;
+    border-bottom: 1px solid var(--paper3);
+    vertical-align: top;
+    color: var(--ink2);
+    line-height: 1.5;
+  }
+  table.comp tr:nth-child(even) td { background: var(--paper2); }
+
+  /* ── TAB 3: Plot Analysis ── */
+  .plot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .plot-card {
+    background: var(--paper2);
+    border-radius: 8px;
+    padding: 1.1rem 1.2rem;
+    border-top: 3px solid var(--rust-light);
+  }
+  .plot-card.teal { border-top-color: var(--teal); }
+  .plot-card.gold { border-top-color: var(--gold); }
+  .plot-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: .95rem;
+    font-weight: 600;
+    margin-bottom: .5rem;
+    color: var(--ink);
+  }
+  .plot-card p { font-size: .86rem; margin: 0; }
+
+  .freytag {
+    position: relative;
+    margin: 2rem 0 1rem;
+    height: 140px;
+  }
+  .freytag svg { width: 100%; height: 140px; }
+
+  /* ── TAB 4: Questions ── */
+  details {
+    border-bottom: 1px solid var(--paper3);
+    padding: .1rem 0;
+  }
+  details:first-of-type { border-top: 1px solid var(--paper3); }
+  summary {
+    padding: 1rem 0;
+    cursor: pointer;
+    font-family: 'Source Serif 4', serif;
+    font-size: .95rem;
+    color: var(--ink);
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: '+';
+    font-size: 1.2rem;
+    color: var(--rust);
+    flex-shrink: 0;
+    line-height: 1.3;
+    transition: transform .2s;
+  }
+  details[open] summary::after { transform: rotate(45deg); }
+  .answer {
+    padding: .2rem 0 1.2rem;
+    color: var(--ink2);
+    font-size: .92rem;
+    line-height: 1.75;
+  }
+  .q-category {
+    font-size: .7rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--rust);
+    background: var(--rust-pale);
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-bottom: 1rem;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">Literary Analysis · The New Yorker, March 30, 2026</div>
+  <h1>"Floating" by Souvankham Thammavongsa</h1>
+  <p>A short story of desire, economics, and quiet grief</p>
+</header>
+
+<nav id="tabs">
+  <button class="tab-btn active" onclick="show('char',this)">Character Relationships</button>
+  <button class="tab-btn" onclick="show('fab',this)">Fabula vs Sjuzhet</button>
+  <button class="tab-btn" onclick="show('plot',this)">Plot Analysis</button>
+  <button class="tab-btn" onclick="show('qa',this)">Discussion Questions</button>
+  <button class="tab-btn" onclick="show('author',this)">About the Author</button>
+</nav>
+
+<!-- ══════════════════════════════════════════════════
+     TAB 1 · CHARACTER RELATIONSHIPS
+══════════════════════════════════════════════════ -->
+<div id="panel-char" class="tab-panel active">
+  <h2>Character relationships</h2>
+  <p>The story is structured around relational distance. The narrator stands at the center of an asymmetric web — emotionally present but consistently held at arm's length by each figure in her orbit.</p>
+
+  <div class="char-svg-wrap">
+  <svg class="rel" viewBox="0 0 680 520" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+
+    <!-- ── Narrator (center) ── -->
+    <g>
+      <ellipse cx="340" cy="240" rx="68" ry="38" fill="#8b3a2a" stroke="#5a2010" stroke-width="1"/>
+      <text x="340" y="235" text-anchor="middle" font-family="'Playfair Display',serif" font-size="13" fill="#faf8f4" font-weight="600">Narrator</text>
+      <text x="340" y="252" text-anchor="middle" font-family="'Source Serif 4',serif" font-size="10" fill="#f4c0b0">woman, ~50, divorced</text>
+    </g>
+
+    <!-- ── The Friend ── -->
+    <g>
+      <ellipse cx="340" cy="90" rx="58" ry="32" fill="#2a5f5a" stroke="#1a3f3a" stroke-width="1"/>
+      <text x="340" y="85" text-anchor="middle" font-family="'Playfair Display',serif" font-size="13" fill="#e2efee" font-weight="600">The Friend</text>
+      <text x="340" y="101" text-anchor="middle" font-family="'Source Serif 4',serif" font-size="10" fill="#a0cfc8">intermediary, married</text>
+    </g>
+    <!-- Friend ↔ Narrator (mutual, trusted conduit) -->
+    <line x1="340" y1="122" x2="340" y2="202" stroke="#4a9090" stroke-width="1.5" marker-end="url(#arr)" marker-start="url(#arr)"/>
+    <text x="357" y="170" font-family="'Source Serif 4',serif" font-size="10" fill="#4a9090">trusted conduit</text>
+
+    <!-- ── The Man ── -->
+    <g>
+      <ellipse cx="160" cy="155" rx="62" ry="34" fill="#4a5a8a" stroke="#2a3a6a" stroke-width="1"/>
+      <text x="160" y="149" text-anchor="middle" font-family="'Playfair Display',serif" font-size="13" fill="#e6eaf8" font-weight="600">The Man</text>
+      <text x="160" y="165" text-anchor="middle" font-family="'Source Serif 4',serif" font-size="10" fill="#a0b0d8">~50s, "love at first sight"</text>
+    </g>
+    <!-- Man → Friend (work acquaintance) -->
+    <path d="M215 140 Q270 108 282 100" fill="none" stroke="#4a5a8a" stroke-width="1" marker-end="url(#arr)" stroke-dasharray="4 3"/>
+    <text x="235" y="112" font-family="'Source Serif 4',serif" font-size="9" fill="#4a5a8a">work colleagues</text>
+    <!-- Man → Narrator (declaration, never followed through) -->
+    <path d="M220 160 Q270 195 272 216" fill="none" stroke="#c05040" stroke-width="1.5" marker-end="url(#arr)" stroke-dasharray="5 3"/>
+    <text x="218" y="200" font-family="'Source Serif 4',serif" font-size="9" fill="#c05040">declared love,</text>
+    <text x="218" y="212" font-family="'Source Serif 4',serif" font-size="9" fill="#c05040">no follow-through</text>
+
+    <!-- ── The Girlfriend ── -->
+    <g>
+      <ellipse cx="140" cy="340" rx="62" ry="32" fill="#7a5a20" stroke="#5a3a08" stroke-width="1"/>
+      <text x="140" y="334" text-anchor="middle" font-family="'Playfair Display',serif" font-size="13" fill="#f5edd8" font-weight="600">The Girlfriend</text>
+      <text x="140" y="350" text-anchor="middle" font-family="'Source Serif 4',serif" font-size="10" fill="#d4b878">no job, ~20s, absent</text>
+    </g>
+    <!-- Girlfriend → Man (mortgage dependency) -->
+    <path d="M185 320 Q190 250 185 189" fill="none" stroke="#9a7030" stroke-width="1.4" marker-end="url(#arr)"/>
+    <text x="198" y="260" font-family="'Source Serif 4',serif" font-size="9" fill="#9a7030">pays mortgage,</text>
+    <text x="198" y="272" font-family="'Source Serif 4',serif" font-size="9" fill="#9a7030">financial dependence</text>
+    <!-- Narrator observes Girlfriend (from distance) -->
+    <path d="M275 258 Q220 295 202 330" fill="none" stroke="#8a8480" stroke-width="1" marker-end="url(#arr)" stroke-dasharray="3 3"/>
+    <text x="217" y="285" font-family="'Source Serif 4',serif" font-size="9" fill="#8a8480">imagines her inner life</text>
+
+    <!-- ── The Ex-husband ── -->
+    <g>
+      <ellipse cx="530" cy="340" rx="66" ry="32" fill="#6b4a90" stroke="#4b2a70" stroke-width="1"/>
+      <text x="530" y="334" text-anchor="middle" font-family="'Playfair Display',serif" font-size="13" fill="#f0e8f8" font-weight="600">The Ex-husband</text>
+      <text x="530" y="350" text-anchor="middle" font-family="'Source Serif 4',serif" font-size="10" fill="#c0a0e0">divorced, resented her income</text>
+    </g>
+    <!-- Ex → Narrator (past, memory / yelling) -->
+    <path d="M468 322 Q420 295 408 264" fill="none" stroke="#9060c0" stroke-width="1.4" marker-end="url(#arr)" stroke-dasharray="5 3"/>
+    <text x="420" y="295" font-family="'Source Serif 4',serif" font-size="9" fill="#9060c0">divorce / financial</text>
+    <text x="420" y="307" font-family="'Source Serif 4',serif" font-size="9" fill="#9060c0">resentment (memory)</text>
+
+    <!-- ── Brief Lover ── -->
+    <g>
+      <ellipse cx="530" cy="155" rx="60" ry="32" fill="#4a7a40" stroke="#2a5a20" stroke-width="1"/>
+      <text x="530" y="149" text-anchor="middle" font-family="'Playfair Display',serif" font-size="13" fill="#eaf3de" font-weight="600">The Brief Lover</text>
+      <text x="530" y="165" text-anchor="middle" font-family="'Source Serif 4',serif" font-size="10" fill="#a0d090">early 30s, temporary</text>
+    </g>
+    <!-- Brief Lover → Narrator -->
+    <path d="M472 165 Q430 195 410 224" fill="none" stroke="#6aa060" stroke-width="1" marker-end="url(#arr)" stroke-dasharray="4 3"/>
+    <text x="450" y="202" font-family="'Source Serif 4',serif" font-size="9" fill="#6aa060">short affair, moved on</text>
+
+    <!-- ── The Mother ── -->
+    <g>
+      <ellipse cx="340" cy="430" rx="56" ry="28" fill="#8a4a60" stroke="#6a2a40" stroke-width="1"/>
+      <text x="340" y="424" text-anchor="middle" font-family="'Playfair Display',serif" font-size="13" fill="#fbeaf0" font-weight="600">The Mother</text>
+      <text x="340" y="440" text-anchor="middle" font-family="'Source Serif 4',serif" font-size="10" fill="#e0a0c0">past / memory only</text>
+    </g>
+    <!-- Mother → Narrator (childhood swimming lesson) -->
+    <path d="M340 402 L340 278" fill="none" stroke="#c070a0" stroke-width="1" marker-end="url(#arr)" stroke-dasharray="4 3"/>
+    <text x="350" y="360" font-family="'Source Serif 4',serif" font-size="9" fill="#c070a0">formative memory</text>
+    <text x="350" y="372" font-family="'Source Serif 4',serif" font-size="9" fill="#c070a0">(swimming/sinking)</text>
+
+    <!-- ── Sister (absent) ── -->
+    <g>
+      <ellipse cx="530" cy="430" rx="58" ry="28" fill="#5a5a5a" stroke="#3a3a3a" stroke-width="1"/>
+      <text x="530" y="424" text-anchor="middle" font-family="'Playfair Display',serif" font-size="13" fill="#e0e0e0" font-weight="600">The Sister</text>
+      <text x="530" y="440" text-anchor="middle" font-family="'Source Serif 4',serif" font-size="10" fill="#b0b0b0">deceased, pills — mentioned once</text>
+    </g>
+    <!-- Sister → Narrator (grief, mentioned in passing) -->
+    <path d="M474 418 Q430 380 408 264" fill="none" stroke="#8a8480" stroke-width="1" marker-end="url(#arr)" stroke-dasharray="3 3"/>
+    <text x="432" y="370" font-family="'Source Serif 4',serif" font-size="9" fill="#8a8480">grief, barely named</text>
+
+    <!-- Legend -->
+    <rect x="20" y="470" width="640" height="42" rx="6" fill="#f2ede4" stroke="#e0d8c8" stroke-width="0.5"/>
+    <text x="36" y="487" font-family="'Source Serif 4',serif" font-size="9" fill="#8a8480">— — dashed line = past or imagined</text>
+    <text x="36" y="502" font-family="'Source Serif 4',serif" font-size="9" fill="#8a8480">——— solid line = active relationship in story time</text>
+    <text x="320" y="487" font-family="'Source Serif 4',serif" font-size="9" fill="#8a8480">All figures are observed / named by narrator; none are POV characters</text>
+    <text x="320" y="502" font-family="'Source Serif 4',serif" font-size="9" fill="#8a8480">The narrator is the only figure with an inner life shown on the page</text>
+  </svg>
+  </div>
+
+  <h3>Key relational dynamics</h3>
+  <p>Every relationship in the story follows the same asymmetry: the narrator is the one who wants, watches, and grieves, while the other figures remain opaque. The Man's feelings are reported secondhand through the Friend; the Girlfriend exists only as a projection of the narrator's imagination. Even the Sister — the most intimate loss in the story — is named only once, fleetingly.</p>
+
+  <div class="callout">
+    The narrator is surrounded by people yet structurally alone. The web of relationships is dense, but nearly all its connections are either broken (ex-husband, sister), temporary (brief lover), or mediated through a third party (the man, via the friend).
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     TAB 2 · FABULA vs SJUZHET
+══════════════════════════════════════════════════ -->
+<div id="panel-fab" class="tab-panel">
+  <h2>Fabula vs sjuzhet</h2>
+  <p>The <em>fabula</em> is the story's chronological spine — what actually happened in sequence. The <em>sjuzhet</em> is how Thammavongsa chooses to arrange and present those events on the page.</p>
+  <p>Each point below is a narrative event. Its <strong>x-position</strong> shows where it appears in the text (sjuzhet order); its <strong>y-position</strong> shows where it falls in real chronological time (fabula order). The diagonal represents a perfectly chronological telling. Points <em>below</em> the line are analepses — they appear in the text later than they occurred in time. Hover over any point to read the event.</p>
+
+  <div style="position:relative; width:100%; margin: 1.5rem 0;">
+    <canvas id="fsChart" style="width:100%; display:block;"></canvas>
+  </div>
+
+  <div id="fs-tooltip" style="
+    display:none;
+    position:absolute;
+    background:var(--paper);
+    border:0.5px solid var(--paper3);
+    border-radius:6px;
+    padding:.55rem .8rem;
+    font-family:'Source Serif 4',serif;
+    font-size:.82rem;
+    color:var(--ink);
+    max-width:220px;
+    line-height:1.5;
+    pointer-events:none;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    z-index:10;
+  "></div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;margin:.5rem 0 1.5rem;font-size:.78rem;color:var(--ink2);">
+    <span style="display:flex;align-items:center;gap:5px;"><span style="width:11px;height:11px;border-radius:50%;background:#4a7a40;display:inline-block;"></span>Present action</span>
+    <span style="display:flex;align-items:center;gap:5px;"><span style="width:11px;height:11px;border-radius:50%;background:#8b3a2a;display:inline-block;"></span>Analepsis — past recalled</span>
+    <span style="display:flex;align-items:center;gap:5px;"><span style="width:11px;height:11px;border-radius:50%;background:#4a5a8a;display:inline-block;"></span>Mediated report (gossip)</span>
+    <span style="display:flex;align-items:center;gap:5px;"><span style="width:11px;height:11px;border-radius:50%;background:#7a5a20;display:inline-block;"></span>Closing image / proleptic return</span>
+    <span style="display:flex;align-items:center;gap:5px;"><span style="width:22px;height:2px;background:#c8c0b4;display:inline-block;"></span>Chronological baseline</span>
+  </div>
+
+  <h3>Key distortions between fabula and sjuzhet</h3>
+  <table class="comp">
+    <thead>
+      <tr>
+        <th>Narratological term</th>
+        <th>What Thammavongsa does</th>
+        <th>Effect</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><em>Analepsis</em> (flashback)</td>
+        <td>The bus-stop section interrupts the winter-to-autumn arc with childhood poverty, the marriage, and the pizza-place fight — events from decades earlier</td>
+        <td>Shows the present loneliness has deep prior history; the past never fully recedes</td>
+      </tr>
+      <tr>
+        <td><em>Ellipsis</em></td>
+        <td>Four months of the man's solo travel are compressed to a brief paragraph</td>
+        <td>Enacts the narrator's experience: waiting feels airless, then suddenly over</td>
+      </tr>
+      <tr>
+        <td><em>Summary</em></td>
+        <td>Months of summer, autumn, and recovery are reported as secondhand gossip via the friend</td>
+        <td>The narrator is always one remove from events — she receives reports, not experience</td>
+      </tr>
+      <tr>
+        <td><em>Scene</em></td>
+        <td>Only the party and the bus stop are rendered in full scene detail</td>
+        <td>Grants weight to the moment of almost-connection and to private grief</td>
+      </tr>
+      <tr>
+        <td><em>Proleptic closure</em></td>
+        <td>The story ends with a childhood memory — the lake — that the fabula places at the very beginning</td>
+        <td>Creates a closed loop; suggests nothing has changed; the narrator has always sunk</td>
+      </tr>
+      <tr>
+        <td><em>Order inversion</em></td>
+        <td>We hear the floating declaration <em>before</em> we learn the man has a girlfriend</td>
+        <td>Reader shares the narrator's hopeful moment — then her deflation — in real time</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    The story's deepest formal choice is to end with its earliest event: the four-year-old narrator sinking in the lake. The sjuzhet arrives at the same point the fabula begins, creating a closed loop — the story of a life in which the fundamental condition has not changed.
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script>
+  (function() {
+    var C_PRESENT = '#4a7a40';
+    var C_PAST    = '#8b3a2a';
+    var C_REPORT  = '#4a5a8a';
+    var C_CLOSE   = '#7a5a20';
+
+    var events = [
+      { sj:1,  fab:6,  label:'Party — the man appears',             type:'present', note:'Opens in medias res. Chronologically this is the 6th event, but it opens the text.' },
+      { sj:2,  fab:7,  label:'Narrator likes him; is he single?',   type:'present', note:'Still the party scene, present tense thinking.' },
+      { sj:3,  fab:1,  label:'Childhood: sinking in the lake',      type:'past',    note:'Bus-stop flashback drops to earliest memory — age 4.' },
+      { sj:4,  fab:2,  label:'Childhood poverty, $5 shoes',         type:'past',    note:'Continues the analepsis: economic origins.' },
+      { sj:5,  fab:3,  label:'Marriage & financial resentment',     type:'past',    note:'Ex-husband earns more; resents her lower income.' },
+      { sj:6,  fab:4,  label:'Pizza-place fight; divorce',          type:'past',    note:'The breaking point, recalled at the bus stop.' },
+      { sj:7,  fab:5,  label:'Brief affair; he moves on',           type:'past',    note:'The man in his thirties — short, ended cleanly.' },
+      { sj:8,  fab:8,  label:'"Floating" revelation',               type:'report',  note:'Friend relays: he said he was "just floating." Chronologically this is shortly after the party.' },
+      { sj:9,  fab:8,  label:'Mortgage & girlfriend revealed',      type:'report',  note:'Same conversation — the hope and its disqualification arrive together.' },
+      { sj:10, fab:9,  label:'Man travels 4 months alone',          type:'report',  note:'Ellipsis — months compressed to a paragraph.' },
+      { sj:11, fab:10, label:'Summer: he complains about her',      type:'report',  note:'Gossip filtered through the friend.' },
+      { sj:12, fab:11, label:'Autumn: he never contacts narrator',  type:'report',  note:'Silence reported, not experienced directly.' },
+      { sj:13, fab:12, label:'Knee surgery; stays with girlfriend', type:'report',  note:'Practical men choose whoever is already there.' },
+      { sj:14, fab:13, label:'Naturopath email confirms his love',  type:'report',  note:'He seeks help for her insomnia — evidence of care.' },
+      { sj:15, fab:1,  label:'Lake, tadpoles — closing image',      type:'close',   note:'Proleptic return: sjuzhet ends where fabula began. The loop closes.' },
+    ];
+
+    var colorMap = { present: C_PRESENT, past: C_PAST, report: C_REPORT, close: C_CLOSE };
+
+    var canvas = document.getElementById('fsChart');
+    var maxSj = 15, maxFab = 13;
+    var PAD = 20;
+    canvas.parentElement.style.height = '420px';
+    canvas.parentElement.style.position = 'relative';
+
+    var chart = new Chart(canvas, {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          data: events.map(function(e) { return { x: e.sj, y: e.fab }; }),
+          pointBackgroundColor: events.map(function(e) { return colorMap[e.type]; }),
+          pointBorderColor: events.map(function(e) { return colorMap[e.type]; }),
+          pointRadius: 8,
+          pointHoverRadius: 11,
+          pointBorderWidth: 0,
+        }, {
+          data: [{ x:0, y:0 }, { x:16, y:14 }],
+          type: 'line',
+          borderColor: '#c8c0b4',
+          borderWidth: 1.5,
+          borderDash: [5, 4],
+          pointRadius: 0,
+          fill: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { top: 20, right: 20, bottom: 10, left: 10 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false },
+          annotation: {}
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Sjuzhet order (position in text →)',
+              font: { size: 12, family: "'Source Serif 4', serif" },
+              color: '#8a8480'
+            },
+            min: 0, max: 16,
+            ticks: {
+              stepSize: 1,
+              color: '#8a8480',
+              font: { size: 11 },
+              callback: function(v) { return Number.isInteger(v) && v > 0 && v <= 15 ? v : ''; }
+            },
+            grid: { color: 'rgba(0,0,0,0.04)' }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Fabula order (chronological position ↑)',
+              font: { size: 12, family: "'Source Serif 4', serif" },
+              color: '#8a8480'
+            },
+            min: 0, max: 14,
+            ticks: {
+              stepSize: 1,
+              color: '#8a8480',
+              font: { size: 11 },
+              callback: function(v) { return Number.isInteger(v) && v > 0 && v <= 13 ? v : ''; }
+            },
+            grid: { color: 'rgba(0,0,0,0.04)' }
+          }
+        },
+        onHover: function(evt, elements) {
+          canvas.style.cursor = elements.length ? 'pointer' : 'default';
+        }
+      }
+    });
+
+    var tooltip = document.getElementById('fs-tooltip');
+    canvas.addEventListener('mousemove', function(evt) {
+      var pts = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, false);
+      if (pts.length && pts[0].datasetIndex === 0) {
+        var idx = pts[0].index;
+        var ev = events[idx];
+        tooltip.innerHTML = '<strong style="font-size:.85rem;color:#1a1714;">' + ev.label + '</strong><br>' +
+          '<span style="font-size:.78rem;color:#8a8480;">sjuzhet ' + ev.sj + '  ·  fabula ' + ev.fab + '</span><br>' +
+          '<span style="font-size:.8rem;color:#4a4642;">' + ev.note + '</span>';
+        var rect = canvas.getBoundingClientRect();
+        var parentRect = canvas.parentElement.getBoundingClientRect();
+        var tx = evt.clientX - parentRect.left + 12;
+        var ty = evt.clientY - parentRect.top - 10;
+        if (tx + 230 > parentRect.width) tx = tx - 244;
+        tooltip.style.left = tx + 'px';
+        tooltip.style.top = ty + 'px';
+        tooltip.style.display = 'block';
+      } else {
+        tooltip.style.display = 'none';
+      }
+    });
+    canvas.addEventListener('mouseleave', function() { tooltip.style.display = 'none'; });
+
+    var regionLabels = [
+      { x: 1.5, y: 12.5, text: 'above diagonal =', color: '#4a5a8a' },
+      { x: 1.5, y: 11.8, text: 'text comes before', color: '#4a5a8a' },
+      { x: 1.5, y: 11.1, text: 'story-time (rare here)', color: '#4a5a8a' },
+      { x: 10,  y: 2.5,  text: 'below diagonal = analepsis', color: '#8b3a2a' },
+      { x: 10,  y: 1.8,  text: '(text comes after story-time)', color: '#8b3a2a' },
+    ];
+  })();
+  </script>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     TAB 3 · PLOT ANALYSIS
+══════════════════════════════════════════════════ -->
+<div id="panel-plot" class="tab-panel">
+  <h2>Plot analysis</h2>
+  <p>Thammavongsa writes lyric fiction in which very little "happens" by conventional standards. The plot's drama is almost entirely internal — a sequence of hopes, analyses, and quiet defeats experienced by a narrator who watches the world with forensic attention and protects herself with understatement.</p>
+
+  <div class="freytag">
+    <svg viewBox="0 0 680 140" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- Freytag arc — modified for this story's anti-climactic shape -->
+      <path d="M 40 110 Q 150 30 280 50 Q 380 65 480 80 Q 580 90 640 115"
+            fill="none" stroke="#8b3a2a" stroke-width="2" marker-end="url(#fa)"/>
+      <!-- Stage labels -->
+      <text x="40" y="128" font-family="'Source Serif 4',serif" font-size="9" fill="#8a8480" text-anchor="middle">Exposition</text>
+      <text x="160" y="128" font-family="'Source Serif 4',serif" font-size="9" fill="#8a8480" text-anchor="middle">Rising action</text>
+      <text x="280" y="128" font-family="'Source Serif 4',serif" font-size="9" fill="#8b3a2a" text-anchor="middle" font-weight="600">Pseudo-climax</text>
+      <text x="420" y="128" font-family="'Source Serif 4',serif" font-size="9" fill="#8a8480" text-anchor="middle">Falling action</text>
+      <text x="560" y="128" font-family="'Source Serif 4',serif" font-size="9" fill="#8a8480" text-anchor="middle">Non-resolution</text>
+      <!-- Dotted verticals -->
+      <line x1="280" y1="50" x2="280" y2="115" stroke="#8b3a2a" stroke-width="0.5" stroke-dasharray="3 2"/>
+      <!-- Stage content -->
+      <text x="40" y="24" font-family="'Source Serif 4',serif" font-size="8" fill="#5a5050" text-anchor="middle">Party</text>
+      <text x="40" y="35" font-family="'Source Serif 4',serif" font-size="8" fill="#5a5050" text-anchor="middle">meeting</text>
+      <text x="160" y="20" font-family="'Source Serif 4',serif" font-size="8" fill="#5a5050" text-anchor="middle">Bus stop /</text>
+      <text x="160" y="31" font-family="'Source Serif 4',serif" font-size="8" fill="#5a5050" text-anchor="middle">backstory</text>
+      <text x="280" y="20" font-family="'Source Serif 4',serif" font-size="8" fill="#8b3a2a" text-anchor="middle">"He was floating"</text>
+      <text x="280" y="31" font-family="'Source Serif 4',serif" font-size="8" fill="#8b3a2a" text-anchor="middle">+ mortgage reveal</text>
+      <text x="420" y="22" font-family="'Source Serif 4',serif" font-size="8" fill="#5a5050" text-anchor="middle">4 months away /</text>
+      <text x="420" y="33" font-family="'Source Serif 4',serif" font-size="8" fill="#5a5050" text-anchor="middle">surgery / gossip</text>
+      <text x="560" y="22" font-family="'Source Serif 4',serif" font-size="8" fill="#5a5050" text-anchor="middle">Naturopath email /</text>
+      <text x="560" y="33" font-family="'Source Serif 4',serif" font-size="8" fill="#5a5050" text-anchor="middle">lake memory</text>
+    </svg>
+  </div>
+  <p style="font-size:.8rem; color:var(--ink3); font-style:italic; margin-top:-.5rem;">Note: the arc is deliberately deflated — the climax (the floating revelation) arrives early and then slowly slopes into silence, mimicking the story's emotional shape.</p>
+
+  <div class="plot-grid">
+    <div class="plot-card">
+      <h4>Exposition</h4>
+      <p>A social gathering. A woman preparing to speak. A man approaches. Their conversation is easy, mutual. He runs to hug her goodbye. The narrator quietly calculates whether he might be single.</p>
+    </div>
+    <div class="plot-card teal">
+      <h4>Rising action</h4>
+      <p>The bus stop: a past marriage, financial resentment, a humiliating argument. A brief lover who moved on. The narrator's meditation on aging, desire, and the shrinking market for women over fifty.</p>
+    </div>
+    <div class="plot-card gold">
+      <h4>Pseudo-climax</h4>
+      <p>The friend tells her: "He said he was just floating." Love at first sight — but he lives with a woman, pays the mortgage. The revelation arrives already compromised. Hope and disqualification in the same breath.</p>
+    </div>
+    <div class="plot-card">
+      <h4>Falling action</h4>
+      <p>Four months of absence. Summer gossip about the girlfriend. Autumn silence. The knee surgery; practical men choose whoever is already there. An e-mail about a naturopath confirms his love for the girlfriend.</p>
+    </div>
+    <div class="plot-card teal">
+      <h4>Anti-resolution</h4>
+      <p>No reunion, no confrontation, no catharsis. The narrator reflects on the word "floating" — then the childhood lake, sinking, the tadpoles she reached for and could not hold. The story ends where she began.</p>
+    </div>
+  </div>
+
+  <h3>Central conflict</h3>
+  <p>The external conflict — will the narrator connect with the man? — is a red herring. The real conflict is internal and structural: the narrator lives in a world where her qualities (financial independence, emotional intelligence, self-sufficiency) are the very things that make her undesirable as a long-term partner. Dependence is coded as loyalty; self-possession is coded as risk.</p>
+
+  <h3>Themes</h3>
+  <div class="plot-grid">
+    <div class="plot-card">
+      <h4>Economics of love</h4>
+      <p>The story is saturated with financial language. Mortgages, salaries, the cost of shoes. Men choose partners they can control financially, not ones they love.</p>
+    </div>
+    <div class="plot-card teal">
+      <h4>The penalty of independence</h4>
+      <p>Because the narrator earns her own income and cannot be dependent, she is "safe" to feel things for — but not "safe" to commit to. Her freedom is her prison.</p>
+    </div>
+    <div class="plot-card gold">
+      <h4>Time and the aging woman</h4>
+      <p>"Now that I am fifty, they all tell me they want to get married." What was once urgently discouraged — marriage talk — is now what she is excluded from entirely.</p>
+    </div>
+    <div class="plot-card">
+      <h4>Language and the unsaid</h4>
+      <p>The story is built from things not said: she doesn't tell him she does this all the time; she doesn't say she is lonely; she never says she is heartbroken. Restraint is the story's grammar.</p>
+    </div>
+  </div>
+
+  <h3>The closing symbol</h3>
+  <div class="callout">
+    The tadpoles: the four-year-old narrator reaching with both hands for something alive, slippery, impossible to hold — "I was greedy. I thought I could have them all, and I grabbed and grabbed, but I had nothing to put them in." This is desire rendered as a child's instinct: abundant, unashamed, and futile.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     TAB 4 · DISCUSSION QUESTIONS
+══════════════════════════════════════════════════ -->
+<div id="panel-qa" class="tab-panel">
+  <h2>Undergraduate discussion questions</h2>
+  <p>These questions move from close reading toward broader thematic and formal concerns, suitable for a first-year or intermediate literature seminar.</p>
+
+  <div class="q-category">Close reading</div>
+  <details>
+    <summary>The story opens "I had not noticed him." What does this choice of opening line establish about the narrator and the story's power dynamics?</summary>
+    <div class="answer">
+      The opening line immediately reverses the expected gaze. Rather than a woman being seen, we have a woman who was not looking. The man enters her visual field uninvited, which subtly positions him as the one who seeks, at least initially. Thammavongsa also uses it to signal the story's larger irony: the woman who "did not notice" becomes the one who notices everything — who analyzes his every gesture, motivation, and omission with extraordinary precision. The reversal is quietly feminist: the narrator's interiority is dense and alert; the man, despite his declarations, remains opaque.
+    </div>
+  </details>
+
+  <details>
+    <summary>The narrator shares that her sister died from pills in a single sentence, then moves on. What is the narrative effect of this brevity, and what does it tell us about the narrator's voice?</summary>
+    <div class="answer">
+      The technique is characteristic of Thammavongsa's prose: devastating information delivered without ceremony. "My sister died. Pills." The period after "died" performs a finality that a comma would not. The narrator uses this disclosure as evidence of a calculation — she'll tell this stranger intimate things because she assumes she'll never see him again. But the sentence also reveals the narrator's relationship to grief: she carries enormous losses that she does not narrativize, does not explain, does not linger on. The story as a whole is an exercise in this kind of compressed sorrow. To acknowledge the sister more fully would be to break the emotional armor the narrator requires to function.
+    </div>
+  </details>
+
+  <details>
+    <summary>The bus stop scene interrupts the main narrative arc. Why might Thammavongsa have placed this extended flashback here, and what does it add structurally?</summary>
+    <div class="answer">
+      Placed immediately after the narrator's hopeful departure from the party (she likes him; is he single?), the bus stop section deflates any romantic momentum. It returns her — and us — to a neighborhood she inhabited during her marriage, and the memories triggered are all of financial conflict and humiliation. Structurally, the flashback establishes that what the narrator is hoping for now is not new longing; it is the same longing she has always had, with the same obstacles in different form. The ex-husband who resented her income prefigures the man who will choose a woman without one. The past keeps explaining the present. Narratologically, it is also an analepsis that violates chronological sjuzhet — Thammavongsa uses the formal disruption to signal that this woman's interior life cannot move forward until it has accounted for what came before.
+    </div>
+  </details>
+
+  <div class="q-category" style="margin-top:1.5rem">Thematic</div>
+  <details>
+    <summary>How does the story use economics — money, mortgages, salaries — as a metaphor for romantic relationships?</summary>
+    <div class="answer">
+      "Floating" is deeply preoccupied with what can and cannot be afforded. The narrator's parents together earned what she now earns alone, yet they were "poor." Her ex-husband made almost six figures and still experienced her lower income as a burden, an inequality, a threat. The man with whom she almost connects pays his girlfriend's mortgage — and this, the narrator understands, is precisely why the girlfriend is "safe." A person who depends on you financially cannot leave easily. Love and economic control become inseparable throughout the story: the girlfriend's lack of a job is simultaneously troubling (she has no independence) and advantageous (she has no exit). The narrator's self-sufficiency — her pride — is the thing that makes her romantically expendable. The story diagnoses a system in which financial dependency functions as a substitute for loyalty, and in which women who refuse that dependency are structurally excluded from its "rewards."
+    </div>
+  </details>
+
+  <details>
+    <summary>"Now that I am fifty, they all tell me they want to get married." How does the story critique the different timelines imposed on men and women in heterosexual romance?</summary>
+    <div class="answer">
+      When the narrator was in her twenties and had "plenty of time to have children," she was careful not to mention marriage, knowing it would frighten men away. She performed patience and casualness at exactly the moment she most wanted permanence. Now that she is fifty, the men around her have reversed: they want commitment, they want children — but they do not want her to provide these things to them. They want to provide for women younger than themselves. The narrator is caught in a temporal trap: she was too serious when she should have been casual, and now she is invisible when they have become serious. The man in his fifties who has "never felt this way before" is similarly diagnosed: he went with whoever was available, whoever did the pursuing, and only now encounters genuine feeling — at a point when acting on it would cost too much.
+    </div>
+  </details>
+
+  <details>
+    <summary>The narrator says of the girlfriend: "I worry about these things for her, even though it is not my life." What does this moment reveal about the narrator's character and the story's ethical register?</summary>
+    <div class="answer">
+      This is one of the story's most quietly astonishing moments. The narrator — who has every reason to resent the girlfriend as the obstacle to her own happiness — instead extends imaginative generosity to her. She worries about the girlfriend's lack of income, her invisibility to his friends, her inability to say anything because she feels she cannot stop him. The narrator recognizes the girlfriend's vulnerability and names it with more care than she names her own grief. This reveals the narrator's fundamental ethical orientation: she is constitutionally unable to reduce other women to rivals or props. It also deepens the story's critique — the girlfriend's situation is not enviable. Being the woman who "stayed" comes at its own cost.
+    </div>
+  </details>
+
+  <div class="q-category" style="margin-top:1.5rem">Form &amp; style</div>
+  <details>
+    <summary>Thammavongsa's sentences are short and declarative. How does this prose style interact with the story's emotional content?</summary>
+    <div class="answer">
+      The prose style is the emotional argument. Short, declarative sentences resist elaboration — they state and move on, refusing the kind of expansive feeling that would make the narrator's grief legible as tragedy. This is how the narrator survives: by not dwelling. "Mom and Dad divorced. My sister died. Pills." Three facts in four words. The prose performs the same compression the narrator performs emotionally. It also creates a documentary quality — events are recorded, not experienced — which mirrors the narrator's habit of observing rather than feeling. The occasional longer sentence, like the final paragraph about the lake, becomes powerful precisely because of the contrast with what precedes it. When the prose finally opens up, it signals that the narrator's armor has thinned.
+    </div>
+  </details>
+
+  <details>
+    <summary>The title "Floating" accrues multiple meanings over the course of the story. Trace the word's evolution and explain what it finally means by the last paragraph.</summary>
+    <div class="answer">
+      "Floating" first appears as the man's description of his emotional state the night he met the narrator: an ecstatic, weightless sensation, associated with cartoons and balloons and the freedom of being taken anywhere without harm. In this register, floating is romantic — it belongs to him. But the narrator immediately reframes it with a second definition: floating in water, a physical act requiring trust, relaxation, the willingness to give your body over to something larger. Then comes the counter-image: as a four-year-old, she did not float. She sank. She touched the bottom. She grabbed at tadpoles with nothing to hold them in. By the end, "floating" is not a promise but an inability — hers. She sinks because she cannot surrender to something she cannot hold, and she cannot hold any of it. The word's journey from his rapturous self-description to her childhood sinking is the story's complete emotional arc.
+    </div>
+  </details>
+
+  <div class="q-category" style="margin-top:1.5rem">Contextual &amp; comparative</div>
+  <details>
+    <summary>The narrator is never named, nor is the man, the ex-husband, or the girlfriend. What is the effect of this withholding of names?</summary>
+    <div class="answer">
+      Names individualize and fix. By withholding them, Thammavongsa does two things simultaneously: she renders the narrator universal (every middle-aged woman who has navigated desire under these conditions) while also dramatizing the narrator's experience of the people around her. The man never quite becomes a particular person to her — he is a type, a projection, a set of signals she reads. He doesn't tell her his name until late in their conversation, and she can't pronounce it. His name is given but not reproduced on the page — it belongs to him, not to her. The ex-husband is defined entirely by his function (he made more money; he yelled). The girlfriend is defined by her condition (no job, pays no mortgage). The absence of names is a formal argument: these people exist to the narrator as forces and situations, not as known individuals.
+    </div>
+  </details>
+
+  <details>
+    <summary>How might you situate "Floating" within a tradition of fiction about immigrant or diaspora experience, given what we know about Thammavongsa's biography and previous work?</summary>
+    <div class="answer">
+      Souvankham Thammavongsa is a Lao-Canadian writer whose previous story collection, <em>How to Pronounce Knife</em>, focused centrally on working-class immigrant experience. "Floating" engages this tradition more obliquely: immigration is not named, but several details accrue meaning in that context — the man's name, which the narrator cannot pronounce (an echo of the title of Thammavongsa's collection); the childhood poverty that differs from the poverty of the narrator's adult peers; the sense that the narrator has always been slightly off-register with the dominant culture's romantic scripts. The story's preoccupation with financial sufficiency and its relationship to desirability also resonates with the experience of immigrant women who achieve middle-class stability through their own labor, only to find that this achievement is coded differently than it would be for someone who inherited the expectation of self-sufficiency. The story works on its own terms as fiction about aging and desire, but it repays reading within the broader arc of Thammavongsa's project.
+    </div>
+  </details>
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+
+<!-- ══════════════════════════════════════════════════
+     TAB 5 · ABOUT THE AUTHOR
+══════════════════════════════════════════════════ -->
+<div id="panel-author" class="tab-panel">
+  <h2>About the author</h2>
+
+  <h3>Biographical profile</h3>
+  <table class="comp">
+    <tbody>
+      <tr><td style="width:34%;font-weight:500;color:var(--ink);">Full name</td><td>Souvankham Thammavongsa</td></tr>
+      <tr><td style="font-weight:500;color:var(--ink);">Year of birth</td><td>1978</td></tr>
+      <tr><td style="font-weight:500;color:var(--ink);">Place of birth</td><td>Nong Khai refugee camp, Thailand (of Lao descent)</td></tr>
+      <tr><td style="font-weight:500;color:var(--ink);">Current residence</td><td>Toronto, Ontario, Canada</td></tr>
+      <tr><td style="font-weight:500;color:var(--ink);">Nationality</td><td>Canadian (Lao-Canadian)</td></tr>
+      <tr><td style="font-weight:500;color:var(--ink);">Gender</td><td>Woman</td></tr>
+      <tr><td style="font-weight:500;color:var(--ink);">Marital status</td><td>Not publicly disclosed; no partner or spouse on record</td></tr>
+      <tr><td style="font-weight:500;color:var(--ink);">Education</td><td>Raised and educated in Toronto public schools; Bachelor of Arts, English, University of Toronto (New College, 2003). No MFA — she has stated she learned to write by reading.</td></tr>
+      <tr><td style="font-weight:500;color:var(--ink);">Influences</td><td>Alice Munro, Carson McCullers, Flannery O'Connor, Tennessee Williams</td></tr>
+      <tr><td style="font-weight:500;color:var(--ink);">Fiction venues</td><td>The New Yorker, Harper's Magazine, The Paris Review, The Atlantic, Granta, Ploughshares, NOON</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Short biography</h3>
+  <p>Souvankham Thammavongsa was born in 1978 in a Lao refugee camp in Nong Khai, Thailand. She and her parents were sponsored by a family in Canada when she was one year old, and she was raised and educated in Toronto, Ontario. She studied at the University of Toronto, majoring in English. She has never taken an MFA course, and says she learned to write by reading.</p>
+
+  <p>She began her literary career as a poet, self-publishing and selling her first chapbooks out of her school bag at farmers' markets and small press fairs. She has written three poetry books — <em>Light</em> (2013), <em>Found</em> (2007), and <em>Small Arguments</em> (2003) — all published by Pedlar Press in Canada, followed by a fourth collection, <em>Cluster</em> (2016). Her transition to fiction brought her to international attention: her fiction has appeared in Harper's, Granta, the Paris Review, Ploughshares, Best American Non-Required Reading 2018, and the O. Henry Prize Stories 2019.</p>
+
+  <p>Thammavongsa has now won the Giller Prize twice — in 2020 for her short story collection <em>How to Pronounce Knife</em>, and in 2025 for her debut novel <em>Pick a Colour</em>, published by Knopf Canada. The novel, set over a single day in a Toronto nail salon, follows a retired boxer working under the name "Susan." In the jury's words, it is written with "an inimitable style that decentralizes the English language, crackling wit, and profound confidence." She is one of only a handful of writers to have won Canada's most prestigious literary prize twice.</p>
+
+  <div class="callout">
+    "When I was a kid I didn't know how to become a writer. My mom and dad are not writers. I printed and bound my own books, sold them out of my school knapsack on front lawns, at farmers markets, and at small press fairs. Thank you to anyone who has ever bought a book that I made." — Thammavongsa, Giller Prize acceptance speech, 2025
+  </div>
+
+  <h3>Body of work</h3>
+  <table class="comp">
+    <thead>
+      <tr>
+        <th>Year</th>
+        <th>Title</th>
+        <th>Genre</th>
+        <th>Publisher</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>2003</td>
+        <td><em>Small Arguments</em></td>
+        <td>Poetry</td>
+        <td>Pedlar Press</td>
+        <td>Debut collection; won the ReLit Award (2004)</td>
+      </tr>
+      <tr>
+        <td>2007</td>
+        <td><em>Found</em></td>
+        <td>Poetry</td>
+        <td>Pedlar Press</td>
+        <td>Adapted into a short film by Paramita Nath</td>
+      </tr>
+      <tr>
+        <td>2013</td>
+        <td><em>Light</em></td>
+        <td>Poetry</td>
+        <td>Pedlar Press</td>
+        <td>Won the Trillium Book Award for Poetry (2014)</td>
+      </tr>
+      <tr>
+        <td>2016</td>
+        <td><em>Cluster</em></td>
+        <td>Poetry</td>
+        <td>Pedlar Press</td>
+        <td>Fourth and most recent poetry collection</td>
+      </tr>
+      <tr>
+        <td>2020</td>
+        <td><em>How to Pronounce Knife</em></td>
+        <td>Short stories</td>
+        <td>Knopf Canada / Little, Brown (US)</td>
+        <td>Won the 2020 Scotiabank Giller Prize; 2021 Trillium Book Award; finalist for the National Book Critics Circle Award; O. Henry Award for the story "Slingshot" (2019)</td>
+      </tr>
+      <tr>
+        <td>2025</td>
+        <td><em>Pick a Colour</em></td>
+        <td>Novel (debut)</td>
+        <td>Knopf Canada / Little, Brown (US)</td>
+        <td>Won the 2025 Giller Prize ($100,000); set over one day in a Toronto nail salon</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="font-size:.84rem;color:var(--ink3);font-style:italic;">Selected stories and essays have also appeared in The New Yorker, Harper's Magazine, The Paris Review, The Atlantic, Granta, Ploughshares, and NOON, among others.</p>
+
+  <h3>Awards and recognition</h3>
+  <table class="comp">
+    <thead>
+      <tr>
+        <th>Year</th>
+        <th>Award</th>
+        <th>Work</th>
+        <th>Result</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>2004</td><td>ReLit Award</td><td><em>Small Arguments</em></td><td>Won</td></tr>
+      <tr><td>2014</td><td>Trillium Book Award for Poetry</td><td><em>Light</em></td><td>Won</td></tr>
+      <tr><td>2015</td><td>Commonwealth Short Story Prize</td><td>"How to Pronounce Knife"</td><td>Shortlisted</td></tr>
+      <tr><td>2016</td><td>The Journey Prize longlist</td><td>"Mani Pedi"</td><td>Longlisted</td></tr>
+      <tr><td>2019</td><td>O. Henry Award</td><td>"Slingshot" (Harper's Magazine)</td><td>Won</td></tr>
+      <tr><td>2020</td><td>Scotiabank Giller Prize</td><td><em>How to Pronounce Knife</em></td><td>Won ($100,000)</td></tr>
+      <tr><td>2021</td><td>Trillium Book Award</td><td><em>How to Pronounce Knife</em></td><td>Won</td></tr>
+      <tr><td>2021</td><td>National Book Critics Circle Award — Fiction</td><td><em>How to Pronounce Knife</em></td><td>Finalist</td></tr>
+      <tr><td>2021</td><td>Asian/Pacific American Award for Literature — Adult Fiction</td><td><em>How to Pronounce Knife</em></td><td>Honor title</td></tr>
+      <tr><td>n/a</td><td>Governor General's Literary Award for Poetry</td><td>Poetry (collection unspecified in sources)</td><td>Finalist</td></tr>
+      <tr><td>n/a</td><td>Griffin Poetry Prize</td><td>Poetry</td><td>Finalist</td></tr>
+      <tr><td>2025</td><td>Giller Prize</td><td><em>Pick a Colour</em></td><td>Won ($100,000)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    Thammavongsa is one of only two authors to have won the Giller Prize twice (the other being Alice Munro). She has also served as a judge for the 2021 Griffin Poetry Prize, the 2021 CBC Short Story Prize, and the inaugural 2024 Montreal Fiction Prize.
+  </div>
+</div>
+
+</body></html>
