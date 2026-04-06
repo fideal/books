@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Balenciaga &mdash; Han Ong | Literary Analysis</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --ink: #1a1a1a;
+  --bg: #faf9f6;
+  --accent: #8b5e3c;
+  --accent2: #3c5e8b;
+  --muted: #6b6b6b;
+  --border: #ddd6c8;
+  --tab-bg: #f0ebe3;
+  --card: #ffffff;
+  --hi: #f5f0e8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Georgia, serif; background: var(--bg); color: var(--ink); line-height: 1.75; font-size: 16px; }
+
+header {
+  background: var(--ink); color: #fff;
+  padding: 1.8rem 2.5rem 1.4rem;
+  border-bottom: 4px solid var(--accent);
+}
+header h1 { font-size: 1.75rem; letter-spacing: .04em; }
+header p  { color: #ccc; font-size: .88rem; margin-top: .3rem; font-style: italic; }
+
+.tab-bar {
+  display: flex; flex-wrap: wrap;
+  background: var(--tab-bg);
+  border-bottom: 2px solid var(--border);
+  padding: 0 1rem; gap: .2rem;
+}
+.tab-btn {
+  padding: .7rem 1.1rem;
+  border: none; background: transparent; cursor: pointer;
+  font-family: Georgia, serif; font-size: .84rem;
+  color: var(--muted);
+  border-bottom: 3px solid transparent;
+  transition: color .15s;
+  margin-bottom: -2px;
+}
+.tab-btn:hover  { color: var(--accent); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: bold; }
+
+.tab-panel { display: none; padding: 2rem 2.5rem; max-width: 1100px; margin: 0 auto; }
+.tab-panel.active { display: block; }
+
+h2 { font-size: 1.35rem; color: var(--accent); margin-bottom: 1rem;
+     border-bottom: 1px solid var(--border); padding-bottom: .5rem; }
+h3 { font-size: 1.05rem; color: var(--accent2); margin: 1.6rem 0 .5rem; }
+h4 { font-size: .95rem; color: var(--accent); margin-bottom: .35rem; }
+p  { margin-bottom: 1rem; }
+
+table { width: 100%; border-collapse: collapse; margin: .8rem 0 1.8rem; font-size: .88rem; }
+th { background: var(--ink); color: #fff; padding: .55rem .8rem; text-align: left; }
+td { padding: .5rem .8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:nth-child(even) td { background: var(--hi); }
+
+#rel-svg-wrap { overflow-x: auto; }
+svg.rel-graph  { display: block; margin: 0 auto; }
+
+.plot-card {
+  background: var(--card);
+  border-left: 4px solid var(--accent);
+  padding: .9rem 1.1rem;
+  margin-bottom: .9rem;
+  border-radius: 0 6px 6px 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+
+.gen-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 1.8rem;
+}
+.gen-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem 1.1rem;
+}
+.gen-card h4 { color: var(--accent2); margin-bottom: .4rem; }
+
+/* --- Q&A ACCORDION --- */
+.qa-group { margin: 1.4rem 0 .4rem; }
+.qa-group-label {
+  font-size: .78rem; font-family: sans-serif; font-weight: bold;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); border-bottom: 1px solid var(--border);
+  padding-bottom: .25rem; margin-bottom: .7rem;
+}
+.qa-item { margin-bottom: .55rem; }
+.qa-q {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: .8rem;
+  background: var(--accent2); color: #fff;
+  padding: .6rem 1rem; border-radius: 4px;
+  font-size: .9rem; cursor: pointer;
+  user-select: none; list-style: none;
+  transition: background .15s;
+}
+.qa-q:hover { background: #2e4d73; }
+.qa-toggle {
+  flex-shrink: 0; font-size: 1.1rem; line-height: 1;
+  font-family: sans-serif; font-weight: bold;
+  transition: transform .2s;
+}
+.qa-toggle.open { transform: rotate(45deg); }
+.qa-a {
+  display: none;
+  background: var(--card); border: 1px solid var(--border);
+  border-top: none; padding: .75rem 1rem;
+  border-radius: 0 0 4px 4px; font-size: .88rem;
+  margin-top: -4px;
+}
+
+#scatter-wrap { position: relative; height: 520px; margin: 1.2rem 0 .5rem; }
+.legend-row { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; margin: .6rem 0 1.4rem; font-size: .82rem; }
+.legend-item { display: flex; align-items: center; gap: .35rem; }
+.ldot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+
+.bio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; margin-bottom: 1.6rem; }
+@media (max-width: 640px) { .bio-grid { grid-template-columns: 1fr; } }
+.awards-list li { margin: .3rem 0 .3rem 1.2rem; font-size: .9rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>My Balenciaga</h1>
+  <p>Han Ong &nbsp;&middot;&nbsp; <em>The New Yorker</em>, March 23, 2026 &nbsp;&middot;&nbsp; Genettian Narratological Analysis</p>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab(event,'rel')">&#9312; Character Relationships</button>
+  <button class="tab-btn"        onclick="showTab(event,'fab')">&#9313; Fabula vs Sjuzhet</button>
+  <button class="tab-btn"        onclick="showTab(event,'plot')">&#9314; Plot Analysis (Genette)</button>
+  <button class="tab-btn"        onclick="showTab(event,'qa')">&#9315; Class Questions</button>
+  <button class="tab-btn"        onclick="showTab(event,'auth')">&#9316; About Han Ong</button>
+</div>
+
+<!-- TAB 1 -->
+<div id="tab-rel" class="tab-panel active">
+  <h2>Character Relationship Map</h2>
+  <p style="color:var(--muted);font-size:.87rem">Centred on Lucy (narrator). Solid lines = primary bonds; dashed = kin, absent, or symbolic.</p>
+  <div id="rel-svg-wrap">
+  <svg class="rel-graph" width="820" height="540" viewBox="0 0 820 540" xmlns="http://www.w3.org/2000/svg">
+    <line x1="410" y1="270" x2="255" y2="148" stroke="#8b5e3c" stroke-width="3" opacity=".85"/>
+    <text x="316" y="193" font-size="11" fill="#8b5e3c" font-family="Georgia" transform="rotate(-36,316,193)">Devoted daughter / confidante</text>
+    <line x1="410" y1="270" x2="565" y2="148" stroke="#3c5e8b" stroke-width="2.5" opacity=".85"/>
+    <text x="458" y="190" font-size="11" fill="#3c5e8b" font-family="Georgia" transform="rotate(36,458,190)">Second mother / ally</text>
+    <line x1="255" y1="148" x2="565" y2="148" stroke="#555" stroke-width="2" opacity=".65" stroke-dasharray="6 3"/>
+    <text x="380" y="138" font-size="11" fill="#555" font-family="Georgia" text-anchor="middle">Sisters (rival / loving)</text>
+    <line x1="410" y1="270" x2="625" y2="378" stroke="#c0392b" stroke-width="2.5" opacity=".9"/>
+    <text x="528" y="308" font-size="11" fill="#c0392b" font-family="Georgia" transform="rotate(28,528,308)">Romantic partner</text>
+    <line x1="410" y1="270" x2="195" y2="390" stroke="#9b59b6" stroke-width="2" opacity=".75" stroke-dasharray="5 3"/>
+    <text x="275" y="353" font-size="11" fill="#9b59b6" font-family="Georgia" transform="rotate(-30,275,353)">Childhood icon / psychic mirror</text>
+    <line x1="255" y1="148" x2="195" y2="390" stroke="#9b59b6" stroke-width="1.5" opacity=".55" stroke-dasharray="4 4"/>
+    <text x="196" y="264" font-size="10" fill="#9b59b6" font-family="Georgia" transform="rotate(-78,196,264)">Fellow beauty / shared grief</text>
+    <line x1="410" y1="270" x2="410" y2="472" stroke="#aaa" stroke-width="1.5" stroke-dasharray="4 4" opacity=".7"/>
+    <text x="420" y="390" font-size="11" fill="#888" font-family="Georgia">Absent biological father</text>
+    <line x1="255" y1="148" x2="75" y2="270" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="5 3" opacity=".6"/>
+    <text x="132" y="196" font-size="10" fill="#c0392b" font-family="Georgia" transform="rotate(-50,132,196)">Rebellious escape</text>
+    <line x1="410" y1="270" x2="665" y2="198" stroke="#27ae60" stroke-width="1.5" opacity=".7" stroke-dasharray="4 3"/>
+    <text x="548" y="218" font-size="10" fill="#27ae60" font-family="Georgia" transform="rotate(-18,548,218)">Friend / photographer</text>
+    <circle cx="410" cy="270" r="42" fill="#8b5e3c" opacity=".93"/>
+    <text x="410" y="265" text-anchor="middle" font-size="13" fill="white" font-family="Georgia" font-weight="bold">Lucy</text>
+    <text x="410" y="281" text-anchor="middle" font-size="10" fill="#ffe" font-family="Georgia">(narrator)</text>
+    <circle cx="255" cy="148" r="36" fill="#c0622a" opacity=".9"/>
+    <text x="255" y="143" text-anchor="middle" font-size="12" fill="white" font-family="Georgia" font-weight="bold">Mother</text>
+    <text x="255" y="159" text-anchor="middle" font-size="9" fill="#ffe" font-family="Georgia">model / fantasist</text>
+    <circle cx="565" cy="148" r="34" fill="#3c5e8b" opacity=".9"/>
+    <text x="565" y="143" text-anchor="middle" font-size="12" fill="white" font-family="Georgia" font-weight="bold">Aunt Fely</text>
+    <text x="565" y="159" text-anchor="middle" font-size="9" fill="#ddf" font-family="Georgia">thoracic surgeon</text>
+    <circle cx="625" cy="378" r="30" fill="#c0392b" opacity=".85"/>
+    <text x="625" y="373" text-anchor="middle" font-size="12" fill="white" font-family="Georgia" font-weight="bold">Chloe</text>
+    <text x="625" y="389" text-anchor="middle" font-size="9" fill="#fdd" font-family="Georgia">Met curator</text>
+    <circle cx="195" cy="390" r="34" fill="#9b59b6" opacity=".85"/>
+    <text x="195" y="385" text-anchor="middle" font-size="11" fill="white" font-family="Georgia" font-weight="bold">Nora Aunor</text>
+    <text x="195" y="401" text-anchor="middle" font-size="9" fill="#edf" font-family="Georgia">film star (deceased)</text>
+    <circle cx="410" cy="472" r="28" fill="#7f8c8d" opacity=".8"/>
+    <text x="410" y="467" text-anchor="middle" font-size="10" fill="white" font-family="Georgia" font-weight="bold">Italian Director</text>
+    <text x="410" y="482" text-anchor="middle" font-size="9" fill="#eee" font-family="Georgia">(biological father)</text>
+    <circle cx="75" cy="270" r="27" fill="#c0392b" opacity=".6"/>
+    <text x="75" y="265" text-anchor="middle" font-size="10" fill="white" font-family="Georgia" font-weight="bold">Grandfather</text>
+    <text x="75" y="280" text-anchor="middle" font-size="9" fill="#fdd" font-family="Georgia">authoritarian</text>
+    <circle cx="665" cy="198" r="26" fill="#27ae60" opacity=".8"/>
+    <text x="665" y="193" text-anchor="middle" font-size="11" fill="white" font-family="Georgia" font-weight="bold">Alfonso</text>
+    <text x="665" y="208" text-anchor="middle" font-size="9" fill="#dfd" font-family="Georgia">Vogue photographer</text>
+    <rect x="28" y="458" width="238" height="72" rx="5" fill="white" stroke="#ddd" stroke-width="1"/>
+    <text x="40" y="476" font-size="11" fill="#333" font-family="Georgia" font-weight="bold">Legend</text>
+    <line x1="40" y1="490" x2="66" y2="490" stroke="#8b5e3c" stroke-width="3"/>
+    <text x="72" y="494" font-size="10" fill="#333" font-family="Georgia">Primary bond</text>
+    <line x1="40" y1="507" x2="66" y2="507" stroke="#555" stroke-width="2" stroke-dasharray="5 3"/>
+    <text x="72" y="511" font-size="10" fill="#333" font-family="Georgia">Sibling / kin</text>
+    <line x1="40" y1="524" x2="66" y2="524" stroke="#aaa" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <text x="72" y="528" font-size="10" fill="#333" font-family="Georgia">Absent / symbolic</text>
+  </svg>
+  </div>
+
+  <h3>Relationship Summary</h3>
+  <table>
+    <tr><th>Pair</th><th>Nature</th><th>Textual Evidence</th></tr>
+    <tr><td>Lucy &harr; Mother</td><td>Symbiotic devotion; complex power dynamics</td><td>Lucy as doctor escort, opera companion, confidante; mother shapes Lucy's self-image</td></tr>
+    <tr><td>Lucy &harr; Aunt Fely</td><td>Surrogate mother; affirming and normalising</td><td>"It was like having two mothers"; Fely calls Lucy beautiful twice</td></tr>
+    <tr><td>Mother &harr; Aunt Fely</td><td>Sisterly rivalry grounded in love</td><td>Mother: "Fely has always lived under the shadow of my beauty"</td></tr>
+    <tr><td>Lucy &harr; Chloe</td><td>Romantic partner; creative and personal catalyst</td><td>Kiss, intimacy "by steps", dress shipped via Chloe's contact</td></tr>
+    <tr><td>Lucy &harr; Nora Aunor</td><td>Cultural icon and psychic mirror</td><td>Nora's haircut unconsciously copied; childhood mirror-crying; weeping for Nora's death as loss of childhood</td></tr>
+    <tr><td>Mother &harr; Italian Director</td><td>Transactional kept arrangement</td><td>"Your father saved me, for a time"</td></tr>
+    <tr><td>Lucy &harr; Italian Director</td><td>Biological origin; no emotional claim</td><td>"I was not moved to contact my father"</td></tr>
+    <tr><td>Mother &harr; Grandfather</td><td>Defiance of patriarchal control</td><td>"She had run circles around her authoritarian father"</td></tr>
+  </table>
+</div>
+
+<!-- TAB 2 -->
+<div id="tab-fab" class="tab-panel">
+  <h2>Fabula vs Sjuzhet Visualisation</h2>
+  <p style="color:var(--muted);font-size:.87rem">
+    <strong>X-axis</strong> = sjuzhet order (position as told). <strong>Y-axis</strong> = fabula order (chronological position).
+    The dashed diagonal = perfectly chronological narration. Points <strong>below</strong> the diagonal = analepses (flashbacks);
+    points <strong>near</strong> it = present action. <strong>Hover</strong> any point for event details and a narratological note.
+  </p>
+  <div class="legend-row">
+    <div class="legend-item"><div class="ldot" style="background:#3c6e8b"></div> Present action</div>
+    <div class="legend-item"><div class="ldot" style="background:#c0392b"></div> Analepsis (flashback)</div>
+    <div class="legend-item"><div class="ldot" style="background:#e67e22"></div> Closing coda</div>
+    <div class="legend-item"><div class="ldot" style="background:#ccc; border:1px dashed #999"></div> Diagonal (chronological ref.)</div>
+  </div>
+  <div id="scatter-wrap">
+    <canvas id="fabScatter"></canvas>
+  </div>
+
+  <h3>Temporal Distortions Table</h3>
+  <table>
+    <tr><th>Event</th><th>Sjuzhet</th><th>Fabula</th><th>Type</th><th>Narratological Significance</th></tr>
+    <tr><td>Nora's death announced</td><td>1</td><td>14</td><td>Present (frame)</td><td>Frame catalyst; triggers all retrospection</td></tr>
+    <tr><td>Mother at Dior / Saint Laurent (1960s&ndash;70s)</td><td>2</td><td>4</td><td>Analepsis</td><td>Deep flashback; beauty-as-survival established</td></tr>
+    <tr><td>Rome trip / modelling scout (mother, age 15)</td><td>3</td><td>1</td><td>Analepsis (deepest)</td><td>Origin of beauty mythology; patriarchal complicity</td></tr>
+    <tr><td>Italian director / kept arrangement</td><td>4</td><td>3</td><td>Analepsis</td><td>Lucy's biological origin; transactional intimacy</td></tr>
+    <tr><td>Lucy's Catholic schooling in Europe</td><td>5</td><td>5</td><td>Analepsis</td><td>Formation of Lucy as writer; beauty contrast established</td></tr>
+    <tr><td>Return to Pasay / father revealed</td><td>6</td><td>6</td><td>Analepsis</td><td>Paternal disclosure; uprooting motif</td></tr>
+    <tr><td>Mother's matchmaking (Lucy 18&ndash;24)</td><td>7</td><td>7</td><td>Analepsis (recent)</td><td>Ironic relief at Lucy's singlehood</td></tr>
+    <tr><td>Three women watch Bona</td><td>8</td><td>15</td><td>Present action</td><td>Communal grief; tears released</td></tr>
+    <tr><td>Lesbian disclosure exchange</td><td>9</td><td>16</td><td>Present action</td><td>Identity negotiation; comic retreat</td></tr>
+    <tr><td>Balenciaga dress acquisition story</td><td>10</td><td>2</td><td>Analepsis (embedded)</td><td>Contested provenance; dress as inherited fiction</td></tr>
+    <tr><td>Lucy gets Nora's haircut</td><td>11</td><td>17</td><td>Present action</td><td>Unconscious identification with Nora</td></tr>
+    <tr><td>Alfonso photo shoot in Balenciaga</td><td>12</td><td>18</td><td>Present action</td><td>Performative femininity; jolie laide</td></tr>
+    <tr><td>Chloe questions dress; asks Lucy on date</td><td>13</td><td>19</td><td>Present action</td><td>Authentication and romance intertwined</td></tr>
+    <tr><td>Lucy ships dress to Paris</td><td>14</td><td>20</td><td>Present action</td><td>Deferred truth as narrative engine</td></tr>
+    <tr><td>Envelope arrives &mdash; unopened</td><td>15</td><td>21</td><td>Present action (climax)</td><td>Radical suspension of certainty; protective fiction chosen</td></tr>
+    <tr><td>Mother's hospitalisation</td><td>16</td><td>22</td><td>Present action</td><td>Mortality surfaces; envelope linked to recovery</td></tr>
+    <tr><td>Walk around reservoir in Balenciaga</td><td>17</td><td>23</td><td>Present action</td><td>Public embodiment; Hoka shoes + couture = absurdist joy</td></tr>
+    <tr><td>Mother's final speech</td><td>18</td><td>24</td><td>Closing coda</td><td>Generational resolution; Lucy's identity affirmed</td></tr>
+  </table>
+</div>
+
+<!-- TAB 3 -->
+<div id="tab-plot" class="tab-panel">
+  <h2>Plot Analysis &mdash; G&eacute;rard Genette's Narratology</h2>
+  <p>All five categories follow Genette's <em>Narrative Discourse</em> (1972 / 1980): Order, Duration, Frequency, Voice, and Focalization.</p>
+
+  <div class="gen-grid">
+    <div class="gen-card">
+      <h4>1. Order (Ordre)</h4>
+      <p><strong>Anachronies dominate.</strong> The sjuzhet opens in medias res at fabula position 14 (Nora's death). Multiple <em>external analepses</em> then plunge into the mother's pre-Lucy life (Rome trip, fabula pos. 1; dress acquisition, pos. 2; Italian director, pos. 3; Dior/YSL career, pos. 4) before returning to the present. There are no prolepses; all departures from the frame are retrospective.</p>
+      <p>The most dramatic distortion: the dress acquisition story appears at sjuzhet position 10 but fabula position 2 &mdash; the second-earliest event told tenth.</p>
+    </div>
+    <div class="gen-card">
+      <h4>2. Duration (Dur&eacute;e)</h4>
+      <p>All four modes are deployed:</p>
+      <ul style="margin-left:1rem;font-size:.87rem">
+        <li style="margin-bottom:.35rem"><strong>Scene</strong> (narrative time &asymp; story time): The three-women dialogues &mdash; disclosure exchange, watching <em>Bona</em>, reservoir walk &mdash; are rendered in near-real-time.</li>
+        <li style="margin-bottom:.35rem"><strong>Summary</strong> (narrative time &lt; story time): The mother's modelling career and Lucy's European schooling are compressed into a few sentences spanning decades.</li>
+        <li style="margin-bottom:.35rem"><strong>Ellipsis</strong>: The two months the dress spends in Paris are entirely elided; the novel-writing process exists only between mentions.</li>
+        <li><strong>Descriptive pause</strong>: The extended description of the Balenciaga &mdash; shoulder straps, bodice, taffeta ruffles, absent label &mdash; halts narrative time for close material attention.</li>
+      </ul>
+    </div>
+    <div class="gen-card">
+      <h4>3. Frequency (Fr&eacute;quence)</h4>
+      <p>Three modes operate simultaneously:</p>
+      <ul style="margin-left:1rem;font-size:.87rem">
+        <li style="margin-bottom:.35rem"><strong>Singulative</strong> (told once / happened once): The Alfonso photo shoot; the first kiss with Chloe; the envelope's arrival.</li>
+        <li style="margin-bottom:.35rem"><strong>Iterative</strong> (told once / happened many times): The opera outings, the matchmaking introductions, the Nora film nights ("each time she put it on"; "every six months or so"). Habitual events narrated as single instances.</li>
+        <li><strong>Repetitive</strong> (told multiple times / happened once): The mother's remark "Seventy-one is too young to die" narrated twice &mdash; obsessive re-circulation of grief. The dress's contested provenance reassessed across multiple scenes.</li>
+      </ul>
+    </div>
+    <div class="gen-card">
+      <h4>4. Voice (Voix)</h4>
+      <p><strong>Narrator type:</strong> Homodiegetic and autodiegetic &mdash; Lucy narrates her own story as its protagonist.</p>
+      <p><strong>Narrative level:</strong> Extradiegetic-homodiegetic. The narration sits above the story-world but Lucy is a character within it.</p>
+      <p><strong>Temporal position:</strong> Subsequent narration, yet the tone is present-tense intimate. The envelope's status is never resolved even from the narrator's vantage, suggesting narration may be ongoing before resolution &mdash; a minor but significant unreliability.</p>
+      <p><strong>Reliability:</strong> Partially unreliable by design. Lucy flags the mother's "harmless impostures" and notes she "joined" in them, implicating her own narration as similarly curated.</p>
+    </div>
+    <div class="gen-card">
+      <h4>5. Focalization (Focalisation)</h4>
+      <p><strong>Internal focalization, fixed</strong> on Lucy throughout. We access only what Lucy perceives, knows, feels, and imagines.</p>
+      <p>Two structural consequences: (1) The mother's inner life is opaque &mdash; Lucy can only infer. (2) Aunt Fely's tears at the end of the <em>Bona</em> screening are explicitly unreadable: "I could not even begin to guess for what or for whom they were being shed." The fixed focalization foregrounds the limits of sympathetic knowledge.</p>
+      <p>The authentication report is the focalization limit pushed to its extreme: a document Lucy possesses but refuses to read &mdash; a literal withheld datum.</p>
+    </div>
+  </div>
+
+  <h3>Structural Overview (Freytag for Orientation)</h3>
+  <div class="plot-card"><h4>Exposition</h4><p>Nora Aunor's death reaches Lucy. The three-woman household and their diaspora identities are established through interlaced analepses.</p></div>
+  <div class="plot-card"><h4>Rising Action</h4><p>The women watch <em>Bona</em> and mourn. Lucy's oblique coming-out attempts. The unconscious Nora haircut. The Balenciaga worn for Alfonso's camera. Chloe questions the dress and asks Lucy on a date. Lucy says yes to both.</p></div>
+  <div class="plot-card"><h4>Climax</h4><p>The authentication envelope arrives from Paris. Lucy does not open it. "I was afraid, yes, but I was also strangely exhilarated." This deliberate non-knowing is the story's moral and epistemological apex.</p></div>
+  <div class="plot-card"><h4>Falling Action</h4><p>Mother and daughter trade the dress. The novel turns comic. Chloe is introduced to the family. A brilliant student emerges. Life resumes its affectionate texture.</p></div>
+  <div class="plot-card"><h4>Resolution / Coda</h4><p>Lucy walks the Central Park reservoir in the Balenciaga and Hoka running shoes. Mother: "The best thing about you, Lucy? Is that you are not me." Lucy: "I am, too." Aunt Fely approaches. The story ends in anticipated laughter.</p></div>
+
+  <h3>Key Themes</h3>
+  <table>
+    <tr><th>Theme</th><th>Genettian Hook</th><th>Development</th></tr>
+    <tr><td>Fictions as love</td><td>Voice / reliability</td><td>Mother's Pulitzer lies; Lucy's participation; sealed envelope as counter-gift of protective fiction</td></tr>
+    <tr><td>Beauty as inheritance and burden</td><td>Order / analepsis</td><td>Deep flashbacks reconstruct the mother's beauty economy; the dress is its material residue</td></tr>
+    <tr><td>Queerness and deferred declaration</td><td>Focalization</td><td>Lucy's inner knowledge vs. public retreats; Chloe relationship kept secret</td></tr>
+    <tr><td>Diaspora grief and nostalgia</td><td>Frequency / iterative</td><td>Nora film nights as habitual mourning ritual; Filipino expat community as backdrop</td></tr>
+    <tr><td>Sartorial discipline and the female body</td><td>Duration / pause</td><td>Descriptive pauses on the dress embody Balenciaga's ideology of the manipulated female form</td></tr>
+    <tr><td>Matrilineal transmission</td><td>Voice / homodiegetic</td><td>Three-woman household; fathers absent; the dress passes mother to daughter</td></tr>
+  </table>
+
+  <h3>Style Note</h3>
+  <p>Ong's narrator is self-consciously literary &mdash; a novelist narrating a novelist's life. This produces a recursive, digressive voice that reflects on its own narration. The syntax is long-breathed and parenthetical, mimicking the way memory accumulates qualifications. Comedy and sorrow are syntactically inseparable: the punchline and the grief occupy the same sentence, often the same clause.</p>
+</div>
+
+<!-- TAB 4 -->
+<div id="tab-qa" class="tab-panel">
+  <h2>Undergraduate Literature Discussion Questions</h2>
+  <p style="color:var(--muted);font-size:.87rem">Questions move from close reading toward broader thematic and formal concerns. Click any question to reveal the answer.</p>
+
+  <!-- GROUP 1 -->
+  <div class="qa-group">
+    <div class="qa-group-label">Close Reading &mdash; Language, Object, Scene</div>
+
+    <div class="qa-item">
+      <div class="qa-q" onclick="toggleQA(this)">
+        <span>1. The story opens: "My mother and I were living on the Upper West Side in New York, with my aunt Fely, who was at work &mdash; she was the chief thoracic surgeon at Mount Sinai &mdash; when I heard that the film star Nora Aunor had passed." What does the syntax of this sentence establish about the story's narrative method?</span>
+        <span class="qa-toggle">+</span>
+      </div>
+      <div class="qa-a">The sentence performs its own argument. Three lives are held simultaneously in a single subordinate clause before the news arrives &mdash; the domestic arrangement, Aunt Fely's professional eminence, Lucy's physical location &mdash; so that Nora's death, when it lands, is already embedded in a context of women's lives, careers, and interdependence. The dash-bracketed parenthesis ("she was the chief thoracic surgeon at Mount Sinai") is characteristic of Ong's style throughout: information is offered in surplus, as if the narrator cannot help annotating her own story. This syntactic abundance signals from the first line that the story will proceed by digression, accumulation, and qualification rather than by linear plot.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q" onclick="toggleQA(this)">
+        <span>2. The Balenciaga dress is described in unusual material detail: shoulder straps, bodice, taffeta ruffles, absent label. What is the narratological and thematic function of this descriptive pause?</span>
+        <span class="qa-toggle">+</span>
+      </div>
+      <div class="qa-a">In Genette's terms, this is a <em>descriptive pause</em>: narrative time halts while discourse time expands. The pause is disproportionate to any plot need, which is precisely its point. The dress is being assigned ontological weight that event alone cannot provide. By cataloguing its construction, Ong makes the dress a material argument: the care of its making corresponds to the care of the mother's self-narration. The absent label is the detail that transforms description into theme &mdash; the dress is genuine and nameless, just as the mother's stories are true in spirit and unverifiable in fact. The meticulous physical description also prefigures Lucy's decision not to open the authentication envelope: if you have attended this closely to an object, do you really need an institution to confirm what you already know?</div>
+    </div>
+  </div>
+
+  <!-- GROUP 2 -->
+  <div class="qa-group">
+    <div class="qa-group-label">Character &mdash; Relationships and Identity</div>
+
+    <div class="qa-item">
+      <div class="qa-q" onclick="toggleQA(this)">
+        <span>3. The mother is described as both "male (decisive and withholding) and female (melodramatic and fanciful) at the same time." What does this characterisation reveal about the story's construction of gender?</span>
+        <span class="qa-toggle">+</span>
+      </div>
+      <div class="qa-a">The formulation dissolves the binary at the moment of naming it. By assigning the mother traits from both columns, Ong suggests that the two-parent model is redundant &mdash; one sufficiently complex person contains it all. This is also a quiet argument about the three-woman household: its self-sufficiency is not a deficit but a completeness. The mother's "male" decisiveness secured Lucy's safety; her "female" melodrama provided Lucy's aesthetic education. The story's absent fathers (the Italian director, the serial-adulterer grandfather) are neither missed nor avenged; they are simply unnecessary. Gender here is not a binary of persons but a spectrum of capacities that any person may hold.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q" onclick="toggleQA(this)">
+        <span>4. Trace the exchanges of the word "beautiful" through the story. Who uses it, to whom, and under what circumstances? What does the pattern reveal?</span>
+        <span class="qa-toggle">+</span>
+      </div>
+      <div class="qa-a">The word arrives in stages, each raising the stakes. Aunt Fely calls Lucy "beautiful" after the Nora haircut &mdash; "The word shocked me." The mother, more honest, responds with "jolie laide" (beautiful-ugly). After Alfonso's photo shoot, Aunt Fely repeats "You are beautiful." The mother holds out for the French category that accommodates Lucy's plainness without falsifying it. The pattern reveals a generational negotiation: the mother, herself defined by unqualified beauty, cannot simply capitulate to a word that erases the distinction she has lived by. "Jolie laide" is not a consolation prize but a precise description, and Lucy accepts it as such &mdash; she pin-ups Alfonso's photograph and calls herself "Laide-Laide, proudly, defiantly ugly." By the reservoir walk, the mother's final "poof!" implies that from behind, in the dress, Lucy was briefly her &mdash; and that the difference, when Lucy turns around, is not ugliness but something more interesting.</div>
+    </div>
+  </div>
+
+  <!-- GROUP 3 -->
+  <div class="qa-group">
+    <div class="qa-group-label">Theme &mdash; Truth, Fiction, and Inheritance</div>
+
+    <div class="qa-item">
+      <div class="qa-q" onclick="toggleQA(this)">
+        <span>5. Lucy participates in her mother's false claims about Pulitzer nominations and Nobel shortlisting. How does the story frame the ethics of such "harmless impostures"? Is there a point at which they become harmful?</span>
+        <span class="qa-toggle">+</span>
+      </div>
+      <div class="qa-a">Ong is careful to locate the impostures within Lucy's parenthetical qualification: "harmless." But the story's plot is generated by exactly one moment where the harmlessness is put in doubt &mdash; the dress. Lucy commissions the authentication, commits $7,500, and then refuses to read the result. The shift from participation to investigation to deliberate non-knowing traces an ethical arc. The impostures are harmless because they harm no one; the dress's status, by contrast, could harm the mother's entire self-narration if disproved. Lucy's decision to leave the envelope sealed is not moral cowardice but a sophisticated ethical judgement: some truths are corrosive to the love they would clarify. The story does not endorse this universally &mdash; Lucy acknowledges she forgives "only for the things that didn't matter." The question the story leaves open is whether the dress matters or not, and whether that is Lucy's decision to make.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q" onclick="toggleQA(this)">
+        <span>6. Nora Aunor's films are described as "festivals of suffering" in which "the whole point was to get Nora to cry, and then cry some more." How does melodrama function as a form in the story itself?</span>
+        <span class="qa-toggle">+</span>
+      </div>
+      <div class="qa-a">Ong inherits melodrama's logic while ironising it. The story's emotional architecture is melodramatic &mdash; three women weeping before a flat-screen TV, a great beauty in decline, a dress of ambiguous provenance, a sealed envelope &mdash; but the narrating voice refuses melodrama's usual earnestness. Lucy comments on everything, including her own potential sentimentality. When she describes why she wept during <em>Bona</em>, the reasons are sharply differentiated: for being called ugly by classmates, for the mother's absences, for Aunt Fely's spinsterhood, for Nora's death as the death of childhood. This taxonomy of griefs is anti-melodramatic even as it occurs during a weeping scene. Ong's argument seems to be that Filipino melodrama &mdash; the "truest Filipina spirit" &mdash; is not naive but strategic: it provides a licensed occasion for grief that otherwise has no form.</div>
+    </div>
+  </div>
+
+  <!-- GROUP 4 -->
+  <div class="qa-group">
+    <div class="qa-group-label">Form and Narrative Structure</div>
+
+    <div class="qa-item">
+      <div class="qa-q" onclick="toggleQA(this)">
+        <span>7. The story's narrator is herself a novelist. How does this metafictional dimension affect our reading of the narration's reliability and self-awareness?</span>
+        <span class="qa-toggle">+</span>
+      </div>
+      <div class="qa-a">In Genettian terms, Lucy is an autodiegetic narrator whose professional identity is storytelling. This reflexivity is not decorative. When Lucy notes that the mother appears as "a great beauty who, in old age, maintained the convictions of her reckless youth" in each of her two novels, she implies that the story we are reading may be a third novelistic processing of the same material. The narration is therefore doubly curated: by a narrator who admits she joined in the mother's "harmless impostures," and by a novelist who has practised transforming this woman into fiction twice before. The fixed internal focalization and the narrator's frequent self-commentary ("Here I could be excused for thinking...") enact a self-consciousness that implicates the narration even as it performs candour. The most honest sentence in the story may be "Her regrets, if she'd had any, had, I supposed, been sanded down in the many revisions of her self-narration" &mdash; a description that applies equally to the narrator herself.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q" onclick="toggleQA(this)">
+        <span>8. "My Balenciaga" is a story about a Filipino diaspora family living in New York. How does the story position its characters' relationship to the Philippines, and what does it suggest about diaspora as a condition rather than an event?</span>
+        <span class="qa-toggle">+</span>
+      </div>
+      <div class="qa-a">The Philippines is present in the story as a layered archive rather than a place. It exists in the mother's 1970s film-premiere memories, in the grandmother's deathbed in Pasay, in Nora Aunor's films, in the "Filipino expat communities" the three women deliberately avoid on social media. No character is oriented toward return; the mother's move to New York is described as made "on my behalf, with a perfect understanding of the kind of ecosystem I would need in order to thrive." Diaspora here is not rupture but re-routing: the Filipino sensibility (the melodrama, the beauty politics, the communal grief, the mother's principled refusal of Chanel because of Coco's wartime collaboration) is not left behind but carried forward and transformed. The story's most Filipino moment &mdash; three women weeping at Nora's films &mdash; takes place in a Manhattan apartment, in a Balenciaga dress, after a day at the Met. Ong suggests that diaspora identity is not a hyphen but an accumulation: the women are not Filipino-American but Filipino and American, holding both without needing to resolve the conjunction.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 5 -->
+<div id="tab-auth" class="tab-panel">
+  <h2>About Han Ong</h2>
+  <div class="bio-grid">
+    <div>
+      <h3>Biographical Table</h3>
+      <table>
+        <tr><th>Attribute</th><th>Detail</th></tr>
+        <tr><td>Place of Birth</td><td>Manila, Philippines</td></tr>
+        <tr><td>Year of Birth</td><td>1968 (February 5)</td></tr>
+        <tr><td>Ethnicity</td><td>Ethnic Chinese Filipino</td></tr>
+        <tr><td>Current Residence</td><td>New York City, USA</td></tr>
+        <tr><td>Education</td><td>High school dropout; earned GED. Admitted to Young Playwrights Lab, Los Angeles Theater Center. No university degree.</td></tr>
+        <tr><td>Gender</td><td>Male</td></tr>
+        <tr><td>Sexual Orientation</td><td>Gay (openly)</td></tr>
+        <tr><td>Marital Status</td><td>Not publicly documented</td></tr>
+        <tr><td>Religion</td><td>Catholic background (13 years Catholic education); current practice not publicly stated</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Short Biography</h3>
+      <p>Han Ong was born on 5 February 1968 in Manila to ethnic Chinese parents. His family immigrated to the United States in 1984, settling in Koreatown, Los Angeles. A high school drama course sparked his interest in theatre; he wrote his first play at 16 and was admitted to the Young Playwrights Lab at the Los Angeles Theater Center. He dropped out of high school at 18, earned a GED, and worked odd jobs &mdash; including in a trophy-manufacturing warehouse &mdash; until a Mark Taper Forum commission and an NEA grant allowed full-time writing.</p>
+      <p>He relocated to New York in 1994, receiving critical acclaim from figures including Robert Brustein. In 1997, at 29, he became one of the youngest-ever MacArthur "Genius" Fellows ($200,000). He turned to fiction with two novels published by Farrar, Straus and Giroux. He has taught at Columbia University, Long Island University, and the 92nd Street Y, and held residencies at the American Academy in Berlin and MacDowell (2024). His short fiction appears in <em>The New Yorker</em>, <em>Conjunctions</em>, and <em>Zoetrope: All-Story</em>.</p>
+      <p>Ong has described his recurring preoccupation with outsiderness as flowing from being "an outsider twice over &mdash; my queerness and my ethnicity. In life it may not be a gift, but in art it is."</p>
+    </div>
+  </div>
+
+  <h3>Body of Work</h3>
+  <table>
+    <tr><th>Title</th><th>Year</th><th>Type</th><th>Publisher / Venue</th><th>Notes</th></tr>
+    <tr><td>Woyzeck (adaptation)</td><td>1992</td><td>Play</td><td>Los Angeles Theater Center</td><td>B&uuml;chner adaptation</td></tr>
+    <tr><td>Swoony Planet</td><td>1992</td><td>Play</td><td>Mark Taper Forum / various</td><td>Joseph Kesselring Prize 1993</td></tr>
+    <tr><td>Widescreen Version of the World</td><td>1993</td><td>Play</td><td>Various</td><td>&mdash;</td></tr>
+    <tr><td>The Chang Fragments</td><td>1996</td><td>Play</td><td>Joseph Papp Public Theatre, NYC</td><td>&mdash;</td></tr>
+    <tr><td>Watcher</td><td>2001</td><td>Play</td><td>Various</td><td>&mdash;</td></tr>
+    <tr><td><em>Fixer Chao</em></td><td>2001</td><td>Novel</td><td>Farrar, Straus and Giroux</td><td>LA Times Best Book of the Year; nominated Stephen Crane First Fiction Award; "new immigrant classic" (NYT)</td></tr>
+    <tr><td><em>The Disinherited</em></td><td>2004</td><td>Novel</td><td>Farrar, Straus and Giroux</td><td>Nominated Lambda Book Award</td></tr>
+    <tr><td>20+ additional stage works</td><td>1988&ndash;pres.</td><td>Plays</td><td>Almeida Theatre (London), Berkeley Rep, Magic Theater (SF), others</td><td>More than two dozen works for the stage</td></tr>
+    <tr><td>Short fiction (incl. "My Balenciaga")</td><td>Ongoing</td><td>Stories</td><td><em>The New Yorker</em>, <em>Conjunctions</em>, <em>Zoetrope</em></td><td>"My Balenciaga" published March 2026</td></tr>
+    <tr><td>Two novels in progress</td><td>~2024</td><td>Novels</td><td>TBA</td><td>Worked on during 2024 MacDowell residency</td></tr>
+  </table>
+
+  <h3>Awards &amp; Honours</h3>
+  <ul class="awards-list">
+    <li><strong>Joseph Kesselring Prize</strong> (1993) &mdash; Best New American Play, for <em>Swoony Planet</em></li>
+    <li><strong>MacArthur Foundation Fellowship</strong> ("Genius Grant") (1997) &mdash; $200,000; one of the youngest-ever recipients</li>
+    <li><strong>National Endowment for the Arts Fellowship</strong> &mdash; Playwriting</li>
+    <li><strong>TCG / NEA Playwriting Award</strong></li>
+    <li><strong>Guggenheim Fellowship</strong> &mdash; Fiction</li>
+    <li><strong>Cullman Center for Scholars and Writers Fellowship</strong> &mdash; New York Public Library</li>
+    <li><strong>Berlin Prize Fellowship</strong> (2010 / 2011) &mdash; American Academy in Berlin</li>
+    <li><strong>MacDowell Fellowship</strong> (2024)</li>
+    <li><em>Fixer Chao</em> nominated, <strong>Stephen Crane First Fiction Award</strong></li>
+    <li><em>The Disinherited</em> nominated, <strong>Lambda Book Award</strong></li>
+    <li><em>Fixer Chao</em> named <strong>LA Times Best Book of the Year</strong></li>
+  </ul>
+</div>
+
+<script>
+/* ------------------------------------------------------------------ */
+/* Q&A accordion toggle                                                */
+/* ------------------------------------------------------------------ */
+function toggleQA(qEl) {
+  var answer = qEl.nextElementSibling;
+  var toggle = qEl.querySelector('.qa-toggle');
+  var isOpen = answer.style.display === 'block';
+  answer.style.display = isOpen ? 'none' : 'block';
+  toggle.classList.toggle('open', !isOpen);
+}
+
+/* ------------------------------------------------------------------ */
+/* Tab switching -- event passed explicitly; no reliance on global     */
+/* ------------------------------------------------------------------ */
+function showTab(evt, id) {
+  var panels = document.querySelectorAll('.tab-panel');
+  var btns   = document.querySelectorAll('.tab-btn');
+  for (var i = 0; i < panels.length; i++) panels[i].classList.remove('active');
+  for (var i = 0; i < btns.length;   i++) btns[i].classList.remove('active');
+  document.getElementById('tab-' + id).classList.add('active');
+  evt.currentTarget.classList.add('active');
+}
+
+/* ------------------------------------------------------------------ */
+/* Scatter chart -- all strings use straight ASCII apostrophes         */
+/* ------------------------------------------------------------------ */
+var eventsData = [
+  { label: "Nora's death announced",                   sj: 1,  fab: 14, type: 'present',   note: 'Frame catalyst; triggers all retrospection' },
+  { label: "Mother at Dior/YSL (1960s-70s)",           sj: 2,  fab: 4,  type: 'analepsis', note: 'Deep analepsis; beauty-as-survival established' },
+  { label: "Rome trip / modelling scout (mother, 15)", sj: 3,  fab: 1,  type: 'analepsis', note: 'Deepest flashback; patriarchal origin of beauty mythology' },
+  { label: "Italian director / kept arrangement",      sj: 4,  fab: 3,  type: 'analepsis', note: "Lucy's biological origin; transactional intimacy" },
+  { label: "Lucy's Catholic schooling in Europe",      sj: 5,  fab: 5,  type: 'analepsis', note: 'Formation of Lucy as writer; beauty contrast' },
+  { label: "Return to Pasay / father revealed",        sj: 6,  fab: 6,  type: 'analepsis', note: 'Paternal disclosure; domestic uprooting motif' },
+  { label: "Mother's matchmaking (Lucy 18-24)",        sj: 7,  fab: 7,  type: 'analepsis', note: "Ironic relief at Lucy's singlehood" },
+  { label: "Three women watch Bona",                   sj: 8,  fab: 15, type: 'present',   note: 'Communal grief; tears released' },
+  { label: "Lesbian disclosure exchange",              sj: 9,  fab: 16, type: 'present',   note: 'Identity negotiation; comic retreat' },
+  { label: "Balenciaga dress acquisition story",       sj: 10, fab: 2,  type: 'analepsis', note: 'Embedded analepsis; contested provenance of the dress' },
+  { label: "Lucy gets Nora's haircut",                 sj: 11, fab: 17, type: 'present',   note: 'Unconscious identification with Nora' },
+  { label: "Alfonso photo shoot in Balenciaga",        sj: 12, fab: 18, type: 'present',   note: 'Performative femininity; jolie laide' },
+  { label: "Chloe questions dress / asks Lucy out",    sj: 13, fab: 19, type: 'present',   note: 'Authentication and romance intertwined' },
+  { label: "Lucy ships dress to Paris",                sj: 14, fab: 20, type: 'present',   note: 'Deferred truth as narrative engine' },
+  { label: "Envelope arrives - unopened",              sj: 15, fab: 21, type: 'present',   note: 'Climax: radical suspension of certainty' },
+  { label: "Mother's hospitalisation",                 sj: 16, fab: 22, type: 'present',   note: 'Mortality surfaces; envelope linked to recovery' },
+  { label: "Walk around reservoir in Balenciaga",      sj: 17, fab: 23, type: 'present',   note: 'Public embodiment; Hoka shoes + couture' },
+  { label: "Mother's final speech",                    sj: 18, fab: 24, type: 'coda',      note: '"The best thing about you is that you are not me"' }
+];
+
+var colorMap = { present: '#3c6e8b', analepsis: '#c0392b', coda: '#e67e22' };
+var labelMap = { present: 'Present action', analepsis: 'Analepsis (flashback)', coda: 'Closing coda' };
+var usedTypes = ['present', 'analepsis', 'coda'];
+
+/* Build one scatter dataset per type */
+var datasets = usedTypes.map(function(t) {
+  return {
+    type: 'scatter',
+    label: labelMap[t],
+    data: eventsData
+      .filter(function(e) { return e.type === t; })
+      .map(function(e) { return { x: e.sj, y: e.fab, label: e.label, note: e.note }; }),
+    backgroundColor: colorMap[t],
+    pointRadius: 9,
+    pointHoverRadius: 13,
+    order: 1
+  };
+});
+
+/* Diagonal reference rendered as a separate line dataset */
+datasets.unshift({
+  type: 'line',
+  label: 'Diagonal (chronological ref.)',
+  data: [{ x: 0, y: 0 }, { x: 19, y: 25 }],
+  borderColor: '#bbb',
+  borderWidth: 2,
+  borderDash: [6, 4],
+  pointRadius: 0,
+  pointHoverRadius: 0,
+  backgroundColor: 'transparent',
+  tension: 0,
+  order: 2,
+  segment: { borderDash: [6, 4] }
+});
+
+var fabCtx = document.getElementById('fabScatter').getContext('2d');
+
+new Chart(fabCtx, {
+  type: 'scatter',      /* outer type; each dataset overrides its own type */
+  data: { datasets: datasets },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          font: { family: 'Georgia', size: 12 },
+          padding: 14,
+          filter: function(item) { return true; }
+        }
+      },
+      tooltip: {
+        filter: function(tooltipItem) {
+          /* suppress tooltip on the diagonal line */
+          return tooltipItem.dataset.type !== 'line';
+        },
+        callbacks: {
+          title: function(items) {
+            if (!items || !items.length) return '';
+            var r = items[0].raw;
+            return (r && r.label) ? r.label : '';
+          },
+          label: function(item) {
+            var r = item.raw;
+            if (!r || !r.note) return '';
+            return [
+              'Sjuzhet: ' + r.x + '   Fabula: ' + r.y,
+              'Note: ' + r.note
+            ];
+          }
+        },
+        bodyFont:  { family: 'Georgia', size: 12 },
+        titleFont: { family: 'Georgia', size: 13, weight: 'bold' },
+        padding: 12,
+        boxPadding: 4
+      }
+    },
+    scales: {
+      x: {
+        type: 'linear',
+        title: { display: true, text: 'Sjuzhet Order (position as told \u2192)', font: { family: 'Georgia', size: 13 } },
+        min: 0, max: 19,
+        ticks: { stepSize: 1, font: { family: 'Georgia', size: 11 } },
+        grid: { color: '#ebebeb' }
+      },
+      y: {
+        type: 'linear',
+        title: { display: true, text: 'Fabula Order (chronological \u2191)', font: { family: 'Georgia', size: 13 } },
+        min: 0, max: 25,
+        ticks: { stepSize: 1, font: { family: 'Georgia', size: 11 } },
+        grid: { color: '#ebebeb' }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
