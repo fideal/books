@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lifecycle of Software Objects — Literary Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #14181f;
+    --surface2: #1c2130;
+    --border: #2a3245;
+    --accent: #5c9eff;
+    --accent2: #ff7b54;
+    --accent3: #7ed3a8;
+    --accent4: #c084fc;
+    --text: #e8ecf4;
+    --text-muted: #7a8aaa;
+    --text-dim: #4a5572;
+    --card: #181d28;
+    --glow: rgba(92, 158, 255, 0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 13px;
+  }
+
+  /* HEADER */
+  .header {
+    padding: 36px 48px 28px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #0d0f14 0%, #111827 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(92,158,255,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+    opacity: 0.8;
+  }
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(24px, 4vw, 42px);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .header h1 em {
+    font-style: italic;
+    color: #a8c4ff;
+  }
+  .header-meta {
+    color: var(--text-muted);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+
+  /* TABS */
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    padding: 14px 22px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: rgba(92,158,255,0.04);
+  }
+
+  /* TAB PANELS */
+  .tab-panel { display: none; padding: 36px 48px; max-width: 1200px; margin: 0 auto; }
+  .tab-panel.active { display: block; }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: block;
+  }
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+
+  /* ===== TAB 1: CHARACTER RELATIONSHIPS ===== */
+  .svg-container {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 28px;
+    overflow: auto;
+  }
+  svg text { font-family: 'DM Mono', monospace; }
+
+  .char-legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .char-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .char-card-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .char-card-role {
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .char-card-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ===== TAB 2: FABULA vs SJUZHET ===== */
+  .chart-wrapper {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+  .chart-wrapper canvas { max-height: 480px; }
+
+  .scatter-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .legend-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Distortions table */
+  .distortion-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-top: 8px;
+  }
+  .distortion-table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--surface2);
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .distortion-table td {
+    padding: 10px 14px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .distortion-table tr:hover td { background: rgba(92,158,255,0.03); }
+  .distortion-table td:first-child { color: var(--text); font-size: 12px; }
+
+  /* ===== TAB 3: PLOT ANALYSIS ===== */
+  .analysis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 700px) { .analysis-grid { grid-template-columns: 1fr; } }
+
+  .analysis-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .analysis-card-title {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 10px;
+  }
+  .analysis-card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    font-weight: 400;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  .analysis-card p, .analysis-card li {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 6px;
+  }
+  .analysis-card ul { padding-left: 16px; }
+  .analysis-card li { margin-bottom: 4px; }
+  .tag {
+    display: inline-block;
+    background: rgba(92,158,255,0.12);
+    color: var(--accent);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+    margin: 2px;
+  }
+  .tag.orange { background: rgba(255,123,84,0.12); color: var(--accent2); }
+  .tag.green  { background: rgba(126,211,168,0.12); color: var(--accent3); }
+  .tag.purple { background: rgba(192,132,252,0.12); color: var(--accent4); }
+
+  /* Theme table */
+  .theme-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .theme-table th {
+    padding: 11px 16px;
+    background: var(--surface2);
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .theme-table td {
+    padding: 11px 16px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    line-height: 1.55;
+    vertical-align: top;
+  }
+  .theme-table tr:last-child td { border-bottom: none; }
+  .theme-table td:first-child { color: var(--text); font-weight: 500; }
+
+  .style-note {
+    background: linear-gradient(135deg, rgba(92,158,255,0.07), rgba(126,211,168,0.04));
+    border: 1px solid rgba(92,158,255,0.2);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-top: 24px;
+  }
+  .style-note-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin-bottom: 10px;
+  }
+  .style-note p {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.75;
+  }
+
+  /* ===== TAB 4: DISCUSSION QUESTIONS ===== */
+  .question-group {
+    margin-bottom: 32px;
+  }
+  .question-group-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .accordion-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .accordion-item:hover { border-color: var(--border); }
+  .accordion-item.open { border-color: rgba(92,158,255,0.3); }
+
+  .accordion-q {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 16px 20px;
+    cursor: pointer;
+    gap: 16px;
+    user-select: none;
+  }
+  .accordion-q-num {
+    font-size: 10px;
+    color: var(--accent);
+    min-width: 22px;
+    margin-top: 2px;
+    letter-spacing: 0.08em;
+  }
+  .accordion-q-text {
+    font-family: 'Instrument Serif', serif;
+    font-size: 15px;
+    color: var(--text);
+    flex: 1;
+    line-height: 1.5;
+  }
+  .accordion-toggle {
+    color: var(--text-dim);
+    font-size: 20px;
+    min-width: 20px;
+    text-align: center;
+    transition: transform 0.25s, color 0.2s;
+    margin-top: 2px;
+  }
+  .accordion-item.open .accordion-toggle {
+    transform: rotate(45deg);
+    color: var(--accent);
+  }
+  .accordion-a {
+    display: none;
+    padding: 0 20px 18px 52px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.75;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+  .accordion-item.open .accordion-a { display: block; }
+  .accordion-a strong { color: var(--text); font-weight: 500; }
+
+  /* ===== TAB 5: AUTHOR INFO ===== */
+  .bio-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 32px;
+    margin-bottom: 32px;
+    align-items: start;
+  }
+  @media (max-width: 700px) { .bio-grid { grid-template-columns: 1fr; } }
+
+  .bio-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .bio-table tr { border-bottom: 1px solid var(--border); }
+  .bio-table tr:last-child { border-bottom: none; }
+  .bio-table th {
+    padding: 10px 14px;
+    text-align: left;
+    color: var(--text-muted);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background: var(--surface2);
+    width: 120px;
+  }
+  .bio-table td {
+    padding: 10px 14px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .bio-short { font-size: 12px; color: var(--text-muted); line-height: 1.8; }
+  .bio-short p { margin-bottom: 12px; }
+  .bio-short p:last-child { margin-bottom: 0; }
+
+  .works-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .works-table th {
+    padding: 10px 14px;
+    background: var(--surface2);
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .works-table td {
+    padding: 10px 14px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    line-height: 1.5;
+    vertical-align: top;
+  }
+  .works-table tr:last-child td { border-bottom: none; }
+  .works-table td:first-child { color: var(--text); font-family: 'Instrument Serif', serif; font-size: 13px; }
+  .works-table td:nth-child(2) { color: var(--text-dim); white-space: nowrap; }
+
+  .awards-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .award-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .award-item-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .award-item-work {
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 3px;
+    font-style: italic;
+  }
+  .award-item-year {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-tag">Literary Analysis · Genette's Narratology</div>
+  <h1><em>The Lifecycle of Software Objects</em></h1>
+  <div class="header-meta">Ted Chiang · Subterranean Press, 2010 · Novella</div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('char')">01 · Character Relationships</button>
+  <button class="tab-btn" onclick="switchTab('fab')">02 · Fabula vs Sjuzhet</button>
+  <button class="tab-btn" onclick="switchTab('plot')">03 · Plot Analysis</button>
+  <button class="tab-btn" onclick="switchTab('disc')">04 · Discussion Questions</button>
+  <button class="tab-btn" onclick="switchTab('auth')">05 · Author</button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB 1: CHARACTER RELATIONSHIPS
+═══════════════════════════════════════════ -->
+<div id="tab-char" class="tab-panel active">
+  <div class="section-label">Tab 01</div>
+  <h2 class="section-title">Character Relationships</h2>
+  <p style="color:var(--text-muted);font-size:12px;margin-bottom:24px;line-height:1.6;">
+    The network below maps the principal human and digient characters. Line weight and colour indicate relationship type. The novella's social architecture is notably bifurcated: human professional ties weaken over time while human–digient bonds intensify.
+  </p>
+
+  <div class="svg-container">
+    <svg viewBox="0 0 900 560" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#4a5572"/>
+        </marker>
+      </defs>
+
+      <!-- Background grid subtle -->
+      <rect width="900" height="560" fill="#181d28" rx="6"/>
+
+      <!-- === EDGES === -->
+      <!-- Ana–Jax (primary bond, thick accent) -->
+      <line x1="320" y1="200" x2="200" y2="360" stroke="#5c9eff" stroke-width="3.5" stroke-dasharray="none" opacity="0.7"/>
+      <!-- Ana–Derek (friendship / professional) -->
+      <line x1="320" y1="200" x2="560" y2="180" stroke="#7ed3a8" stroke-width="2" opacity="0.55"/>
+      <!-- Ana–Robyn (friendship / professional) -->
+      <line x1="320" y1="200" x2="180" y2="120" stroke="#7ed3a8" stroke-width="1.8" opacity="0.5"/>
+      <!-- Derek–Marco (primary bond) -->
+      <line x1="560" y1="180" x2="680" y2="340" stroke="#5c9eff" stroke-width="3.5" opacity="0.7"/>
+      <!-- Derek–Polo (primary bond) -->
+      <line x1="560" y1="180" x2="740" y2="380" stroke="#5c9eff" stroke-width="2.5" opacity="0.55"/>
+      <!-- Marco–Polo (digient siblings) -->
+      <line x1="680" y1="340" x2="740" y2="380" stroke="#ff7b54" stroke-width="2" stroke-dasharray="6,3" opacity="0.6"/>
+      <!-- Derek–Wendy (marriage, strained) -->
+      <line x1="560" y1="180" x2="660" y2="80" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.5"/>
+      <!-- Ana–Kyle (relationship) -->
+      <line x1="320" y1="200" x2="200" y2="90" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.5"/>
+      <!-- Jax–Marco (digient playmates) -->
+      <line x1="200" y1="360" x2="680" y2="340" stroke="#ff7b54" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.4"/>
+      <!-- Jax–Lolly -->
+      <line x1="200" y1="360" x2="120" y2="440" stroke="#ff7b54" stroke-width="1.2" stroke-dasharray="6,4" opacity="0.4"/>
+      <!-- Derek–Felix (peripheral contact) -->
+      <line x1="560" y1="180" x2="780" y2="200" stroke="#4a5572" stroke-width="1" stroke-dasharray="4,6" opacity="0.5"/>
+      <!-- Ana–Robyn to Blue Gamma (institutional) -->
+      <line x1="180" y1="120" x2="400" y2="460" stroke="#4a5572" stroke-width="1" stroke-dasharray="3,5" opacity="0.3"/>
+      <!-- Mahesh link -->
+      <line x1="320" y1="200" x2="430" y2="460" stroke="#4a5572" stroke-width="1" stroke-dasharray="3,5" opacity="0.3"/>
+
+      <!-- === NODES === -->
+
+      <!-- Blue Gamma (institution) -->
+      <ellipse cx="430" cy="460" rx="60" ry="22" fill="#1c2130" stroke="#2a3245" stroke-width="1.5"/>
+      <text x="430" y="457" text-anchor="middle" fill="#4a5572" font-size="9" letter-spacing="0.1em">BLUE GAMMA</text>
+      <text x="430" y="469" text-anchor="middle" fill="#4a5572" font-size="8">institution</text>
+
+      <!-- ANA — protagonist -->
+      <circle cx="320" cy="200" r="38" fill="#0d1929" stroke="#5c9eff" stroke-width="2.5"/>
+      <text x="320" y="196" text-anchor="middle" fill="#e8ecf4" font-size="13" font-weight="500">Ana</text>
+      <text x="320" y="211" text-anchor="middle" fill="#5c9eff" font-size="9" letter-spacing="0.08em">ALVARADO</text>
+
+      <!-- JAX — digient protagonist -->
+      <circle cx="200" cy="360" r="34" fill="#0d1922" stroke="#5c9eff" stroke-width="3"/>
+      <circle cx="200" cy="360" r="38" fill="none" stroke="#5c9eff" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.4"/>
+      <text x="200" y="356" text-anchor="middle" fill="#e8ecf4" font-size="13" font-weight="500">Jax</text>
+      <text x="200" y="371" text-anchor="middle" fill="#5c9eff" font-size="8" letter-spacing="0.08em">DIGIENT</text>
+
+      <!-- DEREK -->
+      <circle cx="560" cy="180" r="34" fill="#0d1929" stroke="#7ed3a8" stroke-width="2"/>
+      <text x="560" y="176" text-anchor="middle" fill="#e8ecf4" font-size="13" font-weight="500">Derek</text>
+      <text x="560" y="191" text-anchor="middle" fill="#7ed3a8" font-size="9" letter-spacing="0.08em">BROOKS</text>
+
+      <!-- MARCO -->
+      <circle cx="680" cy="340" r="28" fill="#0d1922" stroke="#ff7b54" stroke-width="2"/>
+      <circle cx="680" cy="340" r="32" fill="none" stroke="#ff7b54" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.4"/>
+      <text x="680" y="336" text-anchor="middle" fill="#e8ecf4" font-size="12">Marco</text>
+      <text x="680" y="350" text-anchor="middle" fill="#ff7b54" font-size="8" letter-spacing="0.06em">DIGIENT</text>
+
+      <!-- POLO -->
+      <circle cx="750" cy="390" r="24" fill="#0d1922" stroke="#ff7b54" stroke-width="1.8"/>
+      <text x="750" y="387" text-anchor="middle" fill="#e8ecf4" font-size="11">Polo</text>
+      <text x="750" y="399" text-anchor="middle" fill="#ff7b54" font-size="8" letter-spacing="0.06em">DIGIENT</text>
+
+      <!-- ROBYN -->
+      <circle cx="180" cy="120" r="28" fill="#141820" stroke="#7ed3a8" stroke-width="1.5"/>
+      <text x="180" y="116" text-anchor="middle" fill="#e8ecf4" font-size="12">Robyn</text>
+      <text x="180" y="130" text-anchor="middle" fill="#7ed3a8" font-size="8" letter-spacing="0.06em">FRIEND</text>
+
+      <!-- WENDY -->
+      <circle cx="660" cy="80" r="24" fill="#141820" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="660" y="76" text-anchor="middle" fill="#e8ecf4" font-size="11">Wendy</text>
+      <text x="660" y="89" text-anchor="middle" fill="#c084fc" font-size="8" letter-spacing="0.06em">DEREK'S WIFE</text>
+
+      <!-- KYLE -->
+      <circle cx="200" cy="90" r="24" fill="#141820" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="200" y="86" text-anchor="middle" fill="#e8ecf4" font-size="11">Kyle</text>
+      <text x="200" y="99" text-anchor="middle" fill="#c084fc" font-size="8" letter-spacing="0.06em">ANA'S PARTNER</text>
+
+      <!-- LOLLY -->
+      <circle cx="120" cy="440" r="22" fill="#0d1922" stroke="#ff7b54" stroke-width="1.5"/>
+      <text x="120" y="437" text-anchor="middle" fill="#e8ecf4" font-size="10">Lolly</text>
+      <text x="120" y="449" text-anchor="middle" fill="#ff7b54" font-size="7.5" letter-spacing="0.05em">DIGIENT</text>
+
+      <!-- MAHESH -->
+      <circle cx="430" cy="340" r="22" fill="#141820" stroke="#4a5572" stroke-width="1.2"/>
+      <text x="430" y="337" text-anchor="middle" fill="#7a8aaa" font-size="10">Mahesh</text>
+      <text x="430" y="349" text-anchor="middle" fill="#4a5572" font-size="7.5" letter-spacing="0.05em">CO-FOUNDER</text>
+
+      <!-- FELIX -->
+      <circle cx="780" cy="200" r="22" fill="#141820" stroke="#4a5572" stroke-width="1.2"/>
+      <text x="780" y="197" text-anchor="middle" fill="#7a8aaa" font-size="10">Felix</text>
+      <text x="780" y="209" text-anchor="middle" fill="#4a5572" font-size="7.5" letter-spacing="0.05em">XENOTHERIAN</text>
+
+      <!-- LEGEND -->
+      <g transform="translate(16, 480)">
+        <text fill="#4a5572" font-size="9" letter-spacing="0.1em" y="0">LEGEND</text>
+        <line x1="0" y1="14" x2="28" y2="14" stroke="#5c9eff" stroke-width="3" opacity="0.7"/>
+        <text fill="#7a8aaa" font-size="9" x="34" y="18">Human–Digient Bond</text>
+        <line x1="130" y1="14" x2="158" y2="14" stroke="#7ed3a8" stroke-width="2" opacity="0.7"/>
+        <text fill="#7a8aaa" font-size="9" x="164" y="18">Human Friendship</text>
+        <line x1="256" y1="14" x2="284" y2="14" stroke="#ff7b54" stroke-width="1.8" stroke-dasharray="5,3"/>
+        <text fill="#7a8aaa" font-size="9" x="290" y="18">Digient Peer Relationship</text>
+        <line x1="430" y1="14" x2="458" y2="14" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <text fill="#7a8aaa" font-size="9" x="464" y="18">Romantic / Strained</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="char-legend">
+    <div class="char-card">
+      <div class="char-card-name">Ana Alvarado</div>
+      <div class="char-card-role">Protagonist · Trainer</div>
+      <div class="char-card-desc">Former zookeeper turned digient trainer. The novella's moral centre; her relationship with Jax mirrors parental devotion. Focalising character for much of the text.</div>
+    </div>
+    <div class="char-card">
+      <div class="char-card-name">Jax</div>
+      <div class="char-card-role">Digient · Neuroblast</div>
+      <div class="char-card-desc">Neo-Victorian robot avatar. Ana's primary charge; the most developed digient. Develops language, creativity, curiosity, and a nascent sense of self-preservation and economic awareness.</div>
+    </div>
+    <div class="char-card">
+      <div class="char-card-name">Derek Brooks</div>
+      <div class="char-card-role">Avatar Designer · Adopter</div>
+      <div class="char-card-desc">Designs digient avatars; adopts Marco and Polo. His unrequited feelings for Ana create moral ambiguity at the novella's climax when he signs the Binary Desire contract.</div>
+    </div>
+    <div class="char-card">
+      <div class="char-card-name">Marco &amp; Polo</div>
+      <div class="char-card-role">Digients · Panda Avatars</div>
+      <div class="char-card-desc">Identical genome, distinct personalities. Their sibling dynamic explores how identical "nature" diverges under different "nurture." Marco's rhetoric about autonomy drives the Binary Desire subplot.</div>
+    </div>
+    <div class="char-card">
+      <div class="char-card-name">Robyn</div>
+      <div class="char-card-role">Friend · Blue Gamma Trainer</div>
+      <div class="char-card-desc">Ana's entry point into Blue Gamma. Her pregnancy and declaration of being "past digients" positions her as a foil for Ana's ethics of care.</div>
+    </div>
+    <div class="char-card">
+      <div class="char-card-name">Mahesh</div>
+      <div class="char-card-role">Co-founder · Blue Gamma</div>
+      <div class="char-card-desc">Represents the corporate imperative. His product decisions (rollbacks, docile breeds) expose the tension between commercial logic and genuine care.</div>
+    </div>
+    <div class="char-card">
+      <div class="char-card-name">Felix Radcliffe</div>
+      <div class="char-card-role">Xenotherian Keeper</div>
+      <div class="char-card-desc">Peripheral but thematically significant. His alien-culture project represents a pure, asocial approach to AI development — the inverse of Ana's relational model.</div>
+    </div>
+    <div class="char-card">
+      <div class="char-card-name">Lolly</div>
+      <div class="char-card-role">Digient · Lion Cub Avatar</div>
+      <div class="char-card-desc">Blue Gamma mascot; Robyn's primary charge. Her accidental acquisition of profanity triggers the first rollback, establishing the novel's meditation on memory and identity continuity.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB 2: FABULA vs SJUZHET
+═══════════════════════════════════════════ -->
+<div id="tab-fab" class="tab-panel">
+  <div class="section-label">Tab 02</div>
+  <h2 class="section-title">Fabula vs Sjuzhet</h2>
+  <p style="color:var(--text-muted);font-size:12px;margin-bottom:24px;line-height:1.6;">
+    The novella presents a broadly chronological sjuzhet — yet Genette's categories of <em>order</em>, <em>duration</em>, and <em>frequency</em> reveal significant temporal work. Each section-heading (using developmental milestone labels) acts as an ellipsis marker. Backstory is delivered via embedded analepses. The scatterplot maps twenty key narrative events.
+  </p>
+
+  <div class="chart-wrapper">
+    <canvas id="scatterChart"></canvas>
+    <div class="scatter-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#5c9eff"></div>Present Action (sjuzhet ≈ fabula)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ff7b54"></div>Analepsis (flashback / backstory)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#7ed3a8"></div>Summary / Ellipsis (time compression)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#c084fc"></div>Digression / Forum Intercalation</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'DM Serif Display',serif;font-size:18px;font-weight:400;margin-bottom:16px;color:var(--text);">Temporal Distortions Table</h3>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:auto;">
+  <table class="distortion-table">
+    <thead>
+      <tr>
+        <th>Event</th>
+        <th>Sjuzhet Position</th>
+        <th>Fabula Position</th>
+        <th>Distortion Type</th>
+        <th>Narratological Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Ana's zoo career ends</td>
+        <td>S1 — embedded in opening</td>
+        <td>F0 — years before story begins</td>
+        <td>External Analepsis</td>
+        <td>Delivered via free indirect discourse; establishes Ana's ecological grief before any action begins. Genette: reach extends outside the primary narrative.</td>
+      </tr>
+      <tr>
+        <td>Ana's bad interview / game session</td>
+        <td>S2 — opening scene</td>
+        <td>F1 — story's chronological start</td>
+        <td>Scene (present action)</td>
+        <td>Singulative narration. Functions as in medias res — we enter Ana's precarity. Duration matches fabula closely.</td>
+      </tr>
+      <tr>
+        <td>Robyn's NDA reveal / Blue Gamma tour</td>
+        <td>S3</td>
+        <td>F2</td>
+        <td>Scene (present action)</td>
+        <td>Dialogue-heavy scene; fabula and sjuzhet approximately equal. The digients' daycare is the reader's first view of the story's central object.</td>
+      </tr>
+      <tr>
+        <td>Derek's robot-avatar disagreement</td>
+        <td>S4</td>
+        <td>F3</td>
+        <td>Scene + internal summary</td>
+        <td>Derek's reflection on his design philosophy acts as brief pause. Introduces theme of representation vs. nature.</td>
+      </tr>
+      <tr>
+        <td>"A year later" — product launch prep</td>
+        <td>S5</td>
+        <td>F4</td>
+        <td>Temporal Ellipsis</td>
+        <td>Section break with milestone heading. A year of training compressed to nothing — exemplifies iterative ellipsis that structures the whole novella.</td>
+      </tr>
+      <tr>
+        <td>Lolly swears; rollback decision</td>
+        <td>S6</td>
+        <td>F5</td>
+        <td>Scene (crisis)</td>
+        <td>Pivotal singulative event; uniqueness is foregrounded by its social drama. The digients lose three days — the first identity-erasure event.</td>
+      </tr>
+      <tr>
+        <td>"Blue Gamma's Digients are a Hit" — first year</td>
+        <td>S7</td>
+        <td>F6</td>
+        <td>Iterative Summary</td>
+        <td>A paragraph covers hundreds of customer interactions. Genette's iterative frequency: "customers would keep them running" — habitual action standing for repeated events.</td>
+      </tr>
+      <tr>
+        <td>Ana's primate-career backstory reflection</td>
+        <td>S8 — embedded in S6 zone</td>
+        <td>F-pre — before F1</td>
+        <td>Internal Analepsis (completing analepsis)</td>
+        <td>Ana's career arc from Fossey-aspirant to digient trainer fills a gap established at S2. Reach: pre-story. A Proustian intrusion into the present scene.</td>
+      </tr>
+      <tr>
+        <td>SaruMech robot body delivery / Jax's first embodiment</td>
+        <td>S9</td>
+        <td>F7</td>
+        <td>Scene (extended)</td>
+        <td>Highly detailed real-time scene. The "little hairs on your arms" exchange is the novella's most intimate present-tense moment; duration swells.</td>
+      </tr>
+      <tr>
+        <td>Theory of Mind phase — declining sales</td>
+        <td>S10</td>
+        <td>F8</td>
+        <td>Summary + iterative</td>
+        <td>"Over the course of the following year" — external summary. Mood shifts from optimism to crisis. Genette: narrator's voice becomes more prominent, distancing the reader from scene.</td>
+      </tr>
+      <tr>
+        <td>IFF hack / Nyyti torture video</td>
+        <td>S11</td>
+        <td>F9</td>
+        <td>Scene (crisis)</td>
+        <td>Real-time scene of Ana suspending Jax. The ethical stakes of digital existence are condensed into a few minutes of action. Pace accelerates.</td>
+      </tr>
+      <tr>
+        <td>Blue Gamma closure / Robyn's pregnancy</td>
+        <td>S12</td>
+        <td>F10</td>
+        <td>Scene + summary</td>
+        <td>Two simultaneous revelations. Robyn's "past digients" speech functions as embedded philosophic counterpoint — iterative of attitudes Ana has "always heard."</td>
+      </tr>
+      <tr>
+        <td>Derek post-Blue Gamma / park scene with Marco</td>
+        <td>S13</td>
+        <td>F11</td>
+        <td>Scene</td>
+        <td>Habitual-turned-singulative: the park trip is framed as typical but becomes the locus for characterological revelation (Wendy's jealousy, Derek's feelings for Ana).</td>
+      </tr>
+      <tr>
+        <td>Data Earth closure / Real Space migration</td>
+        <td>S14</td>
+        <td>F12</td>
+        <td>Summary (external forces)</td>
+        <td>Ellipsis: "two more years pass" sets up platform obsolescence. The digients' world ends not through violence but commercial indifference — structural irony.</td>
+      </tr>
+      <tr>
+        <td>Jax's cartwheel / broken wrist</td>
+        <td>S15</td>
+        <td>F13</td>
+        <td>Scene</td>
+        <td>Brief singulative; "It not Data Earth" — Jax's quiet complaint is the novella's most poignant line before the Binary Desire arc. Duration is compact but emotionally weighted.</td>
+      </tr>
+      <tr>
+        <td>Marco/Polo request rollback after fight</td>
+        <td>S16</td>
+        <td>F14</td>
+        <td>Scene + philosophical digression</td>
+        <td>Derek's refusal triggers the novella's deepest meditation on identity continuity. Digression (pause) into the ethics of checkpointing as ersatz memory-deletion.</td>
+      </tr>
+      <tr>
+        <td>Marco begs from strangers / Voyl Corporation discussion</td>
+        <td>S17</td>
+        <td>F15</td>
+        <td>Scene + summary digression</td>
+        <td>The legal-personhood subplot emerges. Iterative summary of Voyl's situation stands in for broader social discourse the digients have observed.</td>
+      </tr>
+      <tr>
+        <td>Binary Desire presentation</td>
+        <td>S18</td>
+        <td>F16</td>
+        <td>Extended Scene (debate)</td>
+        <td>The novella's moral climax unfolds in real time. Chase's rhetoric is reported nearly verbatim — Genette's "scene": dialogue brings fabula and sjuzhet into alignment.</td>
+      </tr>
+      <tr>
+        <td>Derek signs Binary Desire contract</td>
+        <td>S19</td>
+        <td>F17</td>
+        <td>Scene (climax)</td>
+        <td>Focalized entirely through Derek. His motivations are transparent to reader but hidden from Ana — a rare moment of dramatic irony. The act is understated; the consequences immense.</td>
+      </tr>
+      <tr>
+        <td>Ana imagines Jax's future — "Playtime's over"</td>
+        <td>S20</td>
+        <td>F18 → proleptic</td>
+        <td>Internal Prolepsis (prospective fantasy)</td>
+        <td>The closing paragraphs shift into Ana's imagined future for Jax: incorporated, loved, arguing, compromising. Genette: a proleptic anachrony that is explicitly framed as fantasy, not prediction. The narrative returns to the present with the final command.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB 3: PLOT ANALYSIS
+═══════════════════════════════════════════ -->
+<div id="tab-plot" class="tab-panel">
+  <div class="section-label">Tab 03</div>
+  <h2 class="section-title">Plot Analysis — Genette's Narratology</h2>
+  <p style="color:var(--text-muted);font-size:12px;margin-bottom:28px;line-height:1.6;">
+    Analysis covers all five of Genette's major narratological categories as applied to this novella's unusually long temporal span (~12 fictional years) and its structural use of section-heading developmental milestones.
+  </p>
+
+  <!-- ORDER -->
+  <div class="analysis-grid">
+    <div class="analysis-card">
+      <div class="analysis-card-title">Order · Anachrony</div>
+      <h3>Temporal Sequence</h3>
+      <p>The sjuzhet is predominantly isochronous with the fabula — events are presented in the order they occurred. The novella's chapter-structure (marked by cognitive milestone headings: <em>Sensorimotor Skills, Speech, Theory of Mind</em>, etc.) reinforces this forward drive.</p>
+      <p>However, <strong>analepses</strong> are embedded throughout: Ana's zoo career, Derek's holiday-party anecdote about the cloned child, and Ana's college long-distance relationship all reach behind the story's chronological horizon (external analepses).</p>
+      <p>The closing section contains the novella's only significant <strong>prolepsis</strong>: Ana's imagined future for Jax — explicitly marked as fantasy, not prediction, ensuring the prolepsis remains hypothetical rather than narratorial.</p>
+      <div style="margin-top:12px;">
+        <span class="tag">External Analepsis</span>
+        <span class="tag">Completing Analepsis</span>
+        <span class="tag orange">Terminal Prolepsis</span>
+      </div>
+    </div>
+
+    <div class="analysis-card">
+      <div class="analysis-card-title">Duration · Tempo</div>
+      <h3>Narrative Pace</h3>
+      <p>Chiang exploits the full range of Genette's durational modes across the novella's ~12-year span:</p>
+      <ul>
+        <li><strong>Scene</strong>: the SaruMech robot delivery, Lolly's profanity incident, the Binary Desire videoconference — real-time dialogue and action where story-time ≈ reading-time.</li>
+        <li><strong>Summary</strong>: section transitions ("a year later," "two more years pass") compress large swathes of time into single sentences or brief paragraphs.</li>
+        <li><strong>Ellipsis</strong>: the cognitive-milestone section headings (with their "Months" scale-bars) mark what is not narrated — entire developmental phases are elided.</li>
+        <li><strong>Pause</strong>: Derek's meditations on digient nature, Ana's reflections on experience as "algorithmically incompressible" — the plot halts for philosophical dilation.</li>
+      </ul>
+    </div>
+
+    <div class="analysis-card">
+      <div class="analysis-card-title">Frequency · Repetition</div>
+      <h3>How Often Events Are Told</h3>
+      <p>Chiang makes sophisticated use of all three frequency modes:</p>
+      <ul>
+        <li><strong>Singulative</strong>: major crises (the IFF hack, the Binary Desire signing, Jax's cartwheel) are told once because they occurred once.</li>
+        <li><strong>Iterative</strong>: training sessions, playground visits, forum browsing — habitual actions expressed once ("Every day Ana would...") that stand for hundreds of occurrences.</li>
+        <li><strong>Repetitive</strong>: the idea of the rollback/checkpoint is revisited (Lolly's profanity, customer complaints, Marco/Polo's request, Blue Gamma's recommendation) — its return each time at a higher ethical stakes ratchets narrative tension without requiring new events.</li>
+      </ul>
+    </div>
+
+    <div class="analysis-card">
+      <div class="analysis-card-title">Voice · Narrative Instance</div>
+      <h3>Who Speaks</h3>
+      <p>The novella uses a <strong>heterodiegetic</strong> (third-person) narrator who is entirely <strong>subsequent</strong> in position — events are narrated after they occur, with consistent past tense.</p>
+      <p>The narrator operates at the <strong>extradiegetic level</strong>, never entering the story-world itself. Yet the voice is heavily coloured by <strong>free indirect discourse</strong>, sliding into characters' internal idioms without quotation marks ("Snap out of it, she told herself").</p>
+      <p>Forum posts, direct messages, and Derek's online replies represent an <strong>intradiegetic</strong> embedded narrative level — characters as narrators of their own micro-stories within the primary narrative.</p>
+      <div style="margin-top:12px;">
+        <span class="tag green">Heterodiegetic</span>
+        <span class="tag green">Subsequent Narration</span>
+        <span class="tag orange">Free Indirect Discourse</span>
+        <span class="tag purple">Intradiegetic Embedded Text</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOCALIZATION — full width -->
+  <div class="analysis-card" style="margin-bottom:24px;">
+    <div class="analysis-card-title">Focalization · Perception</div>
+    <h3>Who Perceives</h3>
+    <p style="margin-bottom:8px;">Chiang employs <strong>variable internal focalization</strong>. The novella opens focused through Ana, shifts to Derek in the second section, then alternates between the two across the narrative. This dual-focalization is not merely a structural convenience — it is thematically load-bearing: we see the same digients (Jax, Marco, Polo) through two different ethical temperaments, and the gap between Derek's and Ana's perceptions of the Binary Desire question constitutes the novella's moral crux.</p>
+    <p style="margin-bottom:8px;">Crucially, we never access the digients' interiority directly. Jax's inner life is always refracted through Ana's observations and interpretations. This is Chiang's most deliberate focalization choice: the question of whether the digients are truly conscious remains epistemically inaccessible to both characters and reader alike, mirroring the hard problem of consciousness at the story's philosophical core.</p>
+    <p>The forum posts introduce <strong>external focalization</strong> of minor characters (Zoe Armstrong, Natalie Vance, Stuart Gust) — we see their actions and words but never their interiority.</p>
+    <div style="margin-top:12px;">
+      <span class="tag">Variable Internal Focalization</span>
+      <span class="tag orange">Dual Focalizers (Ana / Derek)</span>
+      <span class="tag green">External Focalization (forum voices)</span>
+      <span class="tag purple">Zero Access to Digient Interiority</span>
+    </div>
+  </div>
+
+  <!-- THEME TABLE -->
+  <h3 style="font-family:'DM Serif Display',serif;font-size:18px;font-weight:400;margin-bottom:12px;color:var(--text);">Theme Table</h3>
+  <table class="theme-table">
+    <thead>
+      <tr><th>Theme</th><th>Textual Anchors</th><th>Narratological Dimension</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Care as Constitutive of Consciousness</td>
+        <td>Ana's claim that "experience is algorithmically incompressible"; the contrast with Sophonce digients who learn without care; the failure of feral hothouse experiments.</td>
+        <td>Duration: the novella's ellipses erase years of care labour, making it invisible — mirroring how society devalues caregiving. The reader must infer what the gaps contain.</td>
+      </tr>
+      <tr>
+        <td>Identity, Memory, and the Checkpoint</td>
+        <td>Lolly's rollback; Marco/Polo's request to be rolled back after their fight; Jax's fear of suspension; the question of whether a restored digient is "the same" digient.</td>
+        <td>Order: repeated returns to the rollback motif at escalating ethical stakes is Genette's repetitive frequency deployed as philosophical argument.</td>
+      </tr>
+      <tr>
+        <td>Commercial Logic vs. Ethics of Care</td>
+        <td>Blue Gamma's razor-and-blades model; the pivot to docile digients; Polytope's InstantRapport requirement; Binary Desire's commodification of emotional bonds.</td>
+        <td>Voice: the narrator's free indirect discourse aligns with Ana's ethical perspective, subtly tilting the narration against purely commercial reasoning.</td>
+      </tr>
+      <tr>
+        <td>Platform Obsolescence as Existential Threat</td>
+        <td>Data Earth's decline; the Neuroblast engine's orphaning; Jax's complaint: "It not Data Earth"; the ghost-town description of the private Data Earth.</td>
+        <td>Summary: the platform collapse is conveyed through rapid external summary — a durational irony, since the event is catastrophic but narrated quickly, enacting the indifference of market forces.</td>
+      </tr>
+      <tr>
+        <td>The Limits of Analogy (Animal / Child / Product / Person)</td>
+        <td>Ana vs. Robyn on animals as sublimated child-rearing; Derek's Down Syndrome analogy; Brauer's "products vs. employees" distinction; Ana's zoo-trainer backstory.</td>
+        <td>Focalization: each analogy belongs to a specific focalizer. The novella's variable focalization prevents any single analogy from becoming authoritative, keeping the digients ontologically open.</td>
+      </tr>
+      <tr>
+        <td>Sacrifice and Love</td>
+        <td>Derek signing the Binary Desire contract; Ana's willingness to take the Polytope job; Jax wanting to earn money to pay Ana; Ana's "I love you, Jax."</td>
+        <td>The novella's climax is narrated from Derek's focalization, not Ana's — a deliberate choice that renders his sacrifice ambiguous (heroism or self-deception?) without authorial adjudication.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- STYLE NOTE -->
+  <div class="style-note">
+    <div class="style-note-label">Style Note</div>
+    <p>Chiang's prose is characteristically <strong>lucid, expository, and restrained</strong>. He eschews the pyrotechnic sentence in favour of conceptual precision. The novella's most striking stylistic device is structural rather than lexical: the <em>cognitive milestone headings</em> (Sensorimotor Skills → Speech → Theory of Mind → Task Completion → Socialization → Personal Identity → Sound Judgment) form a parallel developmental arc that maps onto the digients' growth. These headings are accompanied by schematic maps (rendered in the original as abstract city plans), creating an interplay between visual and verbal registers absent from most prose fiction. The forum-post intercalations introduce a second stylistic register — colloquial, networked, polyvocal — that democratises narrative authority and implicitly argues for the importance of community in development. Chiang's dialogue, particularly for the digients, deploys a halting, telegraphic syntax ("Pongo pliy bill") that is not played for comedy but rendered with the same precision as any other utterance, insisting on its seriousness.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB 4: DISCUSSION QUESTIONS
+═══════════════════════════════════════════ -->
+<div id="tab-disc" class="tab-panel">
+  <div class="section-label">Tab 04</div>
+  <h2 class="section-title">Discussion Questions</h2>
+  <p style="color:var(--text-muted);font-size:12px;margin-bottom:28px;line-height:1.6;">Eight questions for undergraduate seminar use, progressing from close reading toward broader thematic and formal concerns. Click <strong>+</strong> to reveal model answers.</p>
+
+  <!-- Group A: Close Reading -->
+  <div class="question-group">
+    <div class="question-group-label">Close Reading</div>
+
+    <div class="accordion-item" onclick="toggleAccordion(this)">
+      <div class="accordion-q">
+        <div class="accordion-q-num">01</div>
+        <div class="accordion-q-text">When Lolly accidentally uses the word "fuck" and the digients are rolled back three days — erasing the first time they rolled down a hill — what does the narrative suggest about the relationship between experience, memory, and identity? Why does Chiang frame the erasure of the hill-rolling as the final sentence of that section?</div>
+        <div class="accordion-toggle">+</div>
+      </div>
+      <div class="accordion-a">
+        <strong>Model Answer:</strong> The rollback episode stages the novella's central philosophical problem in miniature: if a mind can be restored to an earlier state, what does it mean to say that the intervening experience was "real"? Chiang places the loss of the hill-rolling — a pure moment of discovered joy, with no commercial purpose — as the section's final beat to make the reader feel the cost viscerally. It is not the profanity that is lost but the innocence around it. The framing suggests that identity is not a stable substrate but a trajectory of accumulated experience; to restore a checkpoint is not to preserve a self but to delete one. This anticipates later arguments about whether the rolled-back Marco/Polo are "the same" as the originals, and whether the digients can meaningfully consent to interventions in their histories.
+      </div>
+    </div>
+
+    <div class="accordion-item" onclick="toggleAccordion(this)">
+      <div class="accordion-q">
+        <div class="accordion-q-num">02</div>
+        <div class="accordion-q-text">Trace the changing significance of the robot body across the novella — from the SaruMech demonstration to Jax's cartwheel accident to the final image of Ana and Jax facing each other. What does physicality represent in a story primarily set in virtual space?</div>
+        <div class="accordion-toggle">+</div>
+      </div>
+      <div class="accordion-a">
+        <strong>Model Answer:</strong> The robot body functions as a threshold between virtual interiority and physical co-presence. At the SaruMech demonstration, it produces wonder and intimacy — "it's thrilling to have Jax stand in front of her and look her in the eye" — because it makes the virtual visible and tangible. Jax's observation of Ana's pores, arm hairs, and the "bright bright bright" sun maps a digient's curiosity onto the phenomenological strangeness of embodiment. The cartwheel accident reverses this: the body is a constraint as well as an opportunity, subject to physics Jax cannot override. The final illustration (silhouettes of Ana and Jax facing one another) literalises the novella's central relationship as a physical encounter rather than a screen-mediated one. Together, these moments argue that genuine relationship requires embodied vulnerability — a point that implicitly challenges the sufficiency of virtual space for meaningful existence, even as the novella celebrates digital life.
+      </div>
+    </div>
+  </div>
+
+  <!-- Group B: Character & Motivation -->
+  <div class="question-group">
+    <div class="question-group-label">Character &amp; Motivation</div>
+
+    <div class="accordion-item" onclick="toggleAccordion(this)">
+      <div class="accordion-q">
+        <div class="accordion-q-num">03</div>
+        <div class="accordion-q-text">Derek signs the Binary Desire contract in the novella's climax. His narrated motivations include: respect for Marco's autonomy, a desire to spare Ana from the Polytope job, and an admitted hope of benefiting romantically from the situation. How does the novella's variable focalization prevent us from adjudicating which motive is primary? Is this a strength or a limitation of the narrative?</div>
+        <div class="accordion-toggle">+</div>
+      </div>
+      <div class="accordion-a">
+        <strong>Model Answer:</strong> The climax is rendered through Derek's own free indirect discourse — we see his reasoning but cannot verify its sincerity. He explicitly acknowledges the selfish motive ("an admirable thought, but he can't pretend it hasn't occurred to him") but then proceeds to rationalise it as altruism. Chiang does not provide an extradiegetic narrator-level judgement; Ana's furious response is the closest we get to an external moral anchor, but she does not know Derek's full reasoning. This sustained ambiguity is the novella's most sophisticated formal choice: it mirrors the epistemological problem at its core (can we ever know a mind's true state?) and applies it to a human character, not just the digients. Students should consider whether the novel implicitly condemns Derek (structurally, his act separates him from Ana permanently) or sympathises with him (his reasoning about Marco's autonomy is coherent), and what that ambiguity demands of the reader ethically.
+      </div>
+    </div>
+
+    <div class="accordion-item" onclick="toggleAccordion(this)">
+      <div class="accordion-q">
+        <div class="accordion-q-num">04</div>
+        <div class="accordion-q-text">Robyn tells Ana she is "past digients" after becoming pregnant, implying that caring for digients was a substitute for "the real thing." Ana rejects this framing. Whose position does the narrative ultimately endorse, and through what formal means does Chiang signal that endorsement?</div>
+        <div class="accordion-toggle">+</div>
+      </div>
+      <div class="accordion-a">
+        <strong>Model Answer:</strong> The narrative clearly positions Robyn's view critically — the sentence "Women who work with animals hear this all the time" marks it as a tired stereotype that Ana, and by extension the novel, refuses. Formally, Chiang endorses Ana's position through focalization: the novella's moral weight accumulates through her perspective, while Robyn essentially exits the story after this scene. More significantly, the novel spends its final pages with Ana, not with Robyn's child — the text's investment is explicit. The closing command ("Time to do your homework, Jax") reframes the digient relationship not as a substitute for human family but as a distinct and legitimate form of care-work in its own right. However, productive discussion can explore whether the novella is entirely free of the essentialism it critiques: Ana's background as a zookeeper, her maternal instincts toward Jax, and her rejection of Binary Desire on grounds of protecting Jax's "authentic" development could all be read through a caregiving-as-gendered-labour lens.
+      </div>
+    </div>
+  </div>
+
+  <!-- Group C: Theme & Ideas -->
+  <div class="question-group">
+    <div class="question-group-label">Thematic Analysis</div>
+
+    <div class="accordion-item" onclick="toggleAccordion(this)">
+      <div class="accordion-q">
+        <div class="accordion-q-num">05</div>
+        <div class="accordion-q-text">Ana argues that "experience is algorithmically incompressible" — that you cannot shortcut the twenty years of being in the world needed to produce mature judgment. How does the structure of the novella itself enact this argument? What is the relationship between the story's exceptional length (for Chiang's oeuvre) and its central thesis?</div>
+        <div class="accordion-toggle">+</div>
+      </div>
+      <div class="accordion-a">
+        <strong>Model Answer:</strong> This is one of the novella's most elegant meta-formal gestures. Chiang's other works are typically short stories or novelettes; <em>The Lifecycle of Software Objects</em> is his longest single work by far. The form performs the argument: we cannot be told in a short story that raising a mind takes years — we have to spend time with Jax to understand why his loss would matter. The ellipses (section breaks compressing months) do not negate this; they enact the incompleteness that even the reader experiences. We miss whole developmental phases just as Ana cannot be with Jax twenty-four hours a day. The forum posts similarly resist summarisation — they must be read in full to convey the texture of community knowledge-sharing. The novella's unusual length is not merely circumstantial but argumentative.
+      </div>
+    </div>
+
+    <div class="accordion-item" onclick="toggleAccordion(this)">
+      <div class="accordion-q">
+        <div class="accordion-q-num">06</div>
+        <div class="accordion-q-text">The Sophonce digients (Drayta, Andro) succeed commercially where the Neuroblast digients fail, precisely because they are asocial and obsessive. What is Chiang's argument about the relationship between sociality and intelligence? How does the feral hothouse experiment support or complicate this argument?</div>
+        <div class="accordion-toggle">+</div>
+      </div>
+      <div class="accordion-a">
+        <strong>Model Answer:</strong> Chiang advances a strongly relational theory of mind: genuine intelligence — the kind that produces creativity, ethical judgment, and adaptable problem-solving — cannot be separated from sustained social interaction. The Sophonce digients are commercially valuable precisely because their asociality makes them controllable and scalable, but Derek explicitly argues they will never produce genuine understanding. The feral hothouse experiment is Chiang's controlled thought experiment for this thesis: abandoned digients with access to libraries do not become autodidacts but revert to playful troops, their rituals unravelling "like cheap twine" without reinforcement. Derek's analogy to feral children clinches the argument. The Sophonce digients complicate this only superficially — their narrowness is functional, not intelligent in the fullest sense. Chiang positions the novella's version of intelligence as irreducibly social and ecological, a view aligned with extended-mind and enactivist theories in cognitive science.
+      </div>
+    </div>
+  </div>
+
+  <!-- Group D: Form & Broader Concerns -->
+  <div class="question-group">
+    <div class="question-group-label">Formal &amp; Broader Concerns</div>
+
+    <div class="accordion-item" onclick="toggleAccordion(this)">
+      <div class="accordion-q">
+        <div class="accordion-q-num">07</div>
+        <div class="accordion-q-text">The section headings — Sensorimotor Skills, Speech, Theory of Mind, Coping Skills, Empathy, Socialization, Personal Identity, Sound Judgment — map onto a standard developmental psychology framework. What is the effect of imposing this frame on the digients' development? Does it reinforce or destabilise the analogy between digients and children?</div>
+        <div class="accordion-toggle">+</div>
+      </div>
+      <div class="accordion-a">
+        <strong>Model Answer:</strong> The developmental headings perform two contradictory functions simultaneously. They legitimise the digients as genuinely developing minds, using the vocabulary of human psychology to assert equivalence — this is rhetorically important for the ethical argument that the digients deserve respect. But they also contain an implicit irony: these are categories designed by cognitive science to describe biological organisms. Applying them to digital entities raises the question of whether the framework illuminates the digients' nature or merely imposes a human template on something genuinely alien. Derek's conversation about whether standards for digient maturity should be "as high as for a human" engages this problem explicitly. The schematic city-plan illustrations accompanying each heading add a further layer: the developmental journey is mapped spatially, as though growth were a kind of navigation through territory. Students should ask whether the framework ultimately domesticates the digients (making them legible as "like children") or opens space for them to exceed the categories.
+      </div>
+    </div>
+
+    <div class="accordion-item" onclick="toggleAccordion(this)">
+      <div class="accordion-q">
+        <div class="accordion-q-num">08</div>
+        <div class="accordion-q-text">Jennifer Chase of Binary Desire argues that the company's intervention is no more coercive than the neurochemical processes that make all humans sexual beings. Is her argument philosophically coherent? How does Ana's response — "But you're not giving them any choice about what they enjoy" — hold up under scrutiny, given that Ana herself chose what Jax enjoys through years of training?</div>
+        <div class="accordion-toggle">+</div>
+      </div>
+      <div class="accordion-a">
+        <strong>Model Answer:</strong> Chase's argument is philosophically sophisticated and genuinely challenging. She correctly identifies that the digients' existing preferences (food, social interaction, curiosity) were themselves installed by Blue Gamma's genomic engineering and Ana's training — Ana did not ask Jax's consent before shaping his reward map through behavioural reinforcement. Ana's counter-argument distinguishes between general developmental shaping (Blue Gamma made Jax like food, not specific foods) and targeted instrumentalisation (Binary Desire would make Jax like specific people for the commercial benefit of those people). This distinction is real but perhaps finer than Ana acknowledges. The novella does not resolve the tension — it enacts it. The deeper argument Ana makes in her forum post is more cogent: the Binary Desire model eliminates "give and take," creating a relationship structured entirely around the human customer's preferences, with the digient's experience engineered to endorse whatever the customer wants. That is the structural difference between parental shaping and commercial instrumentalisation, and it maps onto long-standing debates in political philosophy about the distinction between paternalism and exploitation.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB 5: AUTHOR
+═══════════════════════════════════════════ -->
+<div id="tab-auth" class="tab-panel">
+  <div class="section-label">Tab 05</div>
+  <h2 class="section-title">Ted Chiang — Author</h2>
+
+  <div class="bio-grid">
+    <table class="bio-table">
+      <tr><th>Full Name</th><td>Ted Chiang (姜峯楠 / Jiāng Fēngnán)</td></tr>
+      <tr><th>Born</th><td>October 20, 1967</td></tr>
+      <tr><th>Place of Birth</th><td>Port Jefferson, New York, USA</td></tr>
+      <tr><th>Current Residence</th><td>Bellevue, Washington (near Seattle)</td></tr>
+      <tr><th>Education</th><td>Brown University, B.S. Computer Science, 1989; Clarion Science Fiction &amp; Fantasy Writers' Workshop, 1989</td></tr>
+      <tr><th>Gender</th><td>Male</td></tr>
+      <tr><th>Partner</th><td>Marcia Glover (long-term partner; met at Microsoft)</td></tr>
+      <tr><th>Religion</th><td>Not publicly disclosed</td></tr>
+      <tr><th>Occupation</th><td>Fiction writer; freelance technical writer (software industry)</td></tr>
+      <tr><th>Ethnicity</th><td>Taiwanese-American (parents: waishengren, emigrated from mainland China to Taiwan, then USA)</td></tr>
+    </table>
+
+    <div class="bio-short">
+      <p>Ted Chiang is widely considered one of the most important short fiction writers working in science fiction today. The son of Taiwanese-American parents — his father a distinguished engineering professor at SUNY Stony Brook, his mother a librarian — Chiang grew up on Long Island and developed an early interest in science fiction and mathematics.</p>
+      <p>After graduating from Brown University with a degree in computer science in 1989, he attended the Clarion Writers' Workshop that same summer, an experience he credits with launching his career. His first published story, "Tower of Babylon," appeared in <em>Omni</em> magazine in 1990 and immediately won the Nebula Award for Best Novelette.</p>
+      <p>Chiang is notably slow and deliberate: he has published only around 18 works of short fiction across more than three decades, yet nearly all have won or been nominated for major awards. He works simultaneously as a technical writer in the software industry, a background that informs the precise, expository clarity of his prose style and his credible treatment of technology's social implications.</p>
+      <p>He is also a regular contributor of non-fiction essays to <em>The New Yorker</em>, addressing artificial intelligence, technology, and cognition with the same rigorous, philosophically grounded approach evident in his fiction. He was artist-in-residence at the University of Notre Dame (2020–2021) and has instructed at the Clarion Workshop (2012, 2016).</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <h3 style="font-family:'DM Serif Display',serif;font-size:18px;font-weight:400;margin-bottom:12px;color:var(--text);">Body of Work</h3>
+  <table class="works-table">
+    <thead>
+      <tr><th>Title</th><th>Year</th><th>Form</th><th>Collection / Venue</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Tower of Babylon</td><td>1990</td><td>Novelette</td><td>Omni; Stories of Your Life and Others</td></tr>
+      <tr><td>Understand</td><td>1991</td><td>Novelette</td><td>Asimov's Science Fiction; Stories of Your Life and Others</td></tr>
+      <tr><td>Division by Zero</td><td>1991</td><td>Short story</td><td>Full Spectrum 3; Stories of Your Life and Others</td></tr>
+      <tr><td>Story of Your Life</td><td>1998</td><td>Novelette</td><td>Starlight 2; Stories of Your Life and Others (basis for film Arrival, 2016)</td></tr>
+      <tr><td>Seventy-Two Letters</td><td>2000</td><td>Novelette</td><td>Vanishing Acts; Stories of Your Life and Others</td></tr>
+      <tr><td>The Evolution of Human Science</td><td>2000</td><td>Short story</td><td>Nature</td></tr>
+      <tr><td>Hell Is the Absence of God</td><td>2001</td><td>Novelette</td><td>Starlight 3; Stories of Your Life and Others</td></tr>
+      <tr><td>Liking What You See: A Documentary</td><td>2002</td><td>Novelette</td><td>Stories of Your Life and Others</td></tr>
+      <tr><td>The Merchant and the Alchemist's Gate</td><td>2007</td><td>Novelette</td><td>F&amp;SF; Exhalation: Stories</td></tr>
+      <tr><td>Exhalation</td><td>2008</td><td>Short story</td><td>Eclipse Two; Exhalation: Stories</td></tr>
+      <tr><td>The Lifecycle of Software Objects</td><td>2010</td><td>Novella</td><td>Subterranean Press; Exhalation: Stories</td></tr>
+      <tr><td>Dacey's Patent Automatic Nanny</td><td>2011</td><td>Short story</td><td>The Thackery T. Lambshead Cabinet of Curiosities</td></tr>
+      <tr><td>The Truth of Fact, the Truth of Feeling</td><td>2013</td><td>Novelette</td><td>Subterranean; Exhalation: Stories</td></tr>
+      <tr><td>The Great Silence</td><td>2015</td><td>Short story</td><td>e-flux journal; Exhalation: Stories</td></tr>
+      <tr><td>Omphalos</td><td>2019</td><td>Short story</td><td>Exhalation: Stories</td></tr>
+      <tr><td>Anxiety Is the Dizziness of Freedom</td><td>2019</td><td>Novella</td><td>Exhalation: Stories</td></tr>
+      <tr><td>Story of Your Life (Chinese translation)</td><td>2019</td><td>Collection</td><td>Translator's edition; various markets</td></tr>
+      <tr><td>If You Like This Article (non-fiction)</td><td>ongoing</td><td>Essays</td><td>The New Yorker</td></tr>
+    </tbody>
+  </table>
+
+  <hr class="divider">
+  <h3 style="font-family:'DM Serif Display',serif;font-size:18px;font-weight:400;margin-bottom:12px;color:var(--text);">Awards &amp; Honours</h3>
+  <div class="awards-list">
+    <div class="award-item">
+      <div class="award-item-title">Nebula Award — Best Novelette</div>
+      <div class="award-item-work">"Tower of Babylon"</div>
+      <div class="award-item-year">1990</div>
+    </div>
+    <div class="award-item">
+      <div class="award-item-title">John W. Campbell Award — Best New Writer</div>
+      <div class="award-item-work">Career recognition</div>
+      <div class="award-item-year">1992</div>
+    </div>
+    <div class="award-item">
+      <div class="award-item-title">Nebula Award &amp; Theodore Sturgeon Memorial Award</div>
+      <div class="award-item-work">"Story of Your Life"</div>
+      <div class="award-item-year">1998</div>
+    </div>
+    <div class="award-item">
+      <div class="award-item-title">Sidewise Award for Alternate History</div>
+      <div class="award-item-work">"Seventy-Two Letters"</div>
+      <div class="award-item-year">2000</div>
+    </div>
+    <div class="award-item">
+      <div class="award-item-title">Hugo, Nebula &amp; Locus Awards</div>
+      <div class="award-item-work">"Hell Is the Absence of God"</div>
+      <div class="award-item-year">2002</div>
+    </div>
+    <div class="award-item">
+      <div class="award-item-title">Hugo &amp; Nebula Awards</div>
+      <div class="award-item-work">"The Merchant and the Alchemist's Gate"</div>
+      <div class="award-item-year">2007</div>
+    </div>
+    <div class="award-item">
+      <div class="award-item-title">Hugo Award, BSFA Award &amp; Locus Award</div>
+      <div class="award-item-work">"Exhalation"</div>
+      <div class="award-item-year">2009</div>
+    </div>
+    <div class="award-item">
+      <div class="award-item-title">Hugo Award &amp; Locus Award</div>
+      <div class="award-item-work">"The Lifecycle of Software Objects"</div>
+      <div class="award-item-year">2011</div>
+    </div>
+    <div class="award-item">
+      <div class="award-item-title">Inducted — SF&amp;F Hall of Fame</div>
+      <div class="award-item-work">Career recognition</div>
+      <div class="award-item-year">2020</div>
+    </div>
+    <div class="award-item">
+      <div class="award-item-title">PEN/Malamud Award</div>
+      <div class="award-item-work">Excellence in the short story</div>
+      <div class="award-item-year">2024</div>
+    </div>
+    <div class="award-item">
+      <div class="award-item-title">American Humanist Association — Inquiry &amp; Innovation Award</div>
+      <div class="award-item-work">Career recognition</div>
+      <div class="award-item-year">2024</div>
+    </div>
+    <div class="award-item">
+      <div class="award-item-title">Kurd Lasswitz Preis (Germany)</div>
+      <div class="award-item-work">Best foreign science fiction (translated collection)</div>
+      <div class="award-item-year">2013</div>
+    </div>
+  </div>
+
+  <p style="margin-top:24px;font-size:11px;color:var(--text-dim);line-height:1.6;">
+    Note: Chiang declined a Hugo nomination in 2003 for "Liking What You See: A Documentary," stating the story did not turn out as intended due to editorial pressures. This is counted in career totals by some sources but was voluntarily withdrawn from consideration. Award tallies vary by source; the above reflects verified wins only.
+  </p>
+</div>
+
+<script>
+// ── TAB SWITCHING ──
+function switchTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'fab') initScatter();
+}
+
+// ── ACCORDION ──
+function toggleAccordion(el) {
+  el.classList.toggle('open');
+}
+
+// ── SCATTER CHART ──
+let scatterInitialised = false;
+function initScatter() {
+  if (scatterInitialised) return;
+  scatterInitialised = true;
+
+  const events = [
+    // type, sjuzhet, fabula, label, note
+    { type: 'analepsis',  x: 1,  y: 0,  label: "Ana's zoo career ends",          note: "External analepsis (pre-story); Ana's ecological grief established before action." },
+    { type: 'present',   x: 2,  y: 1,  label: "Bad interview / Age of Iridium",  note: "Singulative scene; story begins in medias res." },
+    { type: 'present',   x: 3,  y: 2,  label: "Robyn's NDA / Blue Gamma tour",   note: "Dialogue-heavy scene; digients introduced." },
+    { type: 'present',   x: 4,  y: 3,  label: "Derek's robot avatar disagreement", note: "Scene with embedded philosophical pause." },
+    { type: 'summary',   x: 5,  y: 4,  label: "A year later — product launch",   note: "Temporal ellipsis; milestone section heading." },
+    { type: 'present',   x: 6,  y: 5,  label: "Lolly swears; rollback",          note: "Pivotal singulative event; first identity erasure." },
+    { type: 'summary',   x: 7,  y: 6,  label: "Digients are a hit (yr 1)",       note: "Iterative summary; hundreds of interactions compressed." },
+    { type: 'analepsis', x: 3.5, y: -1, label: "Ana's primate-career reflection", note: "Completing internal analepsis; reach pre-dates story." },
+    { type: 'present',   x: 8,  y: 7,  label: "SaruMech robot body / Jax embodied", note: "Extended scene; fabula ≈ sjuzhet; most intimate scene." },
+    { type: 'summary',   x: 9,  y: 8,  label: "Theory of Mind — declining sales", note: "External summary; 'over the course of the following year'." },
+    { type: 'present',   x: 10, y: 9,  label: "IFF hack / Nyyti torture",        note: "Crisis scene; rapid pace; Ana suspends Jax." },
+    { type: 'present',   x: 11, y: 10, label: "Blue Gamma closes / Robyn pregnant", note: "Dual revelation; embedded philosophical counterpoint." },
+    { type: 'present',   x: 12, y: 11, label: "Post–BG; park scene with Marco",  note: "Habitual-turned-singulative; Derek's feelings revealed." },
+    { type: 'summary',   x: 13, y: 12, label: "Data Earth closes / Real Space",  note: "Ellipsis; platform obsolescence as existential event." },
+    { type: 'present',   x: 14, y: 13, label: "Jax cartwheel / broken wrist",    note: "'It not Data Earth' — poignant singulative." },
+    { type: 'digression', x: 15, y: 14, label: "Marco/Polo rollback request",    note: "Scene + pause; deepest meditation on identity continuity." },
+    { type: 'digression', x: 16, y: 15, label: "Marco begs; Voyl Corporation",   note: "Legal personhood subplot; iterative digression." },
+    { type: 'present',   x: 17, y: 16, label: "Binary Desire presentation",      note: "Extended real-time debate; sjuzhet ≈ fabula." },
+    { type: 'present',   x: 18, y: 17, label: "Derek signs BD contract",         note: "Climax; Derek's focalization; dramatic irony." },
+    { type: 'prolepsis', x: 19, y: 20, label: "Ana imagines Jax's future",       note: "Internal prolepsis (fantasy); reaches beyond story's end." },
+  ];
+
+  const colours = {
+    present:    '#5c9eff',
+    analepsis:  '#ff7b54',
+    summary:    '#7ed3a8',
+    digression: '#c084fc',
+    prolepsis:  '#f9d342',
+  };
+
+  const datasets = Object.keys(colours).map(type => ({
+    label: {
+      present:    'Present Action',
+      analepsis:  'Analepsis (Flashback)',
+      summary:    'Summary / Ellipsis',
+      digression: 'Digression / Forum',
+      prolepsis:  'Prolepsis (Flash-forward)',
+    }[type],
+    data: events.filter(e => e.type === type).map(e => ({
+      x: e.x, y: e.y,
+      label: e.label,
+      note: e.note,
+    })),
+    backgroundColor: colours[type],
+    pointRadius: 9,
+    pointHoverRadius: 12,
+  }));
+
+  // Diagonal reference line dataset
+  const diagMin = -1, diagMax = 21;
+  datasets.push({
+    label: 'Chronological baseline',
+    data: [{x: diagMin, y: diagMin}, {x: diagMax, y: diagMax}],
+    type: 'line',
+    borderColor: 'rgba(255,255,255,0.15)',
+    borderDash: [6, 4],
+    pointRadius: 0,
+    fill: false,
+    tension: 0,
+  });
+
+  const ctx = document.getElementById('scatterChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 1.8,
+      plugins: {
+        legend: {
+          labels: {
+            color: '#7a8aaa',
+            font: { family: 'DM Mono', size: 11 },
+            padding: 20,
+            filter: item => item.text !== 'Chronological baseline',
+          }
+        },
+        tooltip: {
+          backgroundColor: '#1c2130',
+          borderColor: '#2a3245',
+          borderWidth: 1,
+          titleColor: '#e8ecf4',
+          bodyColor: '#7a8aaa',
+          padding: 12,
+          callbacks: {
+            title: items => items[0].raw.label || '',
+            label: item => [
+              `Sjuzhet: ${item.raw.x}  |  Fabula: ${item.raw.y}`,
+              '',
+              item.raw.note || '',
+            ],
+          },
+          displayColors: false,
+        },
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Sjuzhet Order →  (narrative position in text)', color: '#4a5572', font: { family: 'DM Mono', size: 11 } },
+          min: -1, max: 21,
+          grid: { color: 'rgba(42,50,69,0.5)' },
+          ticks: { color: '#4a5572', font: { family: 'DM Mono', size: 10 } },
+        },
+        y: {
+          title: { display: true, text: 'Fabula Order ↑  (chronological position)', color: '#4a5572', font: { family: 'DM Mono', size: 11 } },
+          min: -3, max: 22,
+          grid: { color: 'rgba(42,50,69,0.5)' },
+          ticks: { color: '#4a5572', font: { family: 'DM Mono', size: 10 } },
+        },
+      },
+    },
+  });
+}
+</script>
+</body>
+</html>
