@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading Notes</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #faf9f7;
+      color: #2c2a25;
+      min-height: 100vh;
+      padding: 3rem 1.5rem;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    header {
+      border-bottom: 1px solid #ddd8ce;
+      padding-bottom: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: normal;
+      letter-spacing: -0.02em;
+      color: #1a1816;
+      margin-bottom: 0.4rem;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      color: #7a756c;
+      font-style: italic;
+    }
+
+    .book-list {
+      list-style: none;
+    }
+
+    .book-list li {
+      border-bottom: 1px solid #e8e4dc;
+    }
+
+    .book-list li:first-child {
+      border-top: 1px solid #e8e4dc;
+    }
+
+    .book-list a {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.1rem 0;
+      text-decoration: none;
+      color: inherit;
+      transition: color 0.15s;
+    }
+
+    .book-list a:hover {
+      color: #8b4513;
+    }
+
+    .book-list a:hover .arrow {
+      opacity: 1;
+      transform: translateX(3px);
+    }
+
+    .book-title {
+      font-size: 1.05rem;
+      color: inherit;
+    }
+
+    .book-meta {
+      font-size: 0.82rem;
+      color: #aaa49a;
+      font-style: italic;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .arrow {
+      font-size: 0.9rem;
+      color: #8b4513;
+      opacity: 0;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e8e4dc;
+      font-size: 0.8rem;
+      color: #b5b0a6;
+      font-style: italic;
+    }
+
+    /* ── HOW TO ADD A NEW BOOK ───────────────────────────────────────
+       Copy one <li> block below and paste it at the top of the list.
+       Change the href to your new *analysis.html filename,
+       and update the title text and source in .book-meta.
+       ────────────────────────────────────────────────────────────── */
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <h1>Reading Notes</h1>
+      <p>Notes to help with understanding and analysis</p>
+    </header>
+
+    <ul class="book-list">
+
+      <!-- ADD NEW ENTRIES AT THE TOP OF THIS LIST -->
+
+      <li>
+        <a href="NYT_My_Balenciaga_analysis.html">
+          <span class="book-title">My Balenciaga Era</span>
+          <span class="book-meta">The New Yorker</span>
+          <span class="arrow">→</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="NYT_Floating_analysis.html">
+          <span class="book-title">Floating</span>
+          <span class="book-meta">The New Yorker</span>
+          <span class="arrow">→</span>
+        </a>
+      </li>
+
+    </ul>
+
+  </div>
+</body>
+</html>
