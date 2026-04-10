@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading Notes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sidebar-w: 280px;
+      --sidebar-bg: #111009;
+      --sidebar-border: #2a2720;
+      --ink: #1a1714;
+      --paper: #f7f4ef;
+      --paper2: #f0ebe2;
+      --rule: #d8d0c2;
+      --accent: #8b3a2a;
+      --accent-muted: #c8604a;
+      --gold: #9a7c3a;
+      --muted: #8a847a;
+      --sidebar-text: #c8c0b0;
+      --sidebar-muted: #5a5448;
+      --sidebar-active-bg: #1e1b14;
+      --sidebar-active-border: #8b3a2a;
+      --sidebar-hover-bg: #181510;
+      --transition: 0.22s ease;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      background: var(--sidebar-bg);
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      height: 46px;
+      background: var(--sidebar-bg);
+      border-bottom: 1px solid var(--sidebar-border);
+      display: flex;
+      align-items: center;
+      padding: 0 1.4rem;
+      gap: 1.2rem;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .topbar-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.8rem;
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--sidebar-muted);
+    }
+
+    .topbar-divider {
+      width: 1px;
+      height: 18px;
+      background: var(--sidebar-border);
+    }
+
+    .topbar-breadcrumb {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--sidebar-muted);
+      letter-spacing: 0.04em;
+      transition: color var(--transition);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .topbar-breadcrumb.active {
+      color: var(--sidebar-text);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-left: auto;
+    }
+
+    .topbar-btn {
+      background: none;
+      border: 1px solid var(--sidebar-border);
+      border-radius: 3px;
+      color: var(--sidebar-muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      padding: 0.3rem 0.65rem;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-transform: uppercase;
+    }
+    .topbar-btn:hover {
+      border-color: var(--sidebar-text);
+      color: var(--sidebar-text);
+    }
+    .topbar-btn.active {
+      border-color: var(--accent-muted);
+      color: var(--accent-muted);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+      transition: width var(--transition);
+    }
+
+    .sidebar.collapsed {
+      width: 0;
+      border-right-width: 0;
+    }
+
+    .sidebar-inner {
+      width: var(--sidebar-w);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 1.4rem 1.4rem 0.8rem;
+      border-bottom: 1px solid var(--sidebar-border);
+    }
+
+    .sidebar-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--sidebar-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar-search {
+      width: 100%;
+      background: #181510;
+      border: 1px solid var(--sidebar-border);
+      border-radius: 3px;
+      color: var(--sidebar-text);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.4rem 0.7rem;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+    .sidebar-search::placeholder { color: var(--sidebar-muted); }
+    .sidebar-search:focus { border-color: var(--accent); }
+
+    .sidebar-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--sidebar-border) transparent;
+    }
+    .sidebar-list::-webkit-scrollbar { width: 3px; }
+    .sidebar-list::-webkit-scrollbar-thumb { background: var(--sidebar-border); border-radius: 2px; }
+
+    .book-item {
+      display: block;
+      padding: 0.85rem 1.4rem 0.85rem 1.2rem;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      border-bottom: 1px solid transparent;
+      transition: all var(--transition);
+      position: relative;
+      text-decoration: none;
+    }
+    .book-item:hover {
+      background: var(--sidebar-hover-bg);
+      border-bottom-color: var(--sidebar-border);
+    }
+    .book-item.active {
+      background: var(--sidebar-active-bg);
+      border-left-color: var(--sidebar-active-border);
+      border-bottom-color: var(--sidebar-border);
+    }
+    .book-item.hidden {
+      display: none;
+    }
+
+    .book-item-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.96rem;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--sidebar-text);
+      line-height: 1.3;
+      margin-bottom: 0.25rem;
+      transition: color var(--transition);
+    }
+    .book-item:hover .book-item-title,
+    .book-item.active .book-item-title {
+      color: #e8e0d0;
+    }
+
+    .book-item-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.06em;
+      color: var(--sidebar-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .book-item.active .book-item-meta {
+      color: #7a6858;
+    }
+
+    .book-item-tag {
+      display: inline-block;
+      padding: 0.1rem 0.35rem;
+      border-radius: 2px;
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .tag-nyr { background: rgba(139,58,42,0.3); color: #c86050; }
+    .tag-novella { background: rgba(42,70,100,0.3); color: #6890c0; }
+    .tag-novel { background: rgba(60,90,60,0.3); color: #70b070; }
+
+    .sidebar-footer {
+      padding: 0.8rem 1.4rem;
+      border-top: 1px solid var(--sidebar-border);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--sidebar-muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── CONTENT PANE ── */
+    .content-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--paper);
+      position: relative;
+    }
+
+    /* ── WELCOME SCREEN ── */
+    .welcome {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+      background: var(--paper);
+      gap: 0;
+    }
+
+    .welcome-ornament {
+      font-size: 1.8rem;
+      color: var(--rule);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.3em;
+    }
+
+    .welcome-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem;
+      font-weight: 300;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .welcome-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 3rem;
+    }
+
+    .welcome-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      max-width: 560px;
+      width: 100%;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .welcome-card {
+      background: var(--paper);
+      padding: 1.2rem 1.4rem;
+      cursor: pointer;
+      transition: background var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .welcome-card:hover {
+      background: var(--paper2);
+    }
+
+    .welcome-card-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .welcome-card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--ink);
+      line-height: 1.3;
+    }
+
+    .welcome-card-author {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--muted);
+    }
+
+    .welcome-hint {
+      margin-top: 2rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--rule);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── ANALYSIS FRAME ── */
+    .analysis-frame-wrap {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+    .analysis-frame-wrap.active {
+      display: flex;
+    }
+
+    .frame-loading {
+      position: absolute;
+      inset: 0;
+      background: var(--paper);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      z-index: 5;
+      transition: opacity 0.3s ease;
+    }
+    .frame-loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-spinner {
+      width: 28px;
+      height: 28px;
+      border: 2px solid var(--rule);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .analysis-iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      background: var(--paper);
+    }
+
+    /* ── COLLAPSE TOGGLE ── */
+    .collapse-btn {
+      background: none;
+      border: none;
+      color: var(--sidebar-muted);
+      cursor: pointer;
+      padding: 0.3rem 0.5rem;
+      font-size: 1rem;
+      line-height: 1;
+      transition: color var(--transition);
+      border-radius: 2px;
+    }
+    .collapse-btn:hover {
+      color: var(--sidebar-text);
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* ── RESIZE HANDLE ── */
+    .resize-handle {
+      width: 4px;
+      cursor: col-resize;
+      background: transparent;
+      flex-shrink: 0;
+      position: relative;
+      transition: background var(--transition);
+    }
+    .resize-handle::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 1px;
+      width: 1px;
+      background: var(--sidebar-border);
+      transition: background var(--transition), width var(--transition), left var(--transition);
+    }
+    .resize-handle:hover::after,
+    .resize-handle.dragging::after {
+      background: var(--accent);
+      width: 2px;
+      left: 1px;
+    }
+
+    /* ── EMPTY / NO RESULTS ── */
+    .no-results {
+      padding: 1.5rem 1.4rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--sidebar-muted);
+      letter-spacing: 0.06em;
+      display: none;
+    }
+
+    /* ── SCROLLBAR STYLING ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+
+    /* ── PRINT ── */
+    @media print {
+      .topbar, .sidebar { display: none; }
+      .content-pane { position: fixed; inset: 0; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      :root { --sidebar-w: 100vw; }
+      .layout { position: relative; }
+      .sidebar {
+        position: absolute;
+        top: 0; left: 0; bottom: 0;
+        z-index: 20;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+      }
+      .sidebar.collapsed {
+        width: 0;
+      }
+      .resize-handle { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <button class="collapse-btn" id="collapseBtn" title="Toggle sidebar" onclick="toggleSidebar()">
+    ☰
+  </button>
+  <div class="topbar-divider"></div>
+  <span class="topbar-title">Reading Notes</span>
+  <div class="topbar-divider"></div>
+  <span class="topbar-breadcrumb" id="breadcrumb">Select an analysis to begin</span>
+  <div class="topbar-actions">
+    <button class="topbar-btn" id="openTabBtn" onclick="openInTab()" style="display:none">Open in tab ↗</button>
+    <button class="topbar-btn" id="printBtn" onclick="printFrame()" style="display:none">Print</button>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout" id="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-inner">
+
+      <div class="sidebar-header">
+        <div class="sidebar-label">Library</div>
+        <input
+          type="search"
+          class="sidebar-search"
+          id="searchInput"
+          placeholder="Filter titles…"
+          oninput="filterBooks(this.value)"
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+
+      <div class="sidebar-list" id="bookList">
+
+        <a class="book-item"
+           data-file="rate-your-happiness-analysis.html"
+           data-title="Rate Your Happiness"
+           data-author="Catherine Lacey"
+           data-source="The New Yorker"
+           onclick="loadBook(this); return false;" href="#">
+          <div class="book-item-title">Rate Your Happiness</div>
+          <div class="book-item-meta">
+            <span>Lacey</span>
+            <span class="book-item-tag tag-nyr">New Yorker</span>
+          </div>
+        </a>
+
+        <a class="book-item"
+           data-file="lifecycle_software_objects_analysis.html"
+           data-title="The Lifecycle of Software Objects"
+           data-author="Ted Chiang"
+           data-source="Novella"
+           onclick="loadBook(this); return false;" href="#">
+          <div class="book-item-title">The Lifecycle of Software Objects</div>
+          <div class="book-item-meta">
+            <span>Chiang</span>
+            <span class="book-item-tag tag-novella">Novella</span>
+          </div>
+        </a>
+
+        <a class="book-item"
+           data-file="NYT_My_Balenciaga_analysis.html"
+           data-title="My Balenciaga"
+           data-author="Han Ong"
+           data-source="The New Yorker"
+           onclick="loadBook(this); return false;" href="#">
+          <div class="book-item-title">My Balenciaga</div>
+          <div class="book-item-meta">
+            <span>Ong</span>
+            <span class="book-item-tag tag-nyr">New Yorker</span>
+          </div>
+        </a>
+
+        <a class="book-item"
+           data-file="NYT_Floating_analysis.html"
+           data-title="Floating"
+           data-author="Souvankham Thammavongsa"
+           data-source="The New Yorker"
+           onclick="loadBook(this); return false;" href="#">
+          <div class="book-item-title">Floating</div>
+          <div class="book-item-meta">
+            <span>Thammavongsa</span>
+            <span class="book-item-tag tag-nyr">New Yorker</span>
+          </div>
+        </a>
+
+        <div class="no-results" id="noResults">No titles match</div>
+
+      </div>
+
+      <div class="sidebar-footer" id="sidebarCount">4 analyses</div>
+
+    </div>
+  </div>
+
+  <!-- RESIZE HANDLE -->
+  <div class="resize-handle" id="resizeHandle"></div>
+
+  <!-- CONTENT PANE -->
+  <div class="content-pane" id="contentPane">
+
+    <!-- WELCOME -->
+    <div class="welcome" id="welcomeScreen">
+      <div class="welcome-ornament">— ❧ —</div>
+      <h1 class="welcome-title">Reading Notes</h1>
+      <p class="welcome-sub">Notes to help with understanding and analysis</p>
+
+      <div class="welcome-grid">
+        <div class="welcome-card" onclick="loadByFile('rate-your-happiness-analysis.html')">
+          <div class="welcome-card-num">01 · New Yorker</div>
+          <div class="welcome-card-title">Rate Your Happiness</div>
+          <div class="welcome-card-author">Catherine Lacey</div>
+        </div>
+        <div class="welcome-card" onclick="loadByFile('lifecycle_software_objects_analysis.html')">
+          <div class="welcome-card-num">02 · Novella</div>
+          <div class="welcome-card-title">The Lifecycle of Software Objects</div>
+          <div class="welcome-card-author">Ted Chiang</div>
+        </div>
+        <div class="welcome-card" onclick="loadByFile('NYT_My_Balenciaga_analysis.html')">
+          <div class="welcome-card-num">03 · New Yorker</div>
+          <div class="welcome-card-title">My Balenciaga</div>
+          <div class="welcome-card-author">Han Ong</div>
+        </div>
+        <div class="welcome-card" onclick="loadByFile('NYT_Floating_analysis.html')">
+          <div class="welcome-card-num">04 · New Yorker</div>
+          <div class="welcome-card-title">Floating</div>
+          <div class="welcome-card-author">Souvankham Thammavongsa</div>
+        </div>
+      </div>
+
+      <p class="welcome-hint">← select from the sidebar, or click above</p>
+    </div>
+
+    <!-- ANALYSIS FRAME -->
+    <div class="analysis-frame-wrap" id="frameWrap">
+      <div class="frame-loading" id="frameLoading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading analysis…</div>
+      </div>
+      <iframe
+        id="analysisFrame"
+        class="analysis-iframe"
+        title="Literary Analysis"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+      ></iframe>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ── STATE ── */
+  let currentFile = null;
+  let sidebarOpen = true;
+  const SIDEBAR_WIDTH_KEY = 'rn_sidebar_w';
+
+  /* ── SIDEBAR TOGGLE ── */
+  function toggleSidebar() {
+    sidebarOpen = !sidebarOpen;
+    const sidebar = document.getElementById('sidebar');
+    const handle  = document.getElementById('resizeHandle');
+    sidebar.classList.toggle('collapsed', !sidebarOpen);
+    handle.style.display = sidebarOpen ? '' : 'none';
+  }
+
+  /* ── LOAD BY FILE (from welcome cards) ── */
+  function loadByFile(filename) {
+    const item = document.querySelector(`.book-item[data-file="${filename}"]`);
+    if (item) loadBook(item);
+  }
+
+  /* ── LOAD BOOK ── */
+  function loadBook(item) {
+    const file   = item.dataset.file;
+    const title  = item.dataset.title;
+    const author = item.dataset.author;
+
+    if (file === currentFile) return;
+    currentFile = file;
+
+    /* Sidebar active state */
+    document.querySelectorAll('.book-item').forEach(el => el.classList.remove('active'));
+    item.classList.add('active');
+
+    /* Breadcrumb */
+    const bc = document.getElementById('breadcrumb');
+    bc.textContent = `${title} — ${author}`;
+    bc.classList.add('active');
+
+    /* Show buttons */
+    document.getElementById('openTabBtn').style.display = '';
+    document.getElementById('printBtn').style.display = '';
+
+    /* Show frame area, hide welcome */
+    document.getElementById('welcomeScreen').style.display = 'none';
+    const wrap = document.getElementById('frameWrap');
+    wrap.classList.add('active');
+
+    /* Show loading indicator */
+    const loading = document.getElementById('frameLoading');
+    loading.classList.remove('hidden');
+
+    /* Load iframe */
+    const frame = document.getElementById('analysisFrame');
+    frame.onload = () => {
+      loading.classList.add('hidden');
+    };
+    frame.onerror = () => {
+      loading.classList.add('hidden');
+    };
+    frame.src = file;
+
+    /* On mobile, auto-collapse sidebar after selection */
+    if (window.innerWidth <= 700) {
+      setTimeout(() => { sidebarOpen = false; document.getElementById('sidebar').classList.add('collapsed'); }, 200);
+    }
+  }
+
+  /* ── OPEN IN TAB ── */
+  function openInTab() {
+    if (currentFile) window.open(currentFile, '_blank');
+  }
+
+  /* ── PRINT ── */
+  function printFrame() {
+    const frame = document.getElementById('analysisFrame');
+    if (frame && frame.contentWindow) {
+      frame.contentWindow.print();
+    }
+  }
+
+  /* ── SEARCH / FILTER ── */
+  function filterBooks(query) {
+    const q = query.trim().toLowerCase();
+    const items = document.querySelectorAll('.book-item');
+    let visible = 0;
+
+    items.forEach(item => {
+      const title  = (item.dataset.title  || '').toLowerCase();
+      const author = (item.dataset.author || '').toLowerCase();
+      const source = (item.dataset.source || '').toLowerCase();
+      const match  = !q || title.includes(q) || author.includes(q) || source.includes(q);
+      item.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+    document.getElementById('sidebarCount').textContent = q
+      ? `${visible} of ${items.length} shown`
+      : `${items.length} analyses`;
+  }
+
+  /* ── KEYBOARD NAVIGATION ── */
+  document.addEventListener('keydown', (e) => {
+    /* Escape: clear search */
+    if (e.key === 'Escape') {
+      const search = document.getElementById('searchInput');
+      if (document.activeElement === search && search.value) {
+        search.value = '';
+        filterBooks('');
+        return;
+      }
+      if (e.key === 'Escape' && !sidebarOpen) toggleSidebar();
+    }
+
+    /* [ / ] : cycle through books */
+    if ((e.key === ']' || e.key === '[') && !e.ctrlKey && !e.metaKey) {
+      if (document.activeElement.tagName === 'INPUT') return;
+      const items = Array.from(document.querySelectorAll('.book-item:not(.hidden)'));
+      if (!items.length) return;
+      const idx = items.findIndex(i => i.classList.contains('active'));
+      let next = e.key === ']'
+        ? (idx + 1) % items.length
+        : (idx - 1 + items.length) % items.length;
+      if (idx === -1) next = 0;
+      loadBook(items[next]);
+      e.preventDefault();
+    }
+
+    /* / : focus search */
+    if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+      if (document.activeElement.tagName !== 'INPUT') {
+        document.getElementById('searchInput').focus();
+        e.preventDefault();
+      }
+    }
+  });
+
+  /* ── RESIZE HANDLE ── */
+  (function initResize() {
+    const handle  = document.getElementById('resizeHandle');
+    const sidebar = document.getElementById('sidebar');
+    let dragging = false;
+    let startX, startW;
+
+    /* Restore saved width */
+    const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
+    if (saved) {
+      const w = parseInt(saved, 10);
+      if (w >= 160 && w <= 520) {
+        document.documentElement.style.setProperty('--sidebar-w', w + 'px');
+        sidebar.style.width = w + 'px';
+        sidebar.querySelector('.sidebar-inner').style.width = w + 'px';
+      }
+    }
+
+    handle.addEventListener('mousedown', (e) => {
+      dragging = true;
+      startX = e.clientX;
+      startW = sidebar.offsetWidth;
+      handle.classList.add('dragging');
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'col-resize';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!dragging) return;
+      const delta = e.clientX - startX;
+      const newW  = Math.min(520, Math.max(160, startW + delta));
+      sidebar.style.width = newW + 'px';
+      sidebar.querySelector('.sidebar-inner').style.width = newW + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!dragging) return;
+      dragging = false;
+      handle.classList.remove('dragging');
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+      localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebar.offsetWidth);
+    });
+  })();
+
+  /* ── URL HASH ROUTING ── */
+  (function initRouting() {
+    function loadFromHash() {
+      const hash = decodeURIComponent(location.hash.slice(1));
+      if (hash) {
+        const item = document.querySelector(`.book-item[data-file="${hash}"]`);
+        if (item) { loadBook(item); return; }
+      }
+    }
+    loadFromHash();
+    window.addEventListener('hashchange', loadFromHash);
+
+    /* Update hash on load */
+    const origLoad = window.loadBook;
+    window.loadBook = function(item) {
+      origLoad(item);
+      history.replaceState(null, '', '#' + encodeURIComponent(item.dataset.file));
+    };
+  })();
+</script>
+
+</body>
+</html>
