@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rate Your Happiness — Narratological Analysis</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&display=swap');
+
+  :root {
+    --ink: #1a1612;
+    --paper: #f5f0e8;
+    --cream: #ede8dc;
+    --rule: #c8bfaa;
+    --accent: #8b4513;
+    --accent2: #4a6741;
+    --accent3: #2a4a6b;
+    --muted: #6b6358;
+    --tab-active: #1a1612;
+    --tab-bg: #e8e3d8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 2rem 2.5rem 1.5rem;
+    border-bottom: 4px solid var(--accent);
+  }
+
+  header .kicker {
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rule);
+    margin-bottom: 0.6rem;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: #d4b896;
+  }
+
+  header .byline {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--rule);
+    font-style: italic;
+  }
+
+  /* Tabs */
+  .tab-bar {
+    display: flex;
+    background: var(--ink);
+    border-bottom: 3px solid var(--accent);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--rule);
+    background: none;
+    border: none;
+    padding: 0.85rem 1.4rem;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .tab-btn:hover { color: var(--paper); }
+  .tab-btn.active {
+    color: var(--paper);
+    border-bottom-color: var(--accent);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .tab-panel { display: none; padding: 2rem 2.5rem 3rem; }
+  .tab-panel.active { display: block; }
+
+  /* Typography */
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--rule);
+    color: var(--ink);
+  }
+
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1.6rem 0 0.6rem;
+    color: var(--accent3);
+  }
+
+  p {
+    line-height: 1.75;
+    font-size: 0.97rem;
+    margin-bottom: 0.9rem;
+    color: #2a2520;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 1rem 0 1.8rem;
+  }
+  th {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Source Serif 4', serif;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    padding: 0.7rem 0.9rem;
+    text-align: left;
+  }
+  td {
+    padding: 0.65rem 0.9rem;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  tr:nth-child(even) td { background: var(--cream); }
+  tr:hover td { background: #e0d9cc; }
+
+  /* SVG network */
+  .svg-wrapper {
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+  }
+
+  /* Chart */
+  .chart-container {
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    height: 480px;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem 1.5rem;
+    margin-bottom: 1.2rem;
+    font-size: 0.82rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Q&A accordion */
+  .qgroup {
+    margin-bottom: 1.8rem;
+  }
+  .qgroup-label {
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .qa-item {
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .qa-q {
+    width: 100%;
+    background: var(--cream);
+    border: none;
+    text-align: left;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--ink);
+    font-style: italic;
+    transition: background 0.15s;
+  }
+  .qa-q:hover { background: #ddd7cb; }
+  .qa-toggle {
+    font-style: normal;
+    font-size: 1.2rem;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: -1px;
+    transition: transform 0.2s;
+  }
+  .qa-a {
+    display: none;
+    padding: 0.9rem 1rem 1rem;
+    background: #faf7f2;
+    border-top: 1px solid var(--rule);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: #2a2520;
+  }
+  .qa-item.open .qa-a { display: block; }
+  .qa-item.open .qa-toggle { transform: rotate(45deg); }
+
+  /* Author bio */
+  .bio-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  @media (max-width: 680px) {
+    .bio-section { grid-template-columns: 1fr; }
+    header h1 { font-size: 1.7rem; }
+    .tab-btn { padding: 0.7rem 0.9rem; font-size: 0.7rem; }
+  }
+
+  .note {
+    background: #f0ebe0;
+    border-left: 3px solid var(--accent);
+    padding: 0.7rem 1rem;
+    font-size: 0.83rem;
+    color: var(--muted);
+    margin: 1rem 0;
+    font-style: italic;
+  }
+
+  .tag {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
+    font-family: 'Source Serif 4', serif;
+  }
+  .tag.green { background: var(--accent2); }
+  .tag.blue { background: var(--accent3); }
+  .tag.brown { background: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">Narratological Analysis · Genette's Framework</div>
+  <h1><em>Rate Your Happiness</em></h1>
+  <div class="byline">Catherine Lacey · The New Yorker, April 13, 2026</div>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('characters',this)">I. Characters</button>
+  <button class="tab-btn" onclick="showTab('fabula',this)">II. Fabula / Sjuzhet</button>
+  <button class="tab-btn" onclick="showTab('analysis',this)">III. Plot Analysis</button>
+  <button class="tab-btn" onclick="showTab('questions',this)">IV. Discussion Questions</button>
+  <button class="tab-btn" onclick="showTab('author',this)">V. Author</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 1: CHARACTERS -->
+<div id="tab-characters" class="tab-panel active">
+  <h2>Character Relationship Network</h2>
+  <p>Characters are mapped by relational type. Louise (protagonist) sits at the centre; all other figures are connected to her by the nature of their tie — familial, romantic, social, or passing.</p>
+
+  <div class="svg-wrapper">
+    <svg viewBox="0 0 900 560" width="100%" style="max-width:900px;display:block;margin:auto;" font-family="'Source Serif 4',Georgia,serif">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#888"/>
+        </marker>
+      </defs>
+
+      <!-- Relation lines -->
+      <!-- Louise - Harry (father) -->
+      <line x1="450" y1="280" x2="270" y2="140" stroke="#8b4513" stroke-width="2" stroke-dasharray="6,3"/>
+      <!-- Louise - Jolene (sister) -->
+      <line x1="450" y1="280" x2="160" y2="310" stroke="#8b4513" stroke-width="2" stroke-dasharray="6,3"/>
+      <!-- Louise - Brother -->
+      <line x1="450" y1="280" x2="200" y2="430" stroke="#8b4513" stroke-width="2" stroke-dasharray="6,3"/>
+      <!-- Louise - Diana -->
+      <line x1="450" y1="280" x2="650" y2="140" stroke="#c0392b" stroke-width="2.5"/>
+      <!-- Louise - Bruce -->
+      <line x1="450" y1="280" x2="710" y2="310" stroke="#2a4a6b" stroke-width="2"/>
+      <!-- Louise - Joan -->
+      <line x1="450" y1="280" x2="600" y2="430" stroke="#4a6741" stroke-width="2"/>
+      <!-- Louise - Lynn -->
+      <line x1="450" y1="280" x2="700" y2="480" stroke="#4a6741" stroke-width="2"/>
+      <!-- Louise - Eldest daughter -->
+      <line x1="450" y1="280" x2="450" y2="470" stroke="#888" stroke-width="1.5"/>
+      <!-- Louise - Sprinkles -->
+      <line x1="450" y1="280" x2="310" y2="490" stroke="#888" stroke-width="1.5"/>
+      <!-- Louise - Old woman on plane -->
+      <line x1="450" y1="280" x2="80" y2="200" stroke="#aaa" stroke-width="1.2" stroke-dasharray="4,4"/>
+      <!-- Bruce - Harry -->
+      <line x1="710" y1="310" x2="270" y2="140" stroke="#6b6358" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <!-- Joan - Lynn (partners) -->
+      <line x1="600" y1="430" x2="700" y2="480" stroke="#4a6741" stroke-width="2.5"/>
+      <!-- Joan/Lynn - Eldest daughter + Sprinkles -->
+      <line x1="600" y1="430" x2="450" y2="470" stroke="#4a6741" stroke-width="1.2"/>
+      <line x1="700" y1="480" x2="450" y2="470" stroke="#4a6741" stroke-width="1.2"/>
+      <line x1="600" y1="430" x2="310" y2="490" stroke="#4a6741" stroke-width="1.2"/>
+
+      <!-- Nodes -->
+      <!-- LOUISE - centre -->
+      <circle cx="450" cy="280" r="38" fill="#1a1612"/>
+      <text x="450" y="275" text-anchor="middle" fill="#f5f0e8" font-size="13" font-weight="600">LOUISE</text>
+      <text x="450" y="292" text-anchor="middle" fill="#c8bfaa" font-size="10" font-style="italic">protagonist</text>
+
+      <!-- HARRY (father) -->
+      <circle cx="270" cy="140" r="30" fill="#8b4513"/>
+      <text x="270" y="136" text-anchor="middle" fill="white" font-size="12" font-weight="600">Harry</text>
+      <text x="270" y="152" text-anchor="middle" fill="#f5d0b0" font-size="10" font-style="italic">father</text>
+
+      <!-- DIANA -->
+      <circle cx="650" cy="140" r="30" fill="#c0392b"/>
+      <text x="650" y="136" text-anchor="middle" fill="white" font-size="12" font-weight="600">Diana</text>
+      <text x="650" y="152" text-anchor="middle" fill="#fdb" font-size="10" font-style="italic">girlfriend</text>
+
+      <!-- BRUCE -->
+      <circle cx="710" cy="310" r="30" fill="#2a4a6b"/>
+      <text x="710" y="306" text-anchor="middle" fill="white" font-size="12" font-weight="600">Bruce</text>
+      <text x="710" y="322" text-anchor="middle" fill="#b0c8e8" font-size="10" font-style="italic">nurse / stranger</text>
+
+      <!-- JOAN -->
+      <circle cx="600" cy="430" r="26" fill="#4a6741"/>
+      <text x="600" y="426" text-anchor="middle" fill="white" font-size="12" font-weight="600">Joan</text>
+      <text x="600" y="441" text-anchor="middle" fill="#c8e8b0" font-size="10" font-style="italic">friend</text>
+
+      <!-- LYNN -->
+      <circle cx="700" cy="480" r="26" fill="#4a6741"/>
+      <text x="700" y="476" text-anchor="middle" fill="white" font-size="12" font-weight="600">Lynn</text>
+      <text x="700" y="491" text-anchor="middle" fill="#c8e8b0" font-size="10" font-style="italic">friend</text>
+
+      <!-- JOLENE (sister) -->
+      <circle cx="160" cy="310" r="26" fill="#8b4513"/>
+      <text x="160" y="306" text-anchor="middle" fill="white" font-size="11" font-weight="600">Jolene</text>
+      <text x="160" y="321" text-anchor="middle" fill="#f5d0b0" font-size="10" font-style="italic">sister</text>
+
+      <!-- BROTHER -->
+      <circle cx="200" cy="430" r="26" fill="#8b4513"/>
+      <text x="200" y="425" text-anchor="middle" fill="white" font-size="11" font-weight="600">Brother</text>
+      <text x="200" y="441" text-anchor="middle" fill="#f5d0b0" font-size="10" font-style="italic">(unnamed)</text>
+
+      <!-- ELDEST DAUGHTER -->
+      <circle cx="450" cy="470" r="28" fill="#6b6358"/>
+      <text x="450" y="465" text-anchor="middle" fill="white" font-size="10" font-weight="600">Eldest</text>
+      <text x="450" y="479" text-anchor="middle" fill="#ddd" font-size="10" font-style="italic">Daughter</text>
+      <text x="450" y="491" text-anchor="middle" fill="#ccc" font-size="9">Joan &amp; Lynn's</text>
+
+      <!-- SPRINKLES -->
+      <circle cx="310" cy="490" r="26" fill="#7a6b5a"/>
+      <text x="310" y="485" text-anchor="middle" fill="white" font-size="10" font-weight="600">Sprinkles</text>
+      <text x="310" y="500" text-anchor="middle" fill="#ddd" font-size="9" font-style="italic">younger daughter</text>
+
+      <!-- OLD WOMAN -->
+      <circle cx="80" cy="200" r="26" fill="#999"/>
+      <text x="80" y="194" text-anchor="middle" fill="white" font-size="10" font-weight="600">Old Woman</text>
+      <text x="80" y="208" text-anchor="middle" fill="#eee" font-size="9" font-style="italic">plane / hike</text>
+
+      <!-- Legend -->
+      <rect x="20" y="18" width="330" height="90" rx="3" fill="#1a1612" opacity="0.85"/>
+      <text x="35" y="38" fill="#f5f0e8" font-size="11" font-weight="600" letter-spacing="0.1em">RELATIONSHIP TYPE</text>
+      <circle cx="40" cy="54" r="5" fill="#8b4513"/>
+      <text x="52" y="58" fill="#c8bfaa" font-size="11">Family (blood)</text>
+      <circle cx="160" cy="54" r="5" fill="#c0392b"/>
+      <text x="172" y="58" fill="#c8bfaa" font-size="11">Romantic</text>
+      <circle cx="40" cy="76" r="5" fill="#2a4a6b"/>
+      <text x="52" y="80" fill="#c8bfaa" font-size="11">Stranger / chance</text>
+      <circle cx="160" cy="76" r="5" fill="#4a6741"/>
+      <text x="172" y="80" fill="#c8bfaa" font-size="11">Social / friend</text>
+      <line x1="35" y1="96" x2="55" y2="96" stroke="#aaa" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="60" y="100" fill="#c8bfaa" font-size="11">Absent / mediated</text>
+    </svg>
+  </div>
+
+  <h3>Character Register</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Character</th>
+        <th>Role</th>
+        <th>Relationship to Louise</th>
+        <th>Narrative Function</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Louise</strong></td>
+        <td>Protagonist, homodiegetic narrator's focaliser</td>
+        <td>—</td>
+        <td>Centre of all action; her consciousness mediates every event. Mid-thirties, audiobook narrator, Manhattan-based.</td>
+      </tr>
+      <tr>
+        <td><strong>Harry</strong></td>
+        <td>Absent presence</td>
+        <td>Estranged father</td>
+        <td>Never appears in scene; exists only through Bruce's memory, Jolene's report, and a saved voice note. Emblem of paternally inflicted wound.</td>
+      </tr>
+      <tr>
+        <td><strong>Diana</strong></td>
+        <td>Romantic partner</td>
+        <td>Girlfriend (faltering)</td>
+        <td>Exists mainly as absence — unreturned texts, "!!!", "out DANCING." Foil for Louise's avoidance of intimacy.</td>
+      </tr>
+      <tr>
+        <td><strong>Bruce</strong></td>
+        <td>Threshold figure</td>
+        <td>Stranger → accidental friend</td>
+        <td>Nurse who revives Louise on the plane; revealed to be Harry's old friend. Structural pivot connecting Louise's medical and paternal crises.</td>
+      </tr>
+      <tr>
+        <td><strong>Joan &amp; Lynn</strong></td>
+        <td>Choral friends</td>
+        <td>Long-standing friends, hosts</td>
+        <td>A functioning couple who embody the domestic life Louise cannot reach. Gentle foils.</td>
+      </tr>
+      <tr>
+        <td><strong>Eldest Daughter</strong></td>
+        <td>Uncanny mirror</td>
+        <td>Honorary niece (Joan &amp; Lynn's)</td>
+        <td>Anti-tech, hyper-rational ten-year-old. Louise perceives herself in the child's acerbic affect; called "little sister" dynamic.</td>
+      </tr>
+      <tr>
+        <td><strong>Sprinkles</strong></td>
+        <td>Comic relief / counterpoint</td>
+        <td>Honorary niece</td>
+        <td>Younger daughter who insists on pink and the name Sprinkles. Embodies unselfconscious joy as backdrop to Louise's malaise.</td>
+      </tr>
+      <tr>
+        <td><strong>Jolene</strong></td>
+        <td>Information relay</td>
+        <td>Sister</td>
+        <td>Appears only in telephone scene; delivers the Harry dossier. Mediates family news at arm's length.</td>
+      </tr>
+      <tr>
+        <td><strong>Old Woman on plane</strong></td>
+        <td>Spectral apparition</td>
+        <td>Brief contact</td>
+        <td>Catches Louise when she faints; reappears on the Headlands hike, misidentified, confusedly mentioning "your father" — linking accident and family wound.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 2: FABULA / SJUZHET -->
+<div id="tab-fabula" class="tab-panel">
+  <h2>Fabula vs. Sjuzhet</h2>
+  <p>The scatterplot maps each narrative event by its position in the text (sjuzhet, x-axis) and its chronological position in the story-world (fabula, y-axis). The dashed diagonal represents perfectly chronological narration. Points below the line are <strong>analepses</strong> (flashbacks); points above are <strong>prolepses</strong> (anticipations); points on or near the diagonal are <strong>isochronous</strong>.</p>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#1a1612"></div> Present action (in-flight/SF)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#8b4513"></div> Internal analepsis (Louise's past)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2a4a6b"></div> Relayed analepsis (others' past)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#4a6741"></div> Summary / iterative</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c0392b"></div> Closing image / coda</div>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="fabulaChart"></canvas>
+  </div>
+
+  <h3>Temporal Distortions Table</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Event</th>
+        <th>Sjuzhet Position</th>
+        <th>Fabula Position</th>
+        <th>Genette Category</th>
+        <th>Narratological Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Louise faints on plane</td>
+        <td>1 — opening</td>
+        <td>10 — present</td>
+        <td>Singulative; scene (isochrony)</td>
+        <td>In medias res opening; the fainting functions as the inciting event from which all other temporal layers radiate.</td>
+      </tr>
+      <tr>
+        <td>Louise thinks of dirty apartment / Diana during faint</td>
+        <td>2 — early</td>
+        <td>9 — recent past (days before)</td>
+        <td>Internal analepsis; stream of consciousness</td>
+        <td>Hypodiegetic analepsis embedded in focalised thought; duration compressed to seconds of sjuzhet time covering weeks of fabula time.</td>
+      </tr>
+      <tr>
+        <td>Diana imagined wearing veil at Louise's funeral</td>
+        <td>3</td>
+        <td>11 — hypothetical future</td>
+        <td>Pseudo-prolepsis (metaleptic fantasy)</td>
+        <td>Not a true prolepsis but an internally generated anticipatory projection; ironises Diana's self-dramatising character before the reader meets her.</td>
+      </tr>
+      <tr>
+        <td>Louise's career history (fashion → marketing → acting → costume → audiobooks)</td>
+        <td>5</td>
+        <td>3 — extended past</td>
+        <td>Summary analepsis; iterative</td>
+        <td>Long anachrony covering ~15 years in one paragraph; Genette's "iterative" mode — repeated or habitual events compressed.</td>
+      </tr>
+      <tr>
+        <td>Bruce's father discouraging journalism</td>
+        <td>6</td>
+        <td>2 — Bruce's distant past</td>
+        <td>Relayed (external) analepsis</td>
+        <td>Heterodiegetic anachrony: Bruce's past enters through dialogue; Bruce as unreliable archivist (he weeps, barely coherent).</td>
+      </tr>
+      <tr>
+        <td>Harry's declining anger (from Reagan to personal tragedy)</td>
+        <td>7</td>
+        <td>1 — Harry's life span</td>
+        <td>Summary analepsis; external anachrony</td>
+        <td>Maximal reach: reaches furthest back in fabula. Louise's anger described in counter-movement — moving from personal to communal. Symmetrical analepses.</td>
+      </tr>
+      <tr>
+        <td>Louise sends Diana a text after landing</td>
+        <td>8</td>
+        <td>10 — present</td>
+        <td>Scene (near-isochrony)</td>
+        <td>Return to present after extended analeptic passage; the text's non-reply marks Diana's non-presence as a structural motif.</td>
+      </tr>
+      <tr>
+        <td>Louise recalls secret handshake from last visit / Eldest daughter remembers Louise throwing up 7 years ago</td>
+        <td>9</td>
+        <td>5 — seven years prior</td>
+        <td>Internal analepsis (external testimony)</td>
+        <td>Memory's unreliability foregrounded: Louise has no recollection; Eldest daughter is precise. Genette's distinction between narrator-memory and character-memory.</td>
+      </tr>
+      <tr>
+        <td>Louise's decade-ago smartphone refusal</td>
+        <td>10</td>
+        <td>4 — ~10 years ago</td>
+        <td>Internal analepsis; singulative</td>
+        <td>Irony of position: narrated during a scene in which she waits for her phone to vibrate. Thematic link to eldest daughter's anti-tech stance.</td>
+      </tr>
+      <tr>
+        <td>Rate Your Happiness influencer scene at Union Square</td>
+        <td>11</td>
+        <td>10 — present</td>
+        <td>Scene; singulative</td>
+        <td>The story's title figure appears obliquely, never engaging Louise directly; a mise en abyme of the story's central question.</td>
+      </tr>
+      <tr>
+        <td>Crystal store: Bruce recalls Harry's postcard from Alaska</td>
+        <td>12</td>
+        <td>7 — ~2 years prior</td>
+        <td>Relayed analepsis</td>
+        <td>A second anachrony filtered through Bruce; the postcard (absent object) catalyses Louise's eventual phone call to Jolene.</td>
+      </tr>
+      <tr>
+        <td>Harry's voice-note playback in cab</td>
+        <td>13</td>
+        <td>8 — two years prior</td>
+        <td>Analepsis; embedded discourse</td>
+        <td>The actual recorded voice note is quoted directly — an inset anachrony with its own singular "present." Gaslighting discourse rendered in Harry's own words.</td>
+      </tr>
+      <tr>
+        <td>Ants / cockroach memory from Oaxaca trip</td>
+        <td>14</td>
+        <td>6 — years earlier</td>
+        <td>Internal analepsis; haunt image</td>
+        <td>"Occasionally haunted her" — iterative framing signals repeated intrusion; transforms the memory into a symbolic image (aimless collective motion = Louise's life).</td>
+      </tr>
+      <tr>
+        <td>Diana's "out DANCING" message / breakfast with Eldest Daughter</td>
+        <td>15</td>
+        <td>10 — present (next morning)</td>
+        <td>Scene; singulative</td>
+        <td>Temporal ellipsis covers the night; morning scene resets action.</td>
+      </tr>
+      <tr>
+        <td>Jolene's phone call / Harry's stroke revelation</td>
+        <td>16</td>
+        <td>10 — present (dusk)</td>
+        <td>Relayed analepsis within present scene</td>
+        <td>News about Harry is itself analeptic (things "happened"), but the call takes place in present. Lacey collapses discovery of past into present action.</td>
+      </tr>
+      <tr>
+        <td>Louise walks into cosmetics store; filches eye serum</td>
+        <td>17 — ending</td>
+        <td>10 — present</td>
+        <td>Scene; closing image / coda</td>
+        <td>The story's final image rhymes with the opening "humiliating artifacts" in the apartment; circle-structure without resolution — a narrative loop, not a climax.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 3: PLOT ANALYSIS -->
+<div id="tab-analysis" class="tab-panel">
+  <h2>Plot Analysis</h2>
+
+  <h3>Order</h3>
+  <p>The sjuzhet is radically non-linear, opening in medias res as Louise faints aboard a flight to San Francisco. From this present-tense crisis, Lacey orchestrates a sustained cascade of analepses — Louise's career history, her anger's evolution mirroring Harry's, the Oaxaca cockroach, the decade-ago smartphone refusal — before returning to the present. There are no true prolepses; the story's "future" gestures are Louise's ironic interior projections (Diana in a veil), which Genette would classify as pseudo-prolepses or internal anticipation. The fabula covers roughly fifteen to twenty years of Louise's life compressed into what amounts to about four days of diegetic time in San Francisco.</p>
+
+  <h3>Duration</h3>
+  <p>Lacey systematically violates equivalence between sjuzhet and fabula duration. Scenes of high emotional charge (the galley floor exchange between Louise and Bruce; the cab ride and voice-note playback) are rendered at near-isochrony — one to two pages per real-time minute. Career history spanning fifteen years occupies one paragraph (summary). The ants-in-Oaxaca memory, though only a 27-second video, receives two paragraphs of narration, illustrating Lacey's preference for <em>pause</em> — the kind Genette identifies when the narrator slows or stops plot to expand description or reflection — at symbolically freighted moments. Sleep is an ellipsis; morning is cut to.</p>
+
+  <h3>Frequency</h3>
+  <p>The narrative deploys a mixture of singulative and iterative modes. The in-flight crisis, each conversation with Bruce, the cab ride, the Headlands hike, and the cosmetics store are singulative (narrated once, occurred once). Diana's communication habits are described iteratively — "she often communicated in paragraph-long texts" — as is Louise's pattern of almost-breaking-up-but-getting-sucked-in-deeper. Harry's anger and Louise's own anger are summarised as long-running iterative arcs. The Rate Your Happiness influencer's videos appear to Louise through Lynn's satellite phone as a rapid montage of the iterative, suggesting the social compulsion to quantify feeling is itself a repeated, mechanical act.</p>
+
+  <h3>Voice &amp; Focalization</h3>
+  <p>The narrative is heterodiegetic (third-person) but tightly restricted to Louise's internal perspective — a classic case of Genette's <em>internal focalization</em> with a single, stable focaliser. The narrator maintains a dry, ironising distance from Louise without ever fully vacating her consciousness: the sentence "She was not an adorable and delicate child who deserved the care of helpful grownups but, rather, a 1099-receiving adult" carries both Louise's self-awareness and the narrator's judgement simultaneously. Shifts in focalization occur when Louise imagines others' interior states (Diana joining a support group, Bruce's "little disappointment" that the emergency was not an aneurysm) — these are what Genette might call focalisation transgressions, brief and productive.</p>
+
+  <h3>Theme Table</h3>
+  <table>
+    <thead>
+      <tr><th>Theme</th><th>Key Manifestation</th><th>Formal Correlate</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>The unquantifiability of happiness / pain</td>
+        <td>Louise refuses to rate her pain 1–10; the influencer forces everyone to 8 or 9</td>
+        <td>The story's title; the closing image of serum "promising to illuminate her from within"</td>
+      </tr>
+      <tr>
+        <td>Estrangement from fathers</td>
+        <td>Harry's voice-note gaslighting; Bruce's grief for his dead father; Louise's inability to name the President</td>
+        <td>Cascading analepses all trace back to paternal origin; Harry is fabula-earliest but sjuzhet-latest in discovery</td>
+      </tr>
+      <tr>
+        <td>Avoidance as a life strategy</td>
+        <td>Louise cannot break up with Diana; cannot respond to Harry; cannot remember throwing up on the beach</td>
+        <td>Non-events (non-replies, non-responses, non-memories) structurally drive the plot</td>
+      </tr>
+      <tr>
+        <td>Technological mediation of feeling</td>
+        <td>Diana's "!!!" text; the driverless cars; Lynn's three phones; the Rate Your Happiness influencer</td>
+        <td>Devices appear at every emotional threshold; the city blackout at the story's close literalises tech's precarity</td>
+      </tr>
+      <tr>
+        <td>The inheritance of anger</td>
+        <td>Shared "big, sad, stupid eyes"; father's anger privatising as he ages; Louise's anger collectivising as she ages</td>
+        <td>Symmetrical analepsis renders father and daughter as mirror images diverging in opposite directions</td>
+      </tr>
+      <tr>
+        <td>Coincidence and the city</td>
+        <td>Bruce appears three times; the old woman appears twice; "What are the chances!" spoken three times</td>
+        <td>Genette's frequency of coincidence functions as ironic prolepsis — the city keeps returning figures to Louise whether she wants them or not</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Prose Style Note</h3>
+  <p>Lacey's sentences accumulate subordinate clauses in a way that enacts Louise's overloaded, parenthetical consciousness — the famous "comma-spliced avalanche" that reviewers noted in <em>Nobody Is Ever Missing</em> appears here in controlled form, particularly in the opening paragraph. Free indirect discourse slides between Louise's self-awareness and ironic self-pity. The story's final image — a tube of eye serum promising internal illumination, pocketed as shoplifting — is Lacey's characteristic mode: the bathetic epiphany, refusing catharsis while offering something stranger and more durable.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 4: DISCUSSION QUESTIONS -->
+<div id="tab-questions" class="tab-panel">
+  <h2>Discussion Questions</h2>
+  <p>Eight questions organised across four thematic groups, progressing from close reading to formal and broader concerns. Click <strong>+</strong> to reveal each answer.</p>
+
+  <div class="qgroup">
+    <div class="qgroup-label">Close Reading</div>
+
+    <div class="qa-item">
+      <button class="qa-q" onclick="toggleQA(this)">
+        <span>Louise's opening meditation during the fainting episode does not catalogue her regrets or loved ones — instead, she thinks of her dirty apartment and its "humiliating artifacts." What does this register about her character, and how does Lacey return to this image at the story's close?</span>
+        <span class="qa-toggle">+</span>
+      </button>
+      <div class="qa-a">
+        <p>The opening move is a studied deflation of the conventional near-death epiphany: where one would expect revelation or love, Louise produces shame and clutter. The "humiliating artifacts" — the skin-rejuvenation brochure, the worn romance novels, the decaying takeout — are self-image objects, things she hides from others. The closing scene rhymes precisely: Louise, standing in a cosmetics store surrounded by mirrors, pockets a tube of eye serum "promising to illuminate her from within." The story closes its loop not with transformation but with another object of aspiration, equally pathetic, equally human. Lacey withholds irony just enough to make the gesture also tender — the serum is still a form of wanting.</p>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <button class="qa-q" onclick="toggleQA(this)">
+        <span>The story's title and its central social-media figure — the Rate Your Happiness influencer — never directly intersect with Louise. She watches his videos through Lynn's satellite phone; she refuses to rate her pain 1–10 on the plane. What is the structural function of this refusal, and what does it reveal about the story's relationship to quantification?</span>
+        <span class="qa-toggle">+</span>
+      </button>
+      <div class="qa-a">
+        <p>Bruce's pain-scale question is lifted from clinical triage protocol, but Louise's refusal — "No" — is the story's thesis in miniature. The influencer's exercise, we learn, is rigged: anyone who rates below eight gets drilled until they revise upward. Both scenes expose quantification as coercive rather than diagnostic. Louise's interiority is precisely what resists the scale; the narrative form of the story — dense, accumulative, unresolved — performs the same resistance. Lacey frames happiness not as a score but as a texture, present in flashes ("sometimes is good," Joan says) and impossible to totalise. The influencer is a mise en abyme of the story's own question, held at ironic arm's length.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="qgroup">
+    <div class="qgroup-label">Character</div>
+
+    <div class="qa-item">
+      <button class="qa-q" onclick="toggleQA(this)">
+        <span>Bruce and Louise are structurally paired: both are connected to Harry, both arrive in San Francisco alone, both enter the open house together. In what ways does Bruce function as a foil, and what does his presence reveal about Louise's relationship to vulnerability and care?</span>
+        <span class="qa-toggle">+</span>
+      </button>
+      <div class="qa-a">
+        <p>Bruce is Louise's mirror in the key of openness: he volunteers his emotions (tearing up over his father, crying in the crystal store), seeks connection, and is moved by coincidence. Louise is closed — she registers gratitude inwardly while deflecting it outwardly, she edits what she tells Joan and Lynn, she cannot ask Bruce directly whether he and Harry were romantically involved. The open-house scene crystallises their difference: both consider, in silence, an apartment in a city they openly dislike. When Diana calls and the lights go out, Louise hangs up — an instinct toward flight. Bruce, by contrast, continues making demands for contact even as he says goodbye. His care for Louise — literal, nursing-care — is the only unsolicited warmth she receives; her response is ambivalence dressed as fondness.</p>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <button class="qa-q" onclick="toggleQA(this)">
+        <span>The Eldest Daughter is described as someone whose tone Louise "recognised as belonging to the eldest daughter" rising from Louise's own throat. What does Lacey achieve by collapsing the boundary between Louise and this ten-year-old?</span>
+        <span class="qa-toggle">+</span>
+      </button>
+      <div class="qa-a">
+        <p>The Eldest Daughter is Louise at her most unmediated: rigorous, contemptuous of compromise, suspicious of techno-optimism, socially abrasive. Louise's adult self has learned to soften and deflect, but the child has not. When Louise catches her own voice echoing the girl's acerbity ("Why not?" / "Compared to what?"), Lacey suggests that Louise's alienation is not a product of age or circumstance but a persistent interior disposition. The "little-sister feeling" Louise experiences around the Eldest Daughter inverts the power dynamic: the child possesses the authority of consistency that Louise lacks. The aunt-niece relationship — an elective kinship, not blood — also rhymes with the story's preoccupation with inherited and chosen attachments.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="qgroup">
+    <div class="qgroup-label">Theme</div>
+
+    <div class="qa-item">
+      <button class="qa-q" onclick="toggleQA(this)">
+        <span>Harry's voice-note is the story's most formally distinct passage: an inset monologue in which he gaslights Louise about her childhood. How does Lacey use this embedded discourse — a recording played two years after it was sent — to complicate our understanding of memory, narrative reliability, and the violence of language?</span>
+        <span class="qa-toggle">+</span>
+      </button>
+      <div class="qa-a">
+        <p>The voice-note is a singular formal rupture: Harry speaks in his own voice, yet Louise has controlled when we hear it (saved, never replied to, retrieved in the cab). Lacey lets Harry's argument — that Louise "wants to suffer," that the "culture" has manufactured her unhappiness — stand without explicit refutation. The effect is deeply uncomfortable precisely because the reader has already spent pages inside Louise's consciousness and knows its texture. Harry's gaslighting depends on an abstract "culture" as agent; Louise's grief is concrete and specific. The two-year delay in playing it back (and the cab driver's tactful silence) creates a strange doubled temporality: Harry's monologue arrives as anachrony within the story's present, insisting that the past was different than Louise remembers it. Memory, Lacey implies, is not a neutral record but a contested site.</p>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <button class="qa-q" onclick="toggleQA(this)">
+        <span>San Francisco is presented as a catalogue of things Louise hates, yet she considers buying an apartment there. How does the story use the city as a setting to explore Louise's contradictory relationship to belonging and modernity?</span>
+        <span class="qa-toggle">+</span>
+      </button>
+      <div class="qa-a">
+        <p>Louise's narrated hatred of San Francisco — its joggers, its startup pitches, its ergonomic men, its driverless cars — is itself a form of attention, which is a form of belonging. She is most fully present in the city when she is cataloguing what she resents about it. The driverless cars function as the story's dominant symbol of technological optimism unmoored from human purpose: they stall in the blackout, their headlights on, "in confusion, in paralysis, lacking any traffic lights to tell them what to do." Louise's closing meditation — "how natural it is to fail, to fail to decide, to remain in meaningless motion, like all those ants with their cockroach corpse" — explicitly identifies the cars with the Oaxaca image and with herself. The open house she visits with Bruce — an apartment in a city she disdains — is the story's comedic but earnest image of the desire for somewhere to land.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="qgroup">
+    <div class="qgroup-label">Form and Narrative Structure</div>
+
+    <div class="qa-item">
+      <button class="qa-q" onclick="toggleQA(this)">
+        <span>The story is organised around a series of improbable coincidences — Bruce appearing three times, the old woman twice, the phrase "What are the chances!" repeated verbatim. How does Lacey use coincidence as a structural and thematic device, and what does it suggest about the nature of narrative itself?</span>
+        <span class="qa-toggle">+</span>
+      </button>
+      <div class="qa-a">
+        <p>In realist fiction, coincidence is usually a structural embarrassment — evidence of the author's hand. Lacey foregrounds it with such insistence ("What are the chances!") that it becomes ironic commentary on plot mechanics. The repeated phrase, spoken by characters who are delighted by the improbable, draws attention to the ease with which humans narrativise chance as meaning. For Louise, coincidence is more threatening than comforting: each reappearance of Bruce tightens a web of obligation around Harry. The old woman who caught Louise on the plane reappears on the hike and, in her dementia, says "Your father —" — as if coincidence and the paternal wound are the same force. Lacey suggests that stories (and the Rate Your Happiness influencer's project) are machines for converting randomness into legible feeling.</p>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <button class="qa-q" onclick="toggleQA(this)">
+        <span>The story ends not with resolution but with Louise pocketing a tube of stolen eye serum and walking back into a blacked-out city "with real intent, finally carrying her contradictory desires with total clarity." How do you read this ending in relation to Genette's concept of narrative closure — and what does Lacey's refusal of resolution ask of the reader?</span>
+        <span class="qa-toggle">+</span>
+      </button>
+      <div class="qa-a">
+        <p>Genette distinguishes between narrative closure (the text ends) and story resolution (the fabula reaches stability). Lacey provides the former while deliberately withholding the latter. Louise leaves with "contradictory desires" held simultaneously — she has not called Harry back, has not ended things with Diana, has not decided anything about Bruce. "Total clarity" is the paradox: she is clear about her ambivalence, not clear about its resolution. The shoplifted serum — promising illumination from within — is a joke on the therapeutic-commodity complex, but it is also Louise's first unilateral, decisive act in the story. It is small, illicit, and self-directed. Lacey's open endings ask readers to resist the desire for narrative payoff, to sit with irreducible complexity in the way the pain scale cannot contain — the same refusal Louise voices in "No."</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 5: AUTHOR -->
+<div id="tab-author" class="tab-panel">
+  <h2>Catherine Lacey</h2>
+
+  <div class="bio-section">
+    <div>
+      <h3>Biographical Data</h3>
+      <table>
+        <tbody>
+          <tr><td><strong>Full Name</strong></td><td>Catherine Lacey (birth surname changed; Lacey is her great-great-great-grandmother's maiden name)</td></tr>
+          <tr><td><strong>Date of Birth</strong></td><td>April 9, 1985</td></tr>
+          <tr><td><strong>Place of Birth</strong></td><td>Tupelo, Mississippi, USA</td></tr>
+          <tr><td><strong>Current Residence</strong></td><td>Mexico City, Mexico</td></tr>
+          <tr><td><strong>Gender</strong></td><td>Woman</td></tr>
+          <tr><td><strong>Nationality</strong></td><td>American</td></tr>
+          <tr><td><strong>Religion</strong></td><td>Raised in a deeply religious Southern Christian household; has written publicly about leaving that faith. Current religious affiliation not publicly confirmed.</td></tr>
+          <tr><td><strong>Marital Status</strong></td><td>Married to Mexican writer Daniel Saldaña París (as of 2025). Previously married to actor Peter Musante (2015–2016); in a relationship with novelist Jesse Ball (2016–2021).</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Education</h3>
+      <table>
+        <tbody>
+          <tr><td><strong>Secondary</strong></td><td>The Baylor School, Chattanooga, Tennessee (boarding school; left Tupelo at age 14)</td></tr>
+          <tr><td><strong>Undergraduate</strong></td><td>BA, Loyola University New Orleans</td></tr>
+          <tr><td><strong>Graduate</strong></td><td>MFA in Creative Nonfiction, Columbia University (graduated 2010)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <h3>Short Biography</h3>
+      <p>Catherine Lacey grew up in Tupelo, Mississippi — the same town where a young Elvis Presley bought his first guitar at her grandfather's hardware store — in a close-knit, church-intensive Southern family. She left for boarding school at fourteen, later studying at Loyola University New Orleans and earning an MFA from Columbia University in 2010.</p>
+      <p>Her debut novel <em>Nobody Is Ever Missing</em> (2014) announced a distinctive voice — lyrical, restless, self-interrogating — that Dwight Garner called "dreamy and fierce at the same time." Subsequent novels have moved from satirical (<em>The Answers</em>) to fable-like (<em>Pew</em>) to formally audacious (<em>Biography of X</em>, her breakout bestseller). Her 2025 hybrid work <em>The Möbius Book</em> defies genre classification entirely.</p>
+      <p>She has held fellowships at the Guggenheim Foundation and the NYPL's Cullman Center, taught at Columbia, the University of Montana, and the University of Mississippi, and now lives in Mexico City with her husband, the novelist Daniel Saldaña París. Her short fiction appears regularly in <em>The New Yorker</em>, <em>Harper's</em>, and <em>The New York Review of Books</em>.</p>
+      <div class="note">Note: Details on marital status and religion are inferred from publicly available interviews and Wikipedia sourcing; not all biographical details have been directly confirmed by the author.</div>
+    </div>
+  </div>
+
+  <h3>Body of Work</h3>
+  <table>
+    <thead>
+      <tr><th>Year</th><th>Title</th><th>Publisher</th><th>Form</th><th>Notable Reception</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>2014</td>
+        <td><em>Nobody Is Ever Missing</em></td>
+        <td>FSG Originals</td>
+        <td>Novel</td>
+        <td>Finalist, NYPL Young Lions Fiction Award; "Best Book of the Year" — Time Out NY; translated into 5+ languages</td>
+      </tr>
+      <tr>
+        <td>2017</td>
+        <td><em>The Answers</em></td>
+        <td>Farrar, Straus and Giroux</td>
+        <td>Novel</td>
+        <td>Comparisons to DeLillo and Atwood; optioned for television adaptation by Darren Aronofsky</td>
+      </tr>
+      <tr>
+        <td>2018</td>
+        <td><em>Certain American States</em></td>
+        <td>FSG Originals</td>
+        <td>Short story collection</td>
+        <td>James Wood: "a young writer whose radiant voice will be sounding in our literature for many years to come"</td>
+      </tr>
+      <tr>
+        <td>2020</td>
+        <td><em>Pew</em></td>
+        <td>Farrar, Straus and Giroux</td>
+        <td>Novel</td>
+        <td>Won 2021 NYPL Young Lions Fiction Award; shortlisted for Dylan Thomas Prize 2021; Lambda Literary Award finalist</td>
+      </tr>
+      <tr>
+        <td>2023</td>
+        <td><em>Biography of X</em></td>
+        <td>Farrar, Straus and Giroux</td>
+        <td>Novel</td>
+        <td>National Bestseller; won 2024 Lambda Literary Award for Lesbian Fiction; won 2023 Brooklyn Library Prize; shortlisted for Dylan Thomas Prize 2024; longlisted PEN/Faulkner; Time #1 book of 2023</td>
+      </tr>
+      <tr>
+        <td>2025</td>
+        <td><em>The Möbius Book</em></td>
+        <td>Farrar, Straus and Giroux</td>
+        <td>Nonfiction / fiction hybrid (memoir)</td>
+        <td>Debut nonfiction work; examines a personal relationship alongside religious fanaticism and disordered eating in youth</td>
+      </tr>
+      <tr>
+        <td>Forthcoming (2027)</td>
+        <td><em>My Stalkers</em></td>
+        <td>Farrar, Straus and Giroux</td>
+        <td>Short story collection</td>
+        <td>Second story collection; announced</td>
+      </tr>
+      <tr>
+        <td>Ongoing</td>
+        <td>Short fiction &amp; essays</td>
+        <td>Various</td>
+        <td>Periodical</td>
+        <td><em>The New Yorker</em>, <em>Harper's</em>, <em>The New York Times</em>, <em>NYRB</em>, <em>McSweeney's</em>, <em>Yale Review</em>, <em>Virginia Quarterly Review</em></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Awards &amp; Honours</h3>
+  <table>
+    <thead>
+      <tr><th>Year</th><th>Award / Honour</th><th>For</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>2012</td><td>New York Foundation for the Arts Artists' Fellowship</td><td>Fiction</td></tr>
+      <tr><td>2016</td><td>Whiting Award</td><td><em>Nobody Is Ever Missing</em></td></tr>
+      <tr><td>2017</td><td>Granta Best of Young American Novelists</td><td>Body of work</td></tr>
+      <tr><td>2019</td><td>Guggenheim Fellowship (Fiction)</td><td>Body of work</td></tr>
+      <tr><td>2021</td><td>NYPL Young Lions Fiction Award (winner)</td><td><em>Pew</em></td></tr>
+      <tr><td>2021</td><td>Dylan Thomas Prize (shortlist)</td><td><em>Pew</em></td></tr>
+      <tr><td>2023</td><td>O. Henry Prize (short fiction)</td><td>"Man Mountain" in <em>Astra Magazine</em></td></tr>
+      <tr><td>2023</td><td>Brooklyn Public Library Book Prize (winner)</td><td><em>Biography of X</em></td></tr>
+      <tr><td>2023–24</td><td>Dorothy &amp; Lewis B. Cullman Center Fellowship, NYPL</td><td>Research fellowship</td></tr>
+      <tr><td>2024</td><td>Lambda Literary Award for Lesbian Fiction (winner)</td><td><em>Biography of X</em></td></tr>
+      <tr><td>2024</td><td>Dylan Thomas Prize (shortlist)</td><td><em>Biography of X</em></td></tr>
+      <tr><td>2024</td><td>PEN/Jean Stein Book Award (finalist)</td><td><em>Biography of X</em></td></tr>
+      <tr><td>2025</td><td>Named judge, 2026 C. Michael Curtis Short Story Book Prize (Hub City Press)</td><td>—</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+// ── Tab switching ─────────────────────────────────────────
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'fabula') initChart();
+}
+
+// ── Q&A accordion ─────────────────────────────────────────
+function toggleQA(btn) {
+  const item = btn.closest('.qa-item');
+  item.classList.toggle('open');
+}
+
+// ── Fabula / Sjuzhet Chart ────────────────────────────────
+let chartInitialised = false;
+
+function initChart() {
+  if (chartInitialised) return;
+  chartInitialised = true;
+
+  const events = [
+    { label: 'Louise faints on plane', x: 1,  y: 10, type: 'present',  note: 'In medias res opening; inciting event.' },
+    { label: 'Dirty apartment / Diana thoughts', x: 2,  y: 9,  type: 'analepsis-louise', note: 'Internal analepsis embedded in focalised thought during faint.' },
+    { label: 'Diana imagined in widow\'s veil', x: 3,  y: 11, type: 'present',  note: 'Pseudo-prolepsis: anticipatory projection, not true prolepsis.' },
+    { label: 'Bruce revives Louise; dialogue', x: 4,  y: 10, type: 'present',  note: 'Singulative scene; near-isochrony.' },
+    { label: 'Louise\'s career history (fashion→audiobooks)', x: 5,  y: 3,  type: 'analepsis-louise', note: 'Summary analepsis ~15 years compressed to one paragraph.' },
+    { label: 'Bruce\'s father / journalism anecdote', x: 6,  y: 2,  type: 'analepsis-relayed', note: 'Relayed (external) analepsis via dialogue.' },
+    { label: 'Harry\'s anger — Louise\'s anger (life arcs)', x: 7,  y: 1,  type: 'iterative', note: 'Maximum fabula reach; symmetrical analeptic pair.' },
+    { label: 'Louise texts Diana after landing', x: 8,  y: 10, type: 'present',  note: 'Return to present; non-reply is structural motif.' },
+    { label: 'Eldest daughter recalls vomit incident (7 yrs)', x: 9,  y: 5,  type: 'analepsis-relayed', note: 'Louise has no memory; child has precise recall. Unreliable memory theme.' },
+    { label: 'Louise\'s smartphone refusal (~10 yrs ago)', x: 10, y: 4,  type: 'analepsis-louise', note: 'Ironic: narrated while waiting for phone to vibrate.' },
+    { label: 'Rate Your Happiness influencer at Union Square', x: 11, y: 10, type: 'present',  note: 'Title figure appears obliquely; mise en abyme.' },
+    { label: 'Crystal store: Harry\'s Alaska postcard (~2 yrs)', x: 12, y: 7,  type: 'analepsis-relayed', note: 'Second relayed anachrony through Bruce; triggers eventual call to Jolene.' },
+    { label: 'Harry\'s voice-note playback in cab (2 yrs ago)', x: 13, y: 8,  type: 'analepsis-louise', note: 'Inset embedded discourse; recorded 2 yrs prior, heard now.' },
+    { label: 'Ants / cockroach memory, Oaxaca', x: 14, y: 6,  type: 'iterative', note: 'Iterative framing ("occasionally haunted"); symbolic image = Louise\'s life.' },
+    { label: 'Morning after: Diana\'s "out DANCING" text', x: 15, y: 10, type: 'present',  note: 'Ellipsis covers the night; present resets.' },
+    { label: 'Jolene\'s call: Harry\'s stroke in Alaska', x: 16, y: 10, type: 'present',  note: 'Relayed analepsis within present scene; discovery of past = present action.' },
+    { label: 'Cosmetics store; shoplifted serum', x: 17, y: 10, type: 'coda',  note: 'Closing image; circles back to "humiliating artifacts" in opening. No resolution.' },
+  ];
+
+  const colours = {
+    'present':          '#1a1612',
+    'analepsis-louise': '#8b4513',
+    'analepsis-relayed':'#2a4a6b',
+    'iterative':        '#4a6741',
+    'coda':             '#c0392b',
+  };
+
+  const typeData = {};
+  const typeLabels = {
+    'present':          'Present action',
+    'analepsis-louise': 'Internal analepsis (Louise\'s past)',
+    'analepsis-relayed':'Relayed analepsis (others\' past)',
+    'iterative':        'Summary / iterative',
+    'coda':             'Closing image / coda',
+  };
+
+  events.forEach(e => {
+    if (!typeData[e.type]) typeData[e.type] = [];
+    typeData[e.type].push({ x: e.x, y: e.y, label: e.label, note: e.note });
+  });
+
+  // Diagonal reference line
+  const diagData = [{ x: 0, y: 0 }, { x: 18, y: 12 }];
+
+  const datasets = [
+    {
+      label: 'Chronological baseline',
+      type: 'line',
+      data: diagData,
+      borderColor: 'rgba(100,90,80,0.4)',
+      borderDash: [8, 5],
+      borderWidth: 1.5,
+      pointRadius: 0,
+      fill: false,
+      tension: 0,
+      order: 1,
+    }
+  ];
+
+  Object.entries(typeData).forEach(([type, pts]) => {
+    datasets.push({
+      label: typeLabels[type],
+      data: pts,
+      type: 'scatter',
+      backgroundColor: colours[type] + 'cc',
+      borderColor: colours[type],
+      borderWidth: 1.5,
+      pointRadius: 8,
+      pointHoverRadius: 11,
+      order: 2,
+    });
+  });
+
+  const ctx = document.getElementById('fabulaChart').getContext('2d');
+
+  new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            font: { family: "'Source Serif 4', Georgia, serif", size: 11 },
+            usePointStyle: true,
+            padding: 14,
+            filter: item => item.text !== 'Chronological baseline',
+          }
+        },
+        tooltip: {
+          callbacks: {
+            title: (items) => {
+              const d = items[0].raw;
+              return d.label || '';
+            },
+            label: (item) => {
+              const d = item.raw;
+              const lines = [
+                `Sjuzhet: ${d.x}  |  Fabula: ${d.y}`,
+                '',
+              ];
+              if (d.note) {
+                // Word-wrap note at ~55 chars
+                const words = d.note.split(' ');
+                let line = '';
+                words.forEach(w => {
+                  if ((line + w).length > 55) { lines.push(line.trim()); line = ''; }
+                  line += w + ' ';
+                });
+                if (line) lines.push(line.trim());
+              }
+              return lines;
+            }
+          },
+          backgroundColor: '#1a1612',
+          titleColor: '#f5f0e8',
+          bodyColor: '#c8bfaa',
+          borderColor: '#8b4513',
+          borderWidth: 1,
+          padding: 12,
+          titleFont: { family: "'Playfair Display', Georgia, serif", size: 13, weight: 'bold' },
+          bodyFont: { family: "'Source Serif 4', Georgia, serif", size: 11 },
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Sjuzhet Order (position in text →)', font: { family: "'Source Serif 4', serif", size: 12 }, color: '#2a2520' },
+          min: 0, max: 18,
+          grid: { color: 'rgba(0,0,0,0.07)' },
+          ticks: { font: { family: "'Source Serif 4', serif", size: 11 }, color: '#6b6358' },
+        },
+        y: {
+          title: { display: true, text: 'Fabula Order (chronological position ↑)', font: { family: "'Source Serif 4', serif", size: 12 }, color: '#2a2520' },
+          min: 0, max: 12,
+          grid: { color: 'rgba(0,0,0,0.07)' },
+          ticks: { font: { family: "'Source Serif 4', serif", size: 11 }, color: '#6b6358' },
+        }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>
