@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calm Sea and Hard Faring — Characters</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0a0f;
+    font-family: Georgia, 'Times New Roman', serif;
+    color: #e8e0d0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+  }
+  header { text-align: center; margin-bottom: 14px; }
+  header .sub { font-size: 11px; letter-spacing: 0.3em; color: #888; text-transform: uppercase; margin-bottom: 6px; }
+  header h1 { font-size: clamp(20px,4vw,36px); font-weight: normal; letter-spacing: 0.08em; color: #e8e0d0; }
+  header .hint { font-size: 13px; color: #666; margin-top: 6px; font-style: italic; }
+  #legend { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-bottom: 12px; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; }
+  #diagram-wrap {
+    width: 100%; max-width: 1000px;
+    border: 1px solid #1e1e2a;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #0d0d16;
+    box-shadow: 0 0 60px rgba(100,80,180,0.08);
+  }
+  svg { width: 100%; display: block; }
+  .node { cursor: pointer; }
+  .node rect { transition: stroke-width 0.2s; }
+  .node:hover rect { stroke-width: 2.5px !important; }
+  #detail {
+    margin-top: 14px;
+    width: 100%; max-width: 1000px;
+    min-height: 88px;
+    background: #0d0d16;
+    border: 1px solid #1e1e2a;
+    border-radius: 8px;
+    padding: 16px 22px;
+    display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  #detail .char-name { font-size: 22px; font-weight: bold; margin-bottom: 2px; }
+  #detail .char-role { font-size: 12px; font-style: italic; opacity: 0.8; }
+  #detail .char-desc { font-size: 13px; line-height: 1.65; margin-bottom: 10px; }
+  #detail .placeholder { color: #555; font-style: italic; font-size: 13px; margin: auto; }
+  #rels { display: flex; flex-wrap: wrap; gap: 8px; }
+  .rel-pill {
+    font-size: 11px; padding: 3px 10px; border-radius: 20px;
+    cursor: pointer; border: 1px solid; background: rgba(255,255,255,0.06);
+    transition: opacity 0.2s;
+  }
+  .rel-pill:hover { opacity: 0.75; }
+  #edge-legend { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
+  .edge-leg { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #666; }
+  .edge-line { width: 24px; height: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="sub">Yiyun Li · The New Yorker · March 2026</div>
+  <h1>Calm Sea and Hard Faring</h1>
+  <div class="hint">Character Relationships · Click any node to explore · Hover edges to read labels</div>
+</header>
+
+<div id="legend"></div>
+<div id="diagram-wrap"><svg id="svg" viewBox="0 0 1000 600"></svg></div>
+<div id="detail"><div class="placeholder">Click a character node to see their description and connections.</div></div>
+<div id="edge-legend"></div>
+
+<script>
+const GC = {
+  family:   { bg:"#2d1b4e", border:"#9b72cf", text:"#e2cff7", dot:"#c084fc" },
+  children: { bg:"#1a3040", border:"#4a9cc7", text:"#c8e8f5", dot:"#60c6f0" },
+  parents:  { bg:"#1e3628", border:"#4a9c68", text:"#c2f0d4", dot:"#6ee7a0" },
+  staff:    { bg:"#3a2510", border:"#c4843a", text:"#fde8c4", dot:"#fbbf68" },
+  absent:   { bg:"#2a2a2a", border:"#666",    text:"#bbb",    dot:"#888"    },
+};
+const EC = { family:"#9b72cf", close:"#60c6f0", conflict:"#f87171", peer:"#6ee7a0", absent:"#555" };
+
+const CHARS = [
+  { id:"lilian",        name:"Lilian",          role:"Protagonist & narrator",     group:"family",   x:50, y:42, desc:"Writer, professor, and devoted mother. Views the trip from 10 years in the future, after losing both sons." },
+  { id:"oscar",         name:"Oscar",            role:"Lilian's elder son",         group:"family",   x:28, y:22, desc:"Jude's older brother. Died before the story's present day. Loyal to stage productions over film adaptations." },
+  { id:"jude",          name:"Jude",             role:"Lilian's younger son",       group:"family",   x:36, y:62, desc:"Quiet, chubby-faced 4th grader. Close friends with Evan. Dies in the middle of his freshman year of college." },
+  { id:"husband",       name:"Husband",          role:"Lilian's husband",           group:"family",   x:18, y:50, desc:"Travels with family to Denmark to visit Kronborg Castle. Unnamed throughout the story." },
+  { id:"evan",          name:"Evan",             role:"Jude's best friend",         group:"children", x:50, y:75, desc:"Skinny, bespectacled, lively. Freya's twin. Once tirelessly spoke on Jude's behalf until a consultant forbade it." },
+  { id:"freya",         name:"Freya",            role:"Evan's twin sister",         group:"children", x:65, y:83, desc:"Vanessa's best friend. Kicks the driver's seat on the drive down Highway 1." },
+  { id:"vanessa",       name:"Vanessa",          role:"Freya's best friend",        group:"children", x:78, y:73, desc:"Travels in the minivan. One of the children singing 'Agony' from Into the Woods." },
+  { id:"hazel",         name:"Hazel",            role:"Scholarship student",        group:"children", x:74, y:44, desc:"Sharp, proud, intensely perceptive. Scholarship kid previously bullied at public school. Lilian sees Ophelia in her. Disappears on the night walk." },
+  { id:"ginny",         name:"Ginny",            role:"Expelled transfer student",  group:"children", x:62, y:22, desc:"Expelled from Kingsley via parental donation. Physically intrusive with Jude. Refuses to walk with Hazel on the final evening." },
+  { id:"tony",          name:"Tony",             role:"Jeremy's son",               group:"children", x:84, y:28, desc:"Tallest boy in 4th grade. Co-author of the crude 'super wiener' ditty with David." },
+  { id:"david",         name:"David",            role:"Student",                    group:"children", x:90, y:50, desc:"Tony's partner in crude jokes. Quick-witted; picks up the 'super weaner' term immediately." },
+  { id:"jeremy",        name:"Jeremy",           role:"Criminal prosecutor",        group:"parents",  x:84, y:12, desc:"Tony's father. Sex offenses specialist. Tall, calm, levelheaded. Coaxes Hazel back with quiet authority during her disappearance." },
+  { id:"anna",          name:"Anna",             role:"Corporate lawyer",           group:"parents",  x:18, y:68, desc:"School board member. Organized, matter-of-fact. Draws up the week's rotating chaperone schedule." },
+  { id:"martha",        name:"Martha",           role:"Parent chaperone",           group:"parents",  x:7,  y:32, desc:"One of the mothers. Disengaged; asks to be excused from afternoon duty on the first day." },
+  { id:"gretchen",      name:"Gretchen",         role:"Parent chaperone",           group:"parents",  x:7,  y:58, desc:"Gossips to Lilian about Jeremy's solo hiking trips and Mimi pushing for couples therapy." },
+  { id:"mike",          name:"Mike",             role:"Real-estate agent",          group:"parents",  x:24, y:84, desc:"Older father of a young daughter. Regular chaperon. Clasps his chest in shock at Hazel's disappearance." },
+  { id:"phillip",       name:"Phillip",          role:"Seismologist",               group:"parents",  x:40, y:12, desc:"Levelheaded. Guards the night path with Jeremy. Approves of Jude and Evan's scientific approach to cracking eggs." },
+  { id:"msA",           name:"Ms. A",            role:"4th grade teacher",          group:"staff",    x:56, y:8,  desc:"One of two teachers on the trip. Works with Ms. Z to manage the children." },
+  { id:"msZ",           name:"Ms. Z",            role:"4th grade teacher",          group:"staff",    x:68, y:8,  desc:"Six months pregnant. The parents insist she rest immediately when Hazel goes missing." },
+  { id:"mimi",          name:"Mimi",             role:"Jeremy's wife (absent)",     group:"absent",   x:95, y:12, desc:"Absent from the trip. Described by Gretchen as effectively a single mother. Pushed Jeremy into couples therapy." },
+  { id:"childhoodfriend",name:"Childhood Friend",role:"Lilian's old friend (absent)",group:"absent", x:5,  y:12, desc:"Beijing schoolmate who made a fortune in real estate. Emails Lilian after Jude's death, recalling shared ice pops and a melting snowman." },
+];
+
+const EDGES = [
+  { from:"lilian",  to:"oscar",          label:"mother of",             style:"family"   },
+  { from:"lilian",  to:"jude",           label:"mother of",             style:"family"   },
+  { from:"lilian",  to:"husband",        label:"married to",            style:"family"   },
+  { from:"oscar",   to:"jude",           label:"brothers",              style:"family"   },
+  { from:"jude",    to:"evan",           label:"best friends",          style:"close"    },
+  { from:"evan",    to:"freya",          label:"twins",                 style:"family"   },
+  { from:"freya",   to:"vanessa",        label:"best friends",          style:"close"    },
+  { from:"jeremy",  to:"tony",           label:"father of",             style:"family"   },
+  { from:"jeremy",  to:"mimi",           label:"married to",            style:"family"   },
+  { from:"ginny",   to:"jude",           label:"harasses",              style:"conflict" },
+  { from:"ginny",   to:"hazel",          label:"refuses to walk with",  style:"conflict" },
+  { from:"lilian",  to:"hazel",          label:"mentors / watches over",style:"close"    },
+  { from:"jeremy",  to:"hazel",          label:"rescues from hillside", style:"close"    },
+  { from:"tony",    to:"david",          label:"collaborators in mischief",style:"peer"  },
+  { from:"lilian",  to:"anna",           label:"fellow chaperones",     style:"peer"     },
+  { from:"lilian",  to:"jeremy",         label:"fellow chaperones",     style:"peer"     },
+  { from:"phillip", to:"jeremy",         label:"guard the path together",style:"peer"    },
+  { from:"lilian",  to:"childhoodfriend",label:"old friends",           style:"absent"   },
+  { from:"msA",     to:"msZ",            label:"co-teachers",           style:"peer"     },
+  { from:"gretchen",to:"lilian",         label:"gossips to",            style:"peer"     },
+  { from:"lilian",  to:"phillip",        label:"fellow chaperones",     style:"peer"     },
+];
+
+const W=1000, H=600, NW=100, NH=42;
+const byId = Object.fromEntries(CHARS.map(c=>[c.id,c]));
+
+function pos(c){ return { x: c.x/100*W, y: c.y/100*H }; }
+
+// Build legend
+const legendEl = document.getElementById('legend');
+[['family','Family'],['children','Children'],['parents','Parent Chaperones'],['staff','Teachers/Staff'],['absent','Absent/Mentioned']].forEach(([k,l])=>{
+  legendEl.innerHTML += `<div class="leg-item" style="color:${GC[k].dot}"><div class="leg-dot" style="background:${GC[k].border}"></div>${l}</div>`;
+});
+
+// Build edge legend
+const edgeLegEl = document.getElementById('edge-legend');
+({family:"Family bond",close:"Close friendship/mentorship",conflict:"Conflict/tension",peer:"Peer/colleague",absent:"Distant/absent"});
+Object.entries({family:"Family bond",close:"Close friendship/mentorship",conflict:"Conflict/tension",peer:"Peer/colleague",absent:"Distant/absent"}).forEach(([k,l])=>{
+  edgeLegEl.innerHTML += `<div class="edge-leg"><div class="edge-line" style="background:${EC[k]}"></div>${l}</div>`;
+});
+
+const svg = document.getElementById('svg');
+const ns = 'http://www.w3.org/2000/svg';
+
+function el(tag,attrs,parent){
+  const e = document.createElementNS(ns,tag);
+  Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));
+  if(parent) parent.appendChild(e);
+  return e;
+}
+
+// Defs
+const defs = el('defs',{},svg);
+Object.entries(EC).forEach(([k,color])=>{
+  const m = el('marker',{id:`arrow-${k}`,markerWidth:6,markerHeight:6,refX:5,refY:3,orient:'auto'},defs);
+  el('path',{d:'M0,0 L0,6 L6,3 z',fill:color,opacity:0.7},m);
+});
+const filt = el('filter',{id:'glow'},defs);
+el('feGaussianBlur',{stdDeviation:3,result:'coloredBlur'},filt);
+const feMerge = el('feMerge',{},filt);
+el('feMergeNode',{in:'coloredBlur'},feMerge);
+el('feMergeNode',{in:'SourceGraphic'},feMerge);
+
+// Edge group (behind nodes)
+const edgeGroup = el('g',{id:'edges'},svg);
+const nodeGroup = el('g',{id:'nodes'},svg);
+
+// Draw edges
+const edgeEls = EDGES.map((e,i)=>{
+  const f=pos(byId[e.from]), t=pos(byId[e.to]);
+  const mx=(f.x+t.x)/2, my=(f.y+t.y)/2;
+  const dx=t.x-f.x, dy=t.y-f.y, len=Math.sqrt(dx*dx+dy*dy)||1;
+  const nx=-dy/len*20, ny=dx/len*20;
+  const path = el('path',{
+    d:`M${f.x},${f.y} Q${mx+nx},${my+ny} ${t.x},${t.y}`,
+    fill:'none', stroke:EC[e.style], 'stroke-width':1.3,
+    'stroke-opacity':0.28, 'marker-end':`url(#arrow-${e.style})`,
+    style:'cursor:pointer'
+  },edgeGroup);
+
+  // hover label
+  const txt = el('text',{x:mx+nx,y:my+ny-7,'text-anchor':'middle','font-size':9,fill:EC[e.style],
+    'font-family':'Georgia,serif',opacity:0,style:'pointer-events:none'},edgeGroup);
+  txt.textContent = e.label;
+
+  path.addEventListener('mouseenter',()=>{
+    path.setAttribute('stroke-width',2.5);
+    path.setAttribute('stroke-opacity',0.9);
+    txt.setAttribute('opacity',1);
+  });
+  path.addEventListener('mouseleave',()=>{
+    path.setAttribute('stroke-width',1.3);
+    path.setAttribute('stroke-opacity', activeChar ? (EDGES[i].from===activeChar||EDGES[i].to===activeChar ? 0.85 : 0.07) : 0.28);
+    txt.setAttribute('opacity',0);
+  });
+  return {path,txt,data:e};
+});
+
+// Draw nodes
+let activeChar = null;
+const nodeEls = {};
+
+CHARS.forEach(c=>{
+  const {x:cx,y:cy}=pos(c);
+  const gc=GC[c.group];
+  const g = el('g',{class:'node'},nodeGroup);
+
+  const rect = el('rect',{
+    x:cx-NW/2,y:cy-NH/2,width:NW,height:NH,rx:5,
+    fill:gc.bg,stroke:gc.border,'stroke-width':1
+  },g);
+
+  const t1=el('text',{x:cx,y:cy-5,'text-anchor':'middle','font-size':12,'font-weight':'bold',
+    fill:gc.dot,'font-family':'Georgia,serif'},g);
+  t1.textContent=c.name;
+
+  const roleShort = c.role.length>20?c.role.slice(0,19)+'…':c.role;
+  const t2=el('text',{x:cx,y:cy+11,'text-anchor':'middle','font-size':8.5,fill:gc.text,opacity:0.8},g);
+  t2.textContent=roleShort;
+
+  nodeEls[c.id]={g,rect};
+
+  g.addEventListener('click',()=>selectChar(c.id));
+});
+
+function selectChar(id){
+  if(activeChar===id){ activeChar=null; clearDetail(); dimAll(false); return; }
+  activeChar=id;
+  const c=byId[id];
+  const relEdges=EDGES.filter(e=>e.from===id||e.to===id);
+  const relIds=new Set(relEdges.flatMap(e=>[e.from,e.to]));
+
+  // dim/highlight nodes
+  CHARS.forEach(ch=>{
+    const isDimmed = !relIds.has(ch.id);
+    nodeEls[ch.id].g.setAttribute('opacity', isDimmed ? 0.18 : 1);
+    nodeEls[ch.id].rect.setAttribute('stroke', ch.id===id ? GC[ch.group].dot : GC[ch.group].border);
+    nodeEls[ch.id].rect.setAttribute('stroke-width', ch.id===id ? 2.5 : 1);
+    nodeEls[ch.id].g.setAttribute('filter', ch.id===id ? 'url(#glow)' : '');
+  });
+
+  // dim/highlight edges
+  edgeEls.forEach(({path,data})=>{
+    const related = data.from===id||data.to===id;
+    path.setAttribute('stroke-opacity', related ? 0.85 : 0.05);
+    path.setAttribute('stroke-width', related ? 1.8 : 1);
+  });
+
+  // detail panel
+  const gc=GC[c.group];
+  const det=document.getElementById('detail');
+  det.style.background=gc.bg;
+  det.style.borderColor=gc.border;
+
+  const pills = relEdges.map(e=>{
+    const otherId = e.from===id?e.to:e.from;
+    const other=byId[otherId];
+    const dir=e.from===id?'→':'←';
+    return `<span class="rel-pill" onclick="selectChar('${otherId}')" style="color:${EC[e.style]};border-color:${EC[e.style]}44">${dir} ${e.label} <strong>${other.name}</strong></span>`;
+  }).join('');
+
+  det.innerHTML=`
+    <div style="flex:0 0 auto">
+      <div class="char-name" style="color:${gc.dot}">${c.name}</div>
+      <div class="char-role" style="color:${gc.text}">${c.role}</div>
+    </div>
+    <div style="flex:1 1 260px">
+      <div class="char-desc" style="color:${gc.text}">${c.desc}</div>
+      <div id="rels">${pills}</div>
+    </div>`;
+}
+
+function dimAll(dim){
+  CHARS.forEach(c=>{
+    nodeEls[c.id].g.setAttribute('opacity',1);
+    nodeEls[c.id].rect.setAttribute('stroke',GC[c.group].border);
+    nodeEls[c.id].rect.setAttribute('stroke-width',1);
+    nodeEls[c.id].g.setAttribute('filter','');
+  });
+  edgeEls.forEach(({path})=>{
+    path.setAttribute('stroke-opacity',0.28);
+    path.setAttribute('stroke-width',1.3);
+  });
+}
+
+function clearDetail(){
+  const det=document.getElementById('detail');
+  det.style.background='#0d0d16';
+  det.style.borderColor='#1e1e2a';
+  det.innerHTML='<div class="placeholder">Click a character node to see their description and connections.</div>';
+}
+</script>
+</body>
+</html>

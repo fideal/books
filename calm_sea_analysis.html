@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calm Sea and Hard Faring — Literary Analysis</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@200;300;400&display=swap');
+  :root {
+    --bg: #0a0a0f; --surface: #0d0d16; --border: #1e1e2a; --text: #e8e0d0;
+    --muted: #888; --accent: #c9a96e; --accent2: #7a9e8e; --accent3: #9b72cf;
+    --danger: #c97070; --tab-active: #c9a96e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); font-family: 'Cormorant Garamond', Georgia, serif; color: var(--text); min-height: 100vh; }
+  .site-header { text-align: center; padding: 40px 24px 28px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .site-header::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 600px; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); }
+  .header-label { font-family: 'Josefin Sans', sans-serif; font-size: 10px; letter-spacing: 0.35em; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+  .header-title { font-size: clamp(26px, 5vw, 48px); font-weight: 300; letter-spacing: 0.06em; color: var(--text); margin-bottom: 6px; }
+  .header-author { font-size: 15px; font-style: italic; color: var(--accent); margin-bottom: 4px; }
+  .header-pub { font-family: 'Josefin Sans', sans-serif; font-size: 10px; letter-spacing: 0.25em; color: var(--muted); }
+  .tab-bar { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); overflow-x: auto; scrollbar-width: none; }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn { font-family: 'Josefin Sans', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 14px 22px; border: none; background: none; color: var(--muted); cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.2s; flex-shrink: 0; }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-content { display: none; padding: 32px 24px; max-width: 1100px; margin: 0 auto; }
+  .tab-content.active { display: block; }
+  .section-label { font-family: 'Josefin Sans', sans-serif; font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .section-title { font-size: 22px; font-weight: 300; letter-spacing: 0.04em; color: var(--text); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 28px; }
+  th { font-family: 'Josefin Sans', sans-serif; font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); font-weight: 300; }
+  td { padding: 10px 12px; border-bottom: 1px solid #13131e; vertical-align: top; line-height: 1.6; color: var(--text); }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  td:first-child { font-family: 'Josefin Sans', sans-serif; font-size: 11px; letter-spacing: 0.1em; color: var(--accent); white-space: nowrap; width: 160px; }
+  .prose-block { font-size: 15px; line-height: 1.85; color: #ccc8be; max-width: 720px; margin-bottom: 24px; }
+  .prose-block em { color: var(--accent); font-style: italic; }
+  #legend { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-bottom: 12px; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; font-family: 'Josefin Sans', sans-serif; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; }
+  #diagram-wrap { width: 100%; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); box-shadow: 0 0 60px rgba(100,80,180,0.08); }
+  svg#charsvg { width: 100%; display: block; }
+  .node { cursor: pointer; }
+  .node rect { transition: stroke-width 0.2s; }
+  .node:hover rect { stroke-width: 2.5px !important; }
+  #detail { margin-top: 14px; width: 100%; min-height: 88px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 22px; display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start; transition: background 0.3s, border-color 0.3s; }
+  #detail .char-name { font-size: 22px; font-weight: 400; margin-bottom: 2px; }
+  #detail .char-role { font-size: 12px; font-style: italic; opacity: 0.8; font-family: 'Josefin Sans', sans-serif; }
+  #detail .char-desc { font-size: 13px; line-height: 1.65; margin-bottom: 10px; }
+  #detail .placeholder { color: #555; font-style: italic; font-size: 13px; margin: auto; }
+  #rels { display: flex; flex-wrap: wrap; gap: 8px; }
+  .rel-pill { font-size: 11px; padding: 3px 10px; border-radius: 20px; cursor: pointer; border: 1px solid; background: rgba(255,255,255,0.06); transition: opacity 0.2s; font-family: 'Josefin Sans', sans-serif; }
+  .rel-pill:hover { opacity: 0.75; }
+  #edge-legend { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
+  .edge-leg { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #666; font-family: 'Josefin Sans', sans-serif; }
+  .edge-line { width: 24px; height: 2px; }
+  .chart-container { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 28px; position: relative; }
+  .chart-legend { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 16px; }
+  .chart-leg-item { display: flex; align-items: center; gap: 6px; font-family: 'Josefin Sans', sans-serif; font-size: 11px; letter-spacing: 0.1em; }
+  .chart-leg-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .analysis-grid { display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 28px; }
+  .analysis-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 22px 26px; }
+  .analysis-card-title { font-family: 'Josefin Sans', sans-serif; font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .analysis-card-body { font-size: 15px; line-height: 1.8; color: #ccc8be; }
+  .analysis-card-body em { color: var(--accent2); font-style: italic; }
+  .theme-tag { display: inline-block; font-family: 'Josefin Sans', sans-serif; font-size: 10px; letter-spacing: 0.15em; padding: 2px 8px; border-radius: 12px; border: 1px solid var(--accent2); color: var(--accent2); margin-right: 4px; }
+  .q-group-title { font-family: 'Josefin Sans', sans-serif; font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent); margin: 28px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .q-group-title:first-child { margin-top: 0; }
+  .accordion-item { border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px; overflow: hidden; }
+  .accordion-q { width: 100%; text-align: left; background: var(--surface); border: none; color: var(--text); font-family: 'Cormorant Garamond', Georgia, serif; font-size: 16px; line-height: 1.5; padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; transition: background 0.2s; }
+  .accordion-q:hover { background: #111120; }
+  .accordion-q .toggle { font-size: 18px; color: var(--accent); flex-shrink: 0; font-family: 'Josefin Sans', sans-serif; font-weight: 200; margin-top: 2px; }
+  .accordion-a { display: none; background: #0e0e1a; padding: 14px 18px 16px; font-size: 14px; line-height: 1.8; color: #bab4a8; border-top: 1px solid var(--border); }
+  .accordion-a.open { display: block; }
+  .accordion-a em { color: var(--accent2); font-style: italic; }
+  .author-bio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+  @media (max-width: 640px) { .author-bio-grid { grid-template-columns: 1fr; } }
+  .caveat { font-family: 'Josefin Sans', sans-serif; font-size: 10px; letter-spacing: 0.1em; color: #555; font-style: italic; margin-top: 8px; }
+  .award-badge { display: inline-block; font-family: 'Josefin Sans', sans-serif; font-size: 10px; letter-spacing: 0.15em; padding: 3px 10px; border-radius: 12px; border: 1px solid var(--accent3); color: var(--accent3); margin: 2px 4px 2px 0; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-label">Literary Analysis · Peter Brooks · Narrative Desire</div>
+  <h1 class="header-title">Calm Sea and Hard Faring</h1>
+  <div class="header-author">Yiyun Li</div>
+  <div class="header-pub">The New Yorker · March 9, 2026</div>
+</header>
+<nav class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('characters')">I. Characters</button>
+  <button class="tab-btn" onclick="showTab('fabula')">II. Fabula vs Sjuzhet</button>
+  <button class="tab-btn" onclick="showTab('analysis')">III. Narrative Analysis</button>
+  <button class="tab-btn" onclick="showTab('questions')">IV. Discussion</button>
+  <button class="tab-btn" onclick="showTab('author')">V. Author</button>
+</nav>
+<div id="tab-characters" class="tab-content active">
+  <div class="section-label">Tab I</div>
+  <div class="section-title">Character Relationships</div>
+  <div id="legend"></div>
+  <div id="diagram-wrap"><svg id="charsvg" viewBox="0 0 1000 600"></svg></div>
+  <div id="detail"><div class="placeholder">Click a character node to see their description and connections.</div></div>
+  <div id="edge-legend"></div>
+</div>
+<div id="tab-fabula" class="tab-content">
+  <div class="section-label">Tab II</div>
+  <div class="section-title">Fabula vs. Sjuzhet</div>
+  <div class="prose-block">The story is narrated from approximately 2025, looking back at a 2015 field trip — but both sons are already dead. Points <em>below</em> the diagonal are analepses (flashbacks); points <em>above</em> are prolepses (flash-forwards). Events near the diagonal follow chronological order within the field trip itself.</div>
+  <div class="chart-legend">
+    <div class="chart-leg-item"><div class="chart-leg-dot" style="background:#c9a96e"></div>Present Action (field trip, 2015)</div>
+    <div class="chart-leg-item"><div class="chart-leg-dot" style="background:#7a9e8e"></div>Analepsis (flashback)</div>
+    <div class="chart-leg-item"><div class="chart-leg-dot" style="background:#9b72cf"></div>Prolepsis (flash-forward)</div>
+    <div class="chart-leg-item"><div class="chart-leg-dot" style="background:#c97070"></div>Narrating Frame (2025)</div>
+  </div>
+  <div class="chart-container"><canvas id="fabulaChart" height="420"></canvas></div>
+  <div class="section-label">Distortions Table</div>
+  <table>
+    <thead><tr><th>Event</th><th>Sjuzhet</th><th>Fabula</th><th>Type</th><th>Deferral — What is Withheld &amp; Why</th></tr></thead>
+    <tbody>
+      <tr><td>NJ narrating frame — Euripides</td><td>1</td><td>14</td><td><span class="theme-tag">Frame</span></td><td>Opens in the future-present. Both sons dead; causes permanently withheld. This ellipsis transforms the story into an elegy without explanation.</td></tr>
+      <tr><td>Oscar's death (mentioned obliquely)</td><td>3</td><td>11</td><td><span class="theme-tag" style="border-color:#c97070;color:#c97070">Prolepsis</span></td><td>Referenced indirectly ("after Oscar's death, Jude, who was in seventh grade"). No cause, no scene. Grief kept abstract — a structural enactment of Lilian's inability to process it.</td></tr>
+      <tr><td>Childhood friend / ice pop memory</td><td>4</td><td>1</td><td><span class="theme-tag" style="border-color:#7a9e8e;color:#7a9e8e">Analepsis</span></td><td>Deep flashback to Beijing childhood, triggered by sympathy email. Withholds that Jude has just died. Sorrow displaced onto a melting snowman.</td></tr>
+      <tr><td>Arrival at learning center</td><td>5</td><td>4</td><td><span class="theme-tag">Present</span></td><td>Chronological within the trip. The preceding prolepsis has already shadowed this "present" with foreknowledge of death.</td></tr>
+      <tr><td>Ginny harasses Jude on beach walk</td><td>7</td><td>5</td><td><span class="theme-tag">Present</span></td><td>Consequence (principal meeting) deferred to later — building the case that the school fails Jude.</td></tr>
+      <tr><td>Denmark trip — Hamlet's castle</td><td>8</td><td>12</td><td><span class="theme-tag" style="border-color:#c97070;color:#c97070">Prolepsis</span></td><td>Flash-forward post-Oscar, pre-Jude's death. Defers Jude's death: we see him alive. The swallows and lullaby presented as a talisman.</td></tr>
+      <tr><td>Jude dies in freshman year (stated)</td><td>9</td><td>13</td><td><span class="theme-tag" style="border-color:#c97070;color:#c97070">Prolepsis</span></td><td>Stated flatly in one clause. No scene, no cause. Refusal to dramatise preserves the field trip's pastoral as the emotional centre.</td></tr>
+      <tr><td>Week's activities montage</td><td>11</td><td>6</td><td><span class="theme-tag">Present</span></td><td>Iterative narration: "there was the hike…" — the pleasurable dilation of the middle. Each scene defers the bonfire night.</td></tr>
+      <tr><td>Elephant seals / super weaner</td><td>12</td><td>7</td><td><span class="theme-tag">Present</span></td><td>Comic interlude, tension release. The crude jokes foreshadow the children's adult selves — prolepsis embedded in the present.</td></tr>
+      <tr><td>Bonfire / night walk begins</td><td>13</td><td>8</td><td><span class="theme-tag">Present</span></td><td>The story's still point. The cicada digression interrupts — deferring the crisis and measuring the distance to grief.</td></tr>
+      <tr><td>Cicada digression (NJ garden)</td><td>13.5</td><td>15</td><td><span class="theme-tag" style="border-color:#c97070;color:#c97070">Prolepsis</span></td><td>Interrupts the bonfire to project forward after both boys are dead. "Neither Oscar nor Jude lived long enough to see a cloud of cicadas, rising, rising, rising."</td></tr>
+      <tr><td>Oscar's friend quotes Bakkhai</td><td>14</td><td>10</td><td><span class="theme-tag" style="border-color:#7a9e8e;color:#7a9e8e">Analepsis</span></td><td>Names the title: "Fare well, but you shall find your faring hard." Shadows Jude (still alive at the bonfire) with Oscar's fate.</td></tr>
+      <tr><td>Jude &amp; Evan return with lamp</td><td>15</td><td>8.2</td><td><span class="theme-tag">Present</span></td><td>"Nine years and a month after this night, Jude would die. Evan —" The em-dash is the story's most concentrated deferral. Evan's fate withheld mid-sentence.</td></tr>
+      <tr><td>Hazel disappears / search</td><td>16</td><td>9</td><td><span class="theme-tag">Present</span></td><td>Sjuzhet climax. Tension is existential, not physical. Defers the recognition that some children cannot be saved from their outliers' lot.</td></tr>
+      <tr><td>Closing: Hazel found / ending</td><td>17</td><td>9.2</td><td><span class="theme-tag" style="border-color:#c97070;color:#c97070">Frame</span></td><td>Jeremy's speech mirrors the story's structure: it will not force hope. Final question refuses consolation: "How can you mandate hope and optimism?"</td></tr>
+    </tbody>
+  </table>
+</div>
+<div id="tab-analysis" class="tab-content">
+  <div class="section-label">Tab III</div>
+  <div class="section-title">Narrative Analysis — Peter Brooks: Narrative Desire</div>
+  <div class="analysis-grid">
+    <div class="analysis-card">
+      <div class="analysis-card-title">Desire</div>
+      <div class="analysis-card-body">The story opens two desires simultaneously. <em>Lilian's desire</em> is to guarantee her children a "calm sea and prosperous voyage" — the Goethe/Mendelssohn dream she knows is impossible. This desire is explicitly elegiac: both sons are already dead before the first paragraph ends. The <em>reader's desire</em> is different: we want to understand how the boys died, whether the children on this trip are safe, and whether Lilian's grief can be metabolised into meaning. The story activates desire by disclosing death early but withholding cause, circumstance, and emotional resolution entirely.<br><br>Hazel carries a secondary desire: the desire of a child who cannot be "molded into an acceptable shape" to be seen accurately — not saved, not optimised, but genuinely witnessed. Lilian is the only adult who attempts this. Jude and Oscar share the same desire; Lilian's tragedy is that witnessing is not enough.</div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Deferral</div>
+      <div class="analysis-card-body">Deferral operates on three levels. First, <em>structural deferral</em>: the deaths of Oscar and Jude are stated but never dramatised. No death scene appears. The narrative distributes grief across every moment of the field trip. Second, <em>syntactic deferral</em>: the em-dash after "Evan —" enacts the unfinishable nature of grief for the living. Third, <em>tonal deferral</em>: Lilian consistently reaches for displaced objects — a Jin dynasty poem, a melting snowman, cicadas — rather than speaking directly of loss. The story is itself an act of deferral, finding talismans against the grief it cannot resolve.</div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">The Middle</div>
+      <div class="analysis-card-body">The field trip is the story's sustained middle — five days of pastoral that are also a kind of temporal sanctuary. Brooks argues that the middle is the site of desire's greatest intensity, where the narrative finds reasons not to end. Li achieves this through <em>iterative narration</em>: "There was the hike… there was the coastal walk…" Each "there was" is an incantation, a repeated gesture of preservation. The bonfire scene is the middle's apex: children filing into the dark with a lamp, an image of concentrated beauty that brings tears to Lilian's eyes — not for what is lost, but for what she knows cannot last.</div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">The Ending</div>
+      <div class="analysis-card-body">Brooks calls the ending the point at which accumulated desire is satisfied, displaced, or exposed as impossible. This story refuses all three in their conventional forms. Hazel is found — the sjuzhet's crisis resolves — but the finding does not save her: her eyes hold "the same despair" Lilian will later recognise in Oscar's. The final question — <em>"How can you mandate hope and optimism when no one can save us from our outliers' lot?"</em> — is addressed to Lilian by Hazel, by Oscar, and by Jude simultaneously. The story ends not with resolution but with a question that cannot be answered. Its structure enacts its argument.</div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Narrative Energy</div>
+      <div class="analysis-card-body">The story's forward energy is not suspense — we know the outcome before the plot begins. Its energy is <em>memorial</em>: the drive to recover and preserve particular moments against the obliterating force of loss. Every description of the children is animated by the knowledge that this is the last time they will be this young, this alive, this unaware of their futures. The narrative tension is between the desire to stay in the pastoral middle and the narrator's inability to unknow what happens next. This is Brooks' "desire of the text" at its most refined: the story moves forward because it must, but mourns every step.</div>
+    </div>
+  </div>
+  <div class="section-label" style="margin-top:8px;">Thematic Threads</div>
+  <table>
+    <thead><tr><th>Theme</th><th>Development in the Story</th></tr></thead>
+    <tbody>
+      <tr><td>Outlier fates</td><td>The story asks whether outlier children (Hazel, Evan, Jude) meet outlier fates — and answers obliquely: they do. The school's failure with Ginny/Jude, and the principal's language of "male aggression," show the institution's incapacity to protect the outlier.</td></tr>
+      <tr><td>The wall between present and future</td><td>Rebecca West's "wall" becomes a structuring image. Parents cannot stop trying to see through it; the story's temporal oscillations enact this compulsion. The cicada digression and Denmark scene both dramatise Lilian looking through a wall she cannot pull down.</td></tr>
+      <tr><td>Mandatory hope / obligatory optimism</td><td>The story is hostile to demanded consolation. Jeremy's speech to Hazel — "we will defer to you… we won't force you" — is the ethical alternative: accompaniment without coercion.</td></tr>
+      <tr><td>Children as beautiful and vulnerable</td><td>The children are "sculptures from ancient Rome or paintings from the sixteenth century." Beauty is inseparable from fragility. The water-insect metaphor positions childhood as a brief structural order before the inevitable scattering.</td></tr>
+      <tr><td>Grief's displaced objects</td><td>Lilian finds proxy objects — the snowman, the cicadas, the swallows, the Bakkhai translation — rather than speaking directly of loss. These are the story's talismans: inadequate, precious, the only form of expression available to a grief too large for direct statement.</td></tr>
+      <tr><td>Calm sea as impossible dream</td><td>Goethe's poem and Mendelssohn's overture haunt the title. "Calm sea and prosperous voyage" is what every parent desires and what the story systematically denies. The Pacific "glistened colorlessly" — beautiful and indifferent.</td></tr>
+    </tbody>
+  </table>
+  <div class="section-label">Prose Style</div>
+  <div class="analysis-card">
+    <div class="analysis-card-body">Li writes in a long, composed periodic sentence that accumulates subordinate clauses before landing — or refusing to land — on a main verb. The syntax performs Lilian's consciousness: circling, qualifying, reaching for precision even when the subject resists it. The story uses iterative summary to compress days into museum-case arrangements, each memory preserved but slightly distanced. Dialogue is economical and character-revealing: Hazel's questions adversarial, Jude's answers exact, Jeremy's speech to the hiding girl quietly masterful. The story's most controlled effect is tonal: sustained elegiac calm, never breaking into open grief, even when announcing deaths flatly in subordinate clauses. This restraint formally embodies Lilian's discipline — and the story's critique of mandatory optimism.</div>
+  </div>
+</div>
+<div id="tab-questions" class="tab-content">
+  <div class="section-label">Tab IV</div>
+  <div class="section-title">Discussion Questions</div>
+  <div class="q-group-title">Close Reading</div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>The story opens with Lilian "looking back ten years later" from New Jersey. What does this retrospective frame do to the reader's experience of the field trip scenes that follow?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">The retrospective frame converts the field trip from a story with an open future into an elegy with a fixed past. Every detail the narrator notices — Jude's chubby face, Evan's way of speaking for his friend, the lamplight vanishing and returning in the dark — is charged with a grief that the reader shares before any of it is explained. This is <em>dramatic irony at the structural level</em>: we know both sons die; the children do not know they are being mourned. The frame also signals the story's central argument: that parents cannot stop trying to see through the wall between present and future, even when knowing the future destroys the present's innocence. The opening paragraph — ending with the Euripides reference and Lilian immediately criticising herself for bleakness — establishes the narrator's characteristic movement: reach for the dark truth, then qualify.</div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>The sentence "Nine years and a month after this night, Jude would die. Evan —" ends with a dash. What work does that typographical break do? What does it mean to leave a sentence unfinished?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">The em-dash marks the point at which Lilian cannot complete the sentence about Evan — not because she doesn't know his fate, but because she has chosen not to know it: "I did not know what he would be like as a young man, only that his faring would never be easy." The grammar enacts the ethical refusal: Lilian will not project Evan's future the way she (she believes) erroneously projected the children's futures during the trip. The dash is also the story's most condensed image of surviving grief: the sentence continues for the living even when it cannot be finished for the dead. Compare it to the Bakkhai translation debate — two versions of the same line, saying the same thing differently. Li is interested in the limits of language at moments of extremity, and the dash is her most honest acknowledgment of those limits.</div>
+  </div>
+  <div class="q-group-title">Desire &amp; Character</div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>Hazel is one of those children who "could not or would not be molded into an acceptable shape." How does the story present her relationship with Lilian, and what does Lilian want from it that she cannot quite name?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">Lilian sees Ophelia in Hazel — a connection she thinks but does not say aloud, recognising it as "an odd comment." This withheld recognition is significant: Lilian perceives the danger in Hazel's fierce self-sufficiency but cannot intervene meaningfully. What Lilian wants is something like <em>witness by proxy</em>: Hazel's survival would not save Oscar or Jude, but it would prove that outlier children can be seen and accompanied, if not protected. Jeremy's speech — "we will defer to you… we won't force you" — is the closest the story comes to an ethics of care for children who cannot be normalised. The limits of Lilian's power are structural: she can see, she can accompany, but the children must make their own way back.</div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>Ginny is introduced as a nuisance and possibly a bully, but the story is careful not to fully condemn her. What does Li's handling of Ginny reveal about how the story thinks about children and moral judgment?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">Lilian twice hedges her judgment of Ginny: "I did not think there was true malice in that laughter" — then seconds later: "Surely there was malice in that smile." This oscillation is deliberate. The story is not interested in rendering a verdict on Ginny but in exploring the limits of adult interpretation. The school's response is a case study in institutional failure: "male aggression" is taken seriously while Ginny's physical boundary violations go unnamed. Lilian's near-use of "sexual harassment" — deployed instrumentally in a "litigious country" — is one of the story's most uncomfortable moments of adult pragmatism. Li seems to suggest that Ginny, too, is a child who doesn't fit, simply in a direction that society is more willing to accommodate. The story refuses the easy moral position.</div>
+  </div>
+  <div class="q-group-title">Deferral &amp; Structure</div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>The story never tells us how Oscar or Jude died. Is this a flaw — a withholding that feels arbitrary — or does it serve the story's larger purposes? What would be lost if we knew?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">This is the story's most consequential structural choice, and readers often divide on it. The case for withholding: cause of death would convert the loss into a specific kind of tragedy (accident, illness, suicide, crime), each with its own cultural and emotional script. By refusing a cause, Li prevents the deaths from being categorised and thereby partially contained. We cannot say "ah, that kind of loss" and activate familiar patterns of consolation. The deaths remain radical and unassimilated — which is, arguably, closer to what grief feels like from inside. The case against: some readers experience the withholding as manipulation. A good class discussion will test both positions against the story's stated hostility to "mandatory optimism": perhaps the absence of a cause is itself an argument — that there is nothing in the deaths to explain, understand, or extract meaning from.</div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>The cicada digression interrupts the bonfire scene — the story's most beautiful moment — with a vision of Lilian's New Jersey garden after both boys are dead. Why does the story break the pastoral here?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">The interruption is the story's most formally daring move. At the moment when the children are most beautiful, most silent, most alive, Li inserts a future scene in which the observer has lost everyone she is watching. "She wanted to exclaim, but the marvel was choked in her throat: neither Oscar nor Jude lived long enough to see a cloud of cicadas, rising, rising, rising." The triple repetition of "rising" is the only moment in the story that could be called lyrical excess — and it is immediately undercut. The digression enacts Lilian's condition: she cannot experience beauty without apprehending the loss that has outlasted it. The pastoral is permanently contaminated by the knowledge that it ended. The cicadas also recall the bonfire children: both are life waking simultaneously, virginal wings, slow motion, reaching. But the cicadas survive. The children, in their outlier forms, do not.</div>
+  </div>
+  <div class="q-group-title">Endings &amp; Meaning</div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>Jeremy's speech to Hazel — "we will defer to you… we won't force you… we won't abandon you" — is the closest the story comes to a positive ethical statement. How does it reframe the critique of "mandatory hope and mandatory optimism"?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">Jeremy's speech proposes an alternative to both abandonment and coercion: <em>patient accompaniment without a required outcome</em>. He sets a time limit (13 hours, 10:30 the next morning) but makes no demands within it. He names Lilian as Hazel's companion. This is the story's most precise image of what parents can actually offer outlier children: presence, deferral of force, and an honest deadline. It does not save Hazel from her "outliers' lot"; the final paragraph makes clear that Lilian recognises in Hazel's eyes the same despair she will later see in Oscar's. But it offers a model of care that is not the same as rescue. The story's critique of "mandatory optimism" is not a critique of hope per se but of hope as demand — hope imposed as a condition of being cared for. Jeremy's "we will defer to you" is the story's answer: care without conditions, accompaniment without compulsion.</div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>The story's title comes from two sources: Goethe's poem set by Mendelssohn, and the Bakkhai translation. What does the conjunction say about the story's understanding of parenthood?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">"Calm sea and prosperous voyage" is a wish — Goethe's lovers awaiting the wind that will bring reunion. Mendelssohn's setting moves from stillness to celebration: a dream of safe passage fulfilled. The Bakkhai line is its negative: "Farewell, my poor dear daughter. But you are beyond faring well!" — a father's last words to a child already beyond saving. The title holds both: the parental dream of a smooth crossing, and the tragic reality of hard faring. Li insists on the conjunction not as irony but as the full truth of parenthood: you carry both at once. The two translations of the Bakkhai line say "the same thing" according to Lilian. This is the story's final position: there is no correct version of the truth about losing a child. There is only what can be said, imperfectly, in the language available to you.</div>
+  </div>
+</div>
+<div id="tab-author" class="tab-content">
+  <div class="section-label">Tab V</div>
+  <div class="section-title">Yiyun Li</div>
+  <div class="author-bio-grid">
+    <div>
+      <div class="section-label">Biographical</div>
+      <table>
+        <tbody>
+          <tr><td>Place of birth</td><td>Beijing, China</td></tr>
+          <tr><td>Year of birth</td><td>1972</td></tr>
+          <tr><td>Current residence</td><td>Princeton, New Jersey, USA</td></tr>
+          <tr><td>Education</td><td>B.Sc. Immunology, Peking University (1994); M.Sc. Immunology, University of Iowa; M.F.A. Creative Writing, Iowa Writers' Workshop</td></tr>
+          <tr><td>Gender</td><td>Female</td></tr>
+          <tr><td>Marital status</td><td>Married (to Dapeng Dong, writer)</td></tr>
+          <tr><td>Religion</td><td>Not publicly confirmed</td></tr>
+          <tr><td>Languages</td><td>Writes exclusively in English; native Mandarin speaker</td></tr>
+          <tr><td>Academic position</td><td>Professor, Lewis Center for the Arts, Princeton University</td></tr>
+        </tbody>
+      </table>
+      <p class="caveat">* Marital status inferred from public interviews; religion not publicly confirmed.</p>
+    </div>
+    <div>
+      <div class="section-label">Biography</div>
+      <div class="prose-block" style="font-size:14px;">Yiyun Li was born in Beijing in 1972 and trained as an immunologist before emigrating to the United States in 1996 to pursue graduate study at the University of Iowa. She abandoned science for fiction at Iowa, earning an MFA from the Writers' Workshop. She has written exclusively in English — her second language — since her early twenties, a choice she has described as a deliberate estrangement from her mother tongue and from a self she needed to leave behind.<br><br>Her debut collection, <em>A Thousand Years of Good Prayers</em> (2005), established her as a major voice in American fiction. Her memoir <em>Dear Friend, from My Life I Write to You in Your Life</em> (2017) chronicles two psychiatric hospitalisations and her relationship with literature as a form of survival. Her son Vincent Li died by suicide in 2019; much of her subsequent work, including <em>Wednesday's Child</em> and "Calm Sea and Hard Faring," engages — if never directly — with that loss.<br><br>She is a contributing writer at <em>The New Yorker</em> and teaches fiction at Princeton University.</div>
+    </div>
+  </div>
+  <div class="section-label">Body of Work</div>
+  <table>
+    <thead><tr><th>Year</th><th>Title</th><th>Form</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>2005</td><td>A Thousand Years of Good Prayers</td><td>Story collection</td><td>Frank O'Connor International Short Story Award; PEN/Hemingway Award</td></tr>
+      <tr><td>2007</td><td>The Vagrants</td><td>Novel</td><td>Set in 1979 China; named best book of year by multiple publications</td></tr>
+      <tr><td>2010</td><td>Gold Boy, Emerald Girl</td><td>Story collection</td><td>Shortlisted, Story Prize</td></tr>
+      <tr><td>2014</td><td>Kinder Than Solitude</td><td>Novel</td><td>Three linked narratives spanning Beijing and California</td></tr>
+      <tr><td>2017</td><td>Dear Friend, from My Life I Write to You in Your Life</td><td>Memoir/essay</td><td>Documents two hospitalisations; meditation on literature and survival</td></tr>
+      <tr><td>2019</td><td>Where Reasons End</td><td>Novel</td><td>Written in response to her son's death; PEN/Jean Stein Book Award (2020)</td></tr>
+      <tr><td>2021</td><td>Must I Go</td><td>Novel</td><td>Protagonist reconstructs a dead man's diary across decades</td></tr>
+      <tr><td>2022</td><td>The Book of Goose</td><td>Novel</td><td>Two girls in post-war rural France; literary fraud and female friendship</td></tr>
+      <tr><td>2024</td><td>Wednesday's Child</td><td>Story collection</td><td>Finalist, Pulitzer Prize for Fiction (2024)</td></tr>
+      <tr><td>2026 (Oct)</td><td>Music Against the Night</td><td>Novel</td><td>Forthcoming at time of this story's publication</td></tr>
+      <tr><td>2026</td><td>"Calm Sea and Hard Faring"</td><td>Short story</td><td>The New Yorker, March 9, 2026</td></tr>
+    </tbody>
+  </table>
+  <div class="section-label">Awards &amp; Recognition</div>
+  <div style="margin-bottom:28px; line-height:2.2;">
+    <span class="award-badge">PEN/Hemingway Award 2006</span>
+    <span class="award-badge">Frank O'Connor International Short Story Award 2005</span>
+    <span class="award-badge">Lannan Literary Fellowship</span>
+    <span class="award-badge">Whiting Award</span>
+    <span class="award-badge">MacArthur Fellowship 2010</span>
+    <span class="award-badge">PEN/Jean Stein Book Award 2020</span>
+    <span class="award-badge">Pulitzer Finalist 2024</span>
+    <span class="award-badge">American Academy of Arts and Letters</span>
+    <span class="award-badge">The New Yorker 20 Under 40 (2010)</span>
+  </div>
+  <p class="caveat">Award list compiled from public records; completeness not guaranteed.</p>
+</div>
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'fabula' && !window.chartBuilt) buildChart();
+}
+function toggleAccordion(btn) {
+  const ans = btn.nextElementSibling;
+  const toggle = btn.querySelector('.toggle');
+  const open = ans.classList.toggle('open');
+  toggle.textContent = open ? '−' : '+';
+}
+const GC = {
+  family:   { bg:"#2d1b4e", border:"#9b72cf", text:"#e2cff7", dot:"#c084fc" },
+  children: { bg:"#1a3040", border:"#4a9cc7", text:"#c8e8f5", dot:"#60c6f0" },
+  parents:  { bg:"#1e3628", border:"#4a9c68", text:"#c2f0d4", dot:"#6ee7a0" },
+  staff:    { bg:"#3a2510", border:"#c4843a", text:"#fde8c4", dot:"#fbbf68" },
+  absent:   { bg:"#2a2a2a", border:"#666",    text:"#bbb",    dot:"#888"    },
+};
+const EC = { family:"#9b72cf", close:"#60c6f0", conflict:"#f87171", peer:"#6ee7a0", absent:"#555" };
+const CHARS = [
+  { id:"lilian",   name:"Lilian",          role:"Protagonist & narrator",      group:"family",   x:50, y:42, desc:"Writer, professor, devoted mother. Narrates from NJ circa 2025, ten years after the trip, after losing both sons. Views the field trip through the double grief of Oscar's and Jude's deaths." },
+  { id:"oscar",    name:"Oscar",            role:"Lilian's elder son",          group:"family",   x:28, y:22, desc:"Jude's older brother. Died before the story's present. Loyal to stage productions over film adaptations; his absence haunts the Denmark scene and the bonfire night." },
+  { id:"jude",     name:"Jude",             role:"Lilian's younger son",        group:"family",   x:36, y:62, desc:"Quiet, chubby-faced 4th grader, Evan's best friend. Precise in speech. Dies in the middle of his freshman year of college. His death — like Oscar's — is stated but never dramatised." },
+  { id:"husband",  name:"Husband",          role:"Lilian's husband",            group:"family",   x:18, y:50, desc:"Accompanies family to Denmark to visit Kronborg Castle. Unnamed throughout; present but not centred." },
+  { id:"evan",     name:"Evan",             role:"Jude's best friend",          group:"children", x:50, y:75, desc:"Skinny, bespectacled, lively. Freya's twin. Tirelessly spoke on Jude's behalf until a special-ed consultant forbade it. His sentence is left unfinished: 'Evan —'" },
+  { id:"freya",    name:"Freya",            role:"Evan's twin sister",          group:"children", x:65, y:83, desc:"Vanessa's best friend. Kicks the driver's seat on the drive. Part of the Into the Woods chorus in the minivan." },
+  { id:"vanessa",  name:"Vanessa",          role:"Freya's best friend",         group:"children", x:78, y:73, desc:"Travels in the minivan, joins the Into the Woods singing. One of the children at the bonfire." },
+  { id:"hazel",    name:"Hazel",            role:"Scholarship student",         group:"children", x:74, y:44, desc:"Petite with large, intense eyes. Sharp, proud, fiercely perceptive. Lilian silently sees Ophelia in her. Disappears on the night walk; found on the hillside in a 'steely negation of reality.'" },
+  { id:"ginny",    name:"Ginny",            role:"Expelled transfer student",   group:"children", x:62, y:22, desc:"Expelled from Kingsley via parental donation. Physically intrusive with Jude. Refuses to walk with Hazel on the final evening — the act that triggers the crisis." },
+  { id:"tony",     name:"Tony",             role:"Jeremy's son",                group:"children", x:84, y:28, desc:"Tallest boy in 4th grade. Co-author of the 'super wiener' ditty with David." },
+  { id:"david",    name:"David",            role:"Student",                     group:"children", x:90, y:50, desc:"Quick-witted; immediately repurposes 'super weaner' with Tony." },
+  { id:"jeremy",   name:"Jeremy",           role:"Criminal prosecutor",         group:"parents",  x:84, y:12, desc:"Tall, levelheaded father of Tony. Sex offences specialist. Finds Hazel on the hillside; delivers the story's most ethically precise speech: 'we will defer to you.'" },
+  { id:"anna",     name:"Anna",             role:"Corporate lawyer",            group:"parents",  x:18, y:68, desc:"School board member. Organised, matter-of-fact. Draws up the chaperone rotation schedule." },
+  { id:"martha",   name:"Martha",           role:"Parent chaperone",            group:"parents",  x:7,  y:32, desc:"Disengaged; asks to be excused from afternoon duty on the first day." },
+  { id:"gretchen", name:"Gretchen",         role:"Parent chaperone",            group:"parents",  x:7,  y:58, desc:"Gossips to Lilian about Jeremy's solo hikes and Mimi's push for couples therapy." },
+  { id:"mike",     name:"Mike",             role:"Real-estate agent",           group:"parents",  x:24, y:84, desc:"Older father, regular chaperon. Clasps his chest in shock at Hazel's disappearance." },
+  { id:"phillip",  name:"Phillip",          role:"Seismologist",                group:"parents",  x:40, y:12, desc:"Levelheaded. Approves of Jude and Evan's scientific egg-cracking experiments. Guards the night path with Jeremy." },
+  { id:"msA",      name:"Ms. A",            role:"4th grade teacher",           group:"staff",    x:56, y:8,  desc:"One of two teachers on the trip. Manages the children with Ms. Z." },
+  { id:"msZ",      name:"Ms. Z",            role:"4th grade teacher",           group:"staff",    x:68, y:8,  desc:"Six months pregnant. The mothers insist she rest immediately when Hazel goes missing." },
+  { id:"mimi",     name:"Mimi",             role:"Jeremy's wife (absent)",      group:"absent",   x:95, y:12, desc:"Not on the trip. Described by Gretchen as effectively a single mother. Pushed Jeremy into couples therapy." },
+  { id:"friend",   name:"Childhood Friend", role:"Lilian's old friend (absent)", group:"absent",  x:5,  y:12, desc:"Beijing schoolmate who emails Lilian after Jude's death, recalling ice pops and a melting snowman." },
+];
+const EDGES = [
+  { from:"lilian",  to:"oscar",    label:"mother of",                style:"family"   },
+  { from:"lilian",  to:"jude",     label:"mother of",                style:"family"   },
+  { from:"lilian",  to:"husband",  label:"married to",               style:"family"   },
+  { from:"oscar",   to:"jude",     label:"brothers",                 style:"family"   },
+  { from:"jude",    to:"evan",     label:"best friends",             style:"close"    },
+  { from:"evan",    to:"freya",    label:"twins",                    style:"family"   },
+  { from:"freya",   to:"vanessa",  label:"best friends",             style:"close"    },
+  { from:"jeremy",  to:"tony",     label:"father of",                style:"family"   },
+  { from:"jeremy",  to:"mimi",     label:"married to",               style:"family"   },
+  { from:"ginny",   to:"jude",     label:"harasses",                 style:"conflict" },
+  { from:"ginny",   to:"hazel",    label:"refuses to walk with",     style:"conflict" },
+  { from:"lilian",  to:"hazel",    label:"mentors / watches over",   style:"close"    },
+  { from:"jeremy",  to:"hazel",    label:"rescues from hillside",    style:"close"    },
+  { from:"tony",    to:"david",    label:"collaborators in mischief",style:"peer"     },
+  { from:"lilian",  to:"anna",     label:"fellow chaperones",        style:"peer"     },
+  { from:"lilian",  to:"jeremy",   label:"fellow chaperones",        style:"peer"     },
+  { from:"phillip", to:"jeremy",   label:"guard path together",      style:"peer"     },
+  { from:"lilian",  to:"friend",   label:"old friends",              style:"absent"   },
+  { from:"msA",     to:"msZ",      label:"co-teachers",              style:"peer"     },
+  { from:"gretchen",to:"lilian",   label:"gossips to",               style:"peer"     },
+  { from:"lilian",  to:"phillip",  label:"fellow chaperones",        style:"peer"     },
+];
+const W=1000,H=600,NW=100,NH=42;
+const byId=Object.fromEntries(CHARS.map(c=>[c.id,c]));
+function pos(c){return{x:c.x/100*W,y:c.y/100*H};}
+const legendEl=document.getElementById('legend');
+[['family','Family'],['children','Children'],['parents','Parent Chaperones'],['staff','Teachers/Staff'],['absent','Absent/Mentioned']].forEach(([k,l])=>{
+  legendEl.innerHTML+=`<div class="leg-item" style="color:${GC[k].dot}"><div class="leg-dot" style="background:${GC[k].border}"></div>${l}</div>`;
+});
+const edgeLegEl=document.getElementById('edge-legend');
+Object.entries({family:"Family bond",close:"Close friendship/mentorship",conflict:"Conflict/tension",peer:"Peer/colleague",absent:"Distant/absent"}).forEach(([k,l])=>{
+  edgeLegEl.innerHTML+=`<div class="edge-leg"><div class="edge-line" style="background:${EC[k]}"></div>${l}</div>`;
+});
+const svg=document.getElementById('charsvg');
+const ns='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){const e=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));if(parent)parent.appendChild(e);return e;}
+const defs=el('defs',{},svg);
+Object.entries(EC).forEach(([k,color])=>{const m=el('marker',{id:`arrow-${k}`,markerWidth:6,markerHeight:6,refX:5,refY:3,orient:'auto'},defs);el('path',{d:'M0,0 L0,6 L6,3 z',fill:color,opacity:0.7},m);});
+const filt=el('filter',{id:'glow'},defs);el('feGaussianBlur',{stdDeviation:3,result:'coloredBlur'},filt);const feMerge=el('feMerge',{},filt);el('feMergeNode',{in:'coloredBlur'},feMerge);el('feMergeNode',{in:'SourceGraphic'},feMerge);
+const edgeGroup=el('g',{id:'edges'},svg);
+const nodeGroup=el('g',{id:'nodes'},svg);
+const edgeEls=EDGES.map((e,i)=>{
+  const f=pos(byId[e.from]),t=pos(byId[e.to]);
+  const mx=(f.x+t.x)/2,my=(f.y+t.y)/2;
+  const dx=t.x-f.x,dy=t.y-f.y,len=Math.sqrt(dx*dx+dy*dy)||1;
+  const nx=-dy/len*20,ny=dx/len*20;
+  const path=el('path',{d:`M${f.x},${f.y} Q${mx+nx},${my+ny} ${t.x},${t.y}`,fill:'none',stroke:EC[e.style],'stroke-width':1.3,'stroke-opacity':0.28,'marker-end':`url(#arrow-${e.style})`,style:'cursor:pointer'},edgeGroup);
+  const txt=el('text',{x:mx+nx,y:my+ny-7,'text-anchor':'middle','font-size':9,fill:EC[e.style],'font-family':'Georgia,serif',opacity:0,style:'pointer-events:none'},edgeGroup);
+  txt.textContent=e.label;
+  path.addEventListener('mouseenter',()=>{path.setAttribute('stroke-width',2.5);path.setAttribute('stroke-opacity',0.9);txt.setAttribute('opacity',1);});
+  path.addEventListener('mouseleave',()=>{path.setAttribute('stroke-width',1.3);path.setAttribute('stroke-opacity',activeChar?(EDGES[i].from===activeChar||EDGES[i].to===activeChar?0.85:0.07):0.28);txt.setAttribute('opacity',0);});
+  return{path,txt,data:e};
+});
+let activeChar=null;const nodeEls={};
+CHARS.forEach(c=>{
+  const{x:cx,y:cy}=pos(c);const gc=GC[c.group];
+  const g=el('g',{class:'node'},nodeGroup);
+  const rect=el('rect',{x:cx-NW/2,y:cy-NH/2,width:NW,height:NH,rx:5,fill:gc.bg,stroke:gc.border,'stroke-width':1},g);
+  const t1=el('text',{x:cx,y:cy-5,'text-anchor':'middle','font-size':12,'font-weight':'bold',fill:gc.dot,'font-family':'Georgia,serif'},g);t1.textContent=c.name;
+  const roleShort=c.role.length>20?c.role.slice(0,19)+'…':c.role;
+  const t2=el('text',{x:cx,y:cy+11,'text-anchor':'middle','font-size':8.5,fill:gc.text,opacity:0.8},g);t2.textContent=roleShort;
+  nodeEls[c.id]={g,rect};g.addEventListener('click',()=>selectChar(c.id));
+});
+function selectChar(id){
+  if(activeChar===id){activeChar=null;clearDetail();dimAll();return;}
+  activeChar=id;const c=byId[id];
+  const relEdges=EDGES.filter(e=>e.from===id||e.to===id);
+  const relIds=new Set(relEdges.flatMap(e=>[e.from,e.to]));
+  CHARS.forEach(ch=>{nodeEls[ch.id].g.setAttribute('opacity',!relIds.has(ch.id)?0.18:1);nodeEls[ch.id].rect.setAttribute('stroke',ch.id===id?GC[ch.group].dot:GC[ch.group].border);nodeEls[ch.id].rect.setAttribute('stroke-width',ch.id===id?2.5:1);nodeEls[ch.id].g.setAttribute('filter',ch.id===id?'url(#glow)':'');});
+  edgeEls.forEach(({path,data})=>{const related=data.from===id||data.to===id;path.setAttribute('stroke-opacity',related?0.85:0.05);path.setAttribute('stroke-width',related?1.8:1);});
+  const gc=GC[c.group];const det=document.getElementById('detail');det.style.background=gc.bg;det.style.borderColor=gc.border;
+  const pills=relEdges.map(e=>{const otherId=e.from===id?e.to:e.from;const other=byId[otherId];const dir=e.from===id?'→':'←';return `<span class="rel-pill" onclick="selectChar('${otherId}')" style="color:${EC[e.style]};border-color:${EC[e.style]}44">${dir} ${e.label} <strong>${other.name}</strong></span>`;}).join('');
+  det.innerHTML=`<div style="flex:0 0 auto"><div class="char-name" style="color:${gc.dot}">${c.name}</div><div class="char-role" style="color:${gc.text}">${c.role}</div></div><div style="flex:1 1 260px"><div class="char-desc" style="color:${gc.text}">${c.desc}</div><div id="rels">${pills}</div></div>`;
+}
+function dimAll(){CHARS.forEach(c=>{nodeEls[c.id].g.setAttribute('opacity',1);nodeEls[c.id].rect.setAttribute('stroke',GC[c.group].border);nodeEls[c.id].rect.setAttribute('stroke-width',1);nodeEls[c.id].g.setAttribute('filter','');});edgeEls.forEach(({path})=>{path.setAttribute('stroke-opacity',0.28);path.setAttribute('stroke-width',1.3);});}
+function clearDetail(){const det=document.getElementById('detail');det.style.background='#0d0d16';det.style.borderColor='#1e1e2a';det.innerHTML='<div class="placeholder">Click a character node to see their description and connections.</div>';}
+window.chartBuilt=false;
+function buildChart(){
+  window.chartBuilt=true;
+  const colorMap={present:'#c9a96e',analepsis:'#7a9e8e',prolepsis:'#9b72cf',frame:'#c97070'};
+  const events=[
+    {label:"NJ frame — Euripides",sj:1,fab:14,type:'frame',note:"Opens in 2025 narrating present. Both deaths known; causes permanently withheld. The story begins at its end."},
+    {label:"Drive down Hwy 1",sj:2,fab:4,type:'present',note:"Near-chronological within the trip. The children's conversation establishes character before grief arrives."},
+    {label:"Oscar's death mentioned",sj:3,fab:11,type:'prolepsis',note:"Referenced obliquely in a parenthetical. No scene, no cause — grief kept abstract by syntactic subordination."},
+    {label:"Childhood friend / ice pop",sj:4,fab:1,type:'analepsis',note:"Deep flashback to Beijing childhood, triggered by a post-Jude sympathy email. Sorrow displaced onto a melting snowman."},
+    {label:"Arrival at center",sj:5,fab:4.5,type:'present',note:"Near-chronological. The pastoral begins; already shadowed by the preceding prolepsis."},
+    {label:"Beach walk / tidal pools",sj:6,fab:5,type:'present',note:"Chronological. Ginny first intrudes on Jude. Hazel photographed with the boys jumping in."},
+    {label:"Ginny harasses Jude",sj:7,fab:5.2,type:'present',note:"Complete scene; consequence (principal meeting) deferred. The school's institutional failure built slowly."},
+    {label:"Denmark trip — Hamlet's castle",sj:8,fab:12,type:'prolepsis',note:"Flash-forward post-Oscar. Jude alive, thoughtful. A talisman against grief."},
+    {label:"Jude dies in freshman year",sj:9,fab:13,type:'prolepsis',note:"Stated flatly in one clause. No scene, no cause. Preserves the field trip as the emotional centre."},
+    {label:"Sunset / Hazel conversation",sj:10,fab:5.5,type:'present',note:"Lilian's most direct encounter with Hazel. Lilian apologises, Hazel nods 'magnanimously.'"},
+    {label:"Week's activities montage",sj:11,fab:6,type:'present',note:"Iterative narration: 'there was the hike…' The pleasurable dilation of the middle."},
+    {label:"Elephant seals / super weaner",sj:12,fab:7,type:'present',note:"Comic interlude and release of tension. Tony and David's jokes foreshadow the men they will become."},
+    {label:"Bonfire / night walk begins",sj:13,fab:8,type:'present',note:"The story's still point. Children filing into the dark with a lamp. Tears come to Lilian's eyes."},
+    {label:"Cicada digression (NJ garden)",sj:13.5,fab:15,type:'prolepsis',note:"Interrupts the bonfire with a future scene after both boys are dead. 'Neither Oscar nor Jude lived long enough to see a cloud of cicadas, rising, rising, rising.'"},
+    {label:"Oscar's friend quotes Bakkhai",sj:14,fab:10,type:'analepsis',note:"Names the title: 'Fare well, but you shall find your faring hard.' Shadows Jude with Oscar's fate."},
+    {label:"Jude & Evan return with lamp",sj:15,fab:8.2,type:'present',note:"'Nine years and a month after this night, Jude would die. Evan —' The em-dash is the story's most concentrated deferral."},
+    {label:"Ginny refuses Hazel",sj:16,fab:8.5,type:'present',note:"The crisis begins. Hazel raises the lamp, insists on walking alone. Magic of the night wears thin."},
+    {label:"Hazel disappears / search",sj:17,fab:9,type:'present',note:"Sjuzhet climax. Tension is existential, not physical. Hazel found in 'steely negation of reality.'"},
+    {label:"Closing: Hazel found / ending",sj:18,fab:9.2,type:'frame',note:"Jeremy's speech. Hazel's despair recognised. Final question refuses consolation: 'How can you mandate hope and optimism?'"},
+  ];
+  const datasets=['present','analepsis','prolepsis','frame'].map(type=>({
+    label:type.charAt(0).toUpperCase()+type.slice(1),
+    data:events.filter(e=>e.type===type).map(e=>({x:e.sj,y:e.fab,label:e.label,note:e.note})),
+    backgroundColor:colorMap[type],borderColor:colorMap[type],pointRadius:8,pointHoverRadius:11,pointStyle:'circle',
+  }));
+  datasets.push({label:'Chronological baseline',data:[{x:1,y:1},{x:18,y:18}],type:'line',borderColor:'rgba(255,255,255,0.15)',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false,tension:0,order:10});
+  const ctx=document.getElementById('fabulaChart').getContext('2d');
+  const customPlugin={id:'eventLabels',afterDatasetsDraw(chart){const{ctx:c,scales:{x,y}}=chart;c.save();c.font='10px "Josefin Sans",sans-serif';c.fillStyle='rgba(232,224,208,0.65)';chart.data.datasets.forEach(ds=>{if(!ds.data[0]?.label)return;ds.data.forEach(pt=>{const px=x.getPixelForValue(pt.x);const py=y.getPixelForValue(pt.y);c.fillText(pt.label,px+10,py-6);});});c.restore();}};
+  new Chart(ctx,{type:'scatter',data:{datasets},plugins:[customPlugin],options:{responsive:true,maintainAspectRatio:true,animation:{duration:600},scales:{x:{title:{display:true,text:'Sjuzhet Order (position in text →)',color:'#888',font:{family:"'Josefin Sans',sans-serif",size:11}},min:0,max:19,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#666',stepSize:1,font:{size:10}}},y:{title:{display:true,text:'Fabula Order (chronological ↑)',color:'#888',font:{family:"'Josefin Sans',sans-serif",size:11}},min:0,max:16,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#666',stepSize:1,font:{size:10}}}},plugins:{legend:{labels:{color:'#888',font:{family:"'Josefin Sans',sans-serif",size:11},filter:item=>item.text!=='Chronological baseline',usePointStyle:true}},tooltip:{backgroundColor:'#0d0d16',borderColor:'#1e1e2a',borderWidth:1,titleColor:'#c9a96e',bodyColor:'#ccc8be',titleFont:{family:"'Cormorant Garamond',Georgia,serif",size:14},bodyFont:{family:"'Cormorant Garamond',Georgia,serif",size:13},padding:12,callbacks:{title(items){return items[0].raw.label||'';},label(item){const raw=item.raw;if(!raw.label)return'';return[`Sjuzhet: ${raw.x}  |  Fabula: ${raw.y}`,'',raw.note];}}}}}});
+}
+</script>
+</body>
+</html>
