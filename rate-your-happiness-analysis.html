@@ -5,296 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rate Your Happiness — Narratological Analysis</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="analysis.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&display=swap');
-
-  :root {
-    --ink: #1a1612;
-    --paper: #f5f0e8;
-    --cream: #ede8dc;
-    --rule: #c8bfaa;
-    --accent: #8b4513;
-    --accent2: #4a6741;
-    --accent3: #2a4a6b;
-    --muted: #6b6358;
-    --tab-active: #1a1612;
-    --tab-bg: #e8e3d8;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Source Serif 4', Georgia, serif;
-    background: var(--paper);
-    color: var(--ink);
-    min-height: 100vh;
-  }
-
-  header {
-    background: var(--ink);
-    color: var(--paper);
-    padding: 2rem 2.5rem 1.5rem;
-    border-bottom: 4px solid var(--accent);
-  }
-
-  header .kicker {
-    font-family: 'Source Serif 4', serif;
-    font-size: 0.72rem;
-    font-weight: 400;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--rule);
-    margin-bottom: 0.6rem;
-  }
-
-  header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.4rem;
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-  }
-
-  header h1 em {
-    font-style: italic;
-    color: #d4b896;
-  }
-
-  header .byline {
-    margin-top: 0.5rem;
-    font-size: 0.85rem;
-    color: var(--rule);
-    font-style: italic;
-  }
-
-  /* Tabs */
-  .tab-bar {
-    display: flex;
-    background: var(--ink);
-    border-bottom: 3px solid var(--accent);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .tab-bar::-webkit-scrollbar { display: none; }
-
-  .tab-btn {
-    font-family: 'Source Serif 4', serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-weight: 500;
-    color: var(--rule);
-    background: none;
-    border: none;
-    padding: 0.85rem 1.4rem;
-    cursor: pointer;
-    white-space: nowrap;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -3px;
-    transition: color 0.2s, border-color 0.2s;
-  }
-  .tab-btn:hover { color: var(--paper); }
-  .tab-btn.active {
-    color: var(--paper);
-    border-bottom-color: var(--accent);
-    background: rgba(255,255,255,0.06);
-  }
-
-  .tab-panel { display: none; padding: 2rem 2.5rem 3rem; }
-  .tab-panel.active { display: block; }
-
-  /* Typography */
-  h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin-bottom: 1.2rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--rule);
-    color: var(--ink);
-  }
-
-  h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 1.6rem 0 0.6rem;
-    color: var(--accent3);
-  }
-
-  p {
-    line-height: 1.75;
-    font-size: 0.97rem;
-    margin-bottom: 0.9rem;
-    color: #2a2520;
-  }
-
-  /* Tables */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.88rem;
-    margin: 1rem 0 1.8rem;
-  }
-  th {
-    background: var(--ink);
-    color: var(--paper);
-    font-family: 'Source Serif 4', serif;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    padding: 0.7rem 0.9rem;
-    text-align: left;
-  }
-  td {
-    padding: 0.65rem 0.9rem;
-    border-bottom: 1px solid var(--rule);
-    vertical-align: top;
-    line-height: 1.5;
-  }
-  tr:nth-child(even) td { background: var(--cream); }
-  tr:hover td { background: #e0d9cc; }
-
-  /* SVG network */
-  .svg-wrapper {
-    background: var(--cream);
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    overflow-x: auto;
-  }
-
-  /* Chart */
-  .chart-container {
-    background: var(--cream);
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    padding: 1.2rem;
-    margin-bottom: 1.5rem;
-    position: relative;
-    height: 480px;
-  }
-
-  /* Legend */
-  .legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem 1.5rem;
-    margin-bottom: 1.2rem;
-    font-size: 0.82rem;
-  }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  .legend-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  /* Q&A accordion */
-  .qgroup {
-    margin-bottom: 1.8rem;
-  }
-  .qgroup-label {
-    font-family: 'Source Serif 4', serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.8rem;
-    padding-bottom: 0.35rem;
-    border-bottom: 1px solid var(--rule);
-  }
-  .qa-item {
-    margin-bottom: 0.5rem;
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .qa-q {
-    width: 100%;
-    background: var(--cream);
-    border: none;
-    text-align: left;
-    padding: 0.85rem 1rem;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-    font-family: 'Source Serif 4', serif;
-    font-size: 0.92rem;
-    line-height: 1.5;
-    color: var(--ink);
-    font-style: italic;
-    transition: background 0.15s;
-  }
-  .qa-q:hover { background: #ddd7cb; }
-  .qa-toggle {
-    font-style: normal;
-    font-size: 1.2rem;
-    color: var(--accent);
-    flex-shrink: 0;
-    margin-top: -1px;
-    transition: transform 0.2s;
-  }
-  .qa-a {
-    display: none;
-    padding: 0.9rem 1rem 1rem;
-    background: #faf7f2;
-    border-top: 1px solid var(--rule);
-    font-size: 0.9rem;
-    line-height: 1.7;
-    color: #2a2520;
-  }
-  .qa-item.open .qa-a { display: block; }
-  .qa-item.open .qa-toggle { transform: rotate(45deg); }
-
-  /* Author bio */
-  .bio-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-bottom: 2rem;
-  }
-  @media (max-width: 680px) {
-    .bio-section { grid-template-columns: 1fr; }
-    header h1 { font-size: 1.7rem; }
-    .tab-btn { padding: 0.7rem 0.9rem; font-size: 0.7rem; }
-  }
-
-  .note {
-    background: #f0ebe0;
-    border-left: 3px solid var(--accent);
-    padding: 0.7rem 1rem;
-    font-size: 0.83rem;
-    color: var(--muted);
-    margin: 1rem 0;
-    font-style: italic;
-  }
-
-  .tag {
-    display: inline-block;
-    background: var(--ink);
-    color: var(--paper);
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.2rem 0.5rem;
-    border-radius: 2px;
-    margin-right: 0.3rem;
-    margin-bottom: 0.3rem;
-    font-family: 'Source Serif 4', serif;
-  }
-  .tag.green { background: var(--accent2); }
-  .tag.blue { background: var(--accent3); }
-  .tag.brown { background: var(--accent); }
+  /* ── Page-specific overrides ── */
+  .chart-container { height: 480px; }
+  .qgroup { margin-bottom: 1.8rem; }
 </style>
 </head>
 <body>
@@ -328,104 +43,104 @@
 
       <!-- Relation lines -->
       <!-- Louise - Harry (father) -->
-      <line x1="450" y1="280" x2="270" y2="140" stroke="#8b4513" stroke-width="2" stroke-dasharray="6,3"/>
+      <line x1="450" y1="280" x2="270" y2="140" stroke="#8b3a2a" stroke-width="2" stroke-dasharray="6,3"/>
       <!-- Louise - Jolene (sister) -->
-      <line x1="450" y1="280" x2="160" y2="310" stroke="#8b4513" stroke-width="2" stroke-dasharray="6,3"/>
+      <line x1="450" y1="280" x2="160" y2="310" stroke="#8b3a2a" stroke-width="2" stroke-dasharray="6,3"/>
       <!-- Louise - Brother -->
-      <line x1="450" y1="280" x2="200" y2="430" stroke="#8b4513" stroke-width="2" stroke-dasharray="6,3"/>
+      <line x1="450" y1="280" x2="200" y2="430" stroke="#8b3a2a" stroke-width="2" stroke-dasharray="6,3"/>
       <!-- Louise - Diana -->
-      <line x1="450" y1="280" x2="650" y2="140" stroke="#c0392b" stroke-width="2.5"/>
+      <line x1="450" y1="280" x2="650" y2="140" stroke="#c8604a" stroke-width="2.5"/>
       <!-- Louise - Bruce -->
-      <line x1="450" y1="280" x2="710" y2="310" stroke="#2a4a6b" stroke-width="2"/>
+      <line x1="450" y1="280" x2="710" y2="310" stroke="#2a5f5a" stroke-width="2"/>
       <!-- Louise - Joan -->
-      <line x1="450" y1="280" x2="600" y2="430" stroke="#4a6741" stroke-width="2"/>
+      <line x1="450" y1="280" x2="600" y2="430" stroke="#7a5a20" stroke-width="2"/>
       <!-- Louise - Lynn -->
-      <line x1="450" y1="280" x2="700" y2="480" stroke="#4a6741" stroke-width="2"/>
+      <line x1="450" y1="280" x2="700" y2="480" stroke="#7a5a20" stroke-width="2"/>
       <!-- Louise - Eldest daughter -->
-      <line x1="450" y1="280" x2="450" y2="470" stroke="#888" stroke-width="1.5"/>
+      <line x1="450" y1="280" x2="450" y2="470" stroke="#8a8480" stroke-width="1.5"/>
       <!-- Louise - Sprinkles -->
-      <line x1="450" y1="280" x2="310" y2="490" stroke="#888" stroke-width="1.5"/>
+      <line x1="450" y1="280" x2="310" y2="490" stroke="#8a8480" stroke-width="1.5"/>
       <!-- Louise - Old woman on plane -->
-      <line x1="450" y1="280" x2="80" y2="200" stroke="#aaa" stroke-width="1.2" stroke-dasharray="4,4"/>
+      <line x1="450" y1="280" x2="80" y2="200" stroke="#e8e0d0" stroke-width="1.2" stroke-dasharray="4,4"/>
       <!-- Bruce - Harry -->
-      <line x1="710" y1="310" x2="270" y2="140" stroke="#6b6358" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <line x1="710" y1="310" x2="270" y2="140" stroke="#4a4642" stroke-width="1.5" stroke-dasharray="5,4"/>
       <!-- Joan - Lynn (partners) -->
-      <line x1="600" y1="430" x2="700" y2="480" stroke="#4a6741" stroke-width="2.5"/>
+      <line x1="600" y1="430" x2="700" y2="480" stroke="#7a5a20" stroke-width="2.5"/>
       <!-- Joan/Lynn - Eldest daughter + Sprinkles -->
-      <line x1="600" y1="430" x2="450" y2="470" stroke="#4a6741" stroke-width="1.2"/>
-      <line x1="700" y1="480" x2="450" y2="470" stroke="#4a6741" stroke-width="1.2"/>
-      <line x1="600" y1="430" x2="310" y2="490" stroke="#4a6741" stroke-width="1.2"/>
+      <line x1="600" y1="430" x2="450" y2="470" stroke="#7a5a20" stroke-width="1.2"/>
+      <line x1="700" y1="480" x2="450" y2="470" stroke="#7a5a20" stroke-width="1.2"/>
+      <line x1="600" y1="430" x2="310" y2="490" stroke="#7a5a20" stroke-width="1.2"/>
 
       <!-- Nodes -->
       <!-- LOUISE - centre -->
-      <circle cx="450" cy="280" r="38" fill="#1a1612"/>
-      <text x="450" y="275" text-anchor="middle" fill="#f5f0e8" font-size="13" font-weight="600">LOUISE</text>
-      <text x="450" y="292" text-anchor="middle" fill="#c8bfaa" font-size="10" font-style="italic">protagonist</text>
+      <circle cx="450" cy="280" r="38" fill="#1a1714"/>
+      <text x="450" y="275" text-anchor="middle" fill="#faf8f4" font-size="13" font-weight="600">LOUISE</text>
+      <text x="450" y="292" text-anchor="middle" fill="#e8e0d0" font-size="10" font-style="italic">protagonist</text>
 
       <!-- HARRY (father) -->
-      <circle cx="270" cy="140" r="30" fill="#8b4513"/>
+      <circle cx="270" cy="140" r="30" fill="#8b3a2a"/>
       <text x="270" y="136" text-anchor="middle" fill="white" font-size="12" font-weight="600">Harry</text>
-      <text x="270" y="152" text-anchor="middle" fill="#f5d0b0" font-size="10" font-style="italic">father</text>
+      <text x="270" y="152" text-anchor="middle" fill="#f4e6e2" font-size="10" font-style="italic">father</text>
 
       <!-- DIANA -->
-      <circle cx="650" cy="140" r="30" fill="#c0392b"/>
+      <circle cx="650" cy="140" r="30" fill="#c8604a"/>
       <text x="650" y="136" text-anchor="middle" fill="white" font-size="12" font-weight="600">Diana</text>
-      <text x="650" y="152" text-anchor="middle" fill="#fdb" font-size="10" font-style="italic">girlfriend</text>
+      <text x="650" y="152" text-anchor="middle" fill="#f4e6e2" font-size="10" font-style="italic">girlfriend</text>
 
       <!-- BRUCE -->
-      <circle cx="710" cy="310" r="30" fill="#2a4a6b"/>
+      <circle cx="710" cy="310" r="30" fill="#2a5f5a"/>
       <text x="710" y="306" text-anchor="middle" fill="white" font-size="12" font-weight="600">Bruce</text>
-      <text x="710" y="322" text-anchor="middle" fill="#b0c8e8" font-size="10" font-style="italic">nurse / stranger</text>
+      <text x="710" y="322" text-anchor="middle" fill="#e2efee" font-size="10" font-style="italic">nurse / stranger</text>
 
       <!-- JOAN -->
-      <circle cx="600" cy="430" r="26" fill="#4a6741"/>
+      <circle cx="600" cy="430" r="26" fill="#7a5a20"/>
       <text x="600" y="426" text-anchor="middle" fill="white" font-size="12" font-weight="600">Joan</text>
-      <text x="600" y="441" text-anchor="middle" fill="#c8e8b0" font-size="10" font-style="italic">friend</text>
+      <text x="600" y="441" text-anchor="middle" fill="#f5edd8" font-size="10" font-style="italic">friend</text>
 
       <!-- LYNN -->
-      <circle cx="700" cy="480" r="26" fill="#4a6741"/>
+      <circle cx="700" cy="480" r="26" fill="#7a5a20"/>
       <text x="700" y="476" text-anchor="middle" fill="white" font-size="12" font-weight="600">Lynn</text>
-      <text x="700" y="491" text-anchor="middle" fill="#c8e8b0" font-size="10" font-style="italic">friend</text>
+      <text x="700" y="491" text-anchor="middle" fill="#f5edd8" font-size="10" font-style="italic">friend</text>
 
       <!-- JOLENE (sister) -->
-      <circle cx="160" cy="310" r="26" fill="#8b4513"/>
+      <circle cx="160" cy="310" r="26" fill="#8b3a2a"/>
       <text x="160" y="306" text-anchor="middle" fill="white" font-size="11" font-weight="600">Jolene</text>
-      <text x="160" y="321" text-anchor="middle" fill="#f5d0b0" font-size="10" font-style="italic">sister</text>
+      <text x="160" y="321" text-anchor="middle" fill="#f4e6e2" font-size="10" font-style="italic">sister</text>
 
       <!-- BROTHER -->
-      <circle cx="200" cy="430" r="26" fill="#8b4513"/>
+      <circle cx="200" cy="430" r="26" fill="#8b3a2a"/>
       <text x="200" y="425" text-anchor="middle" fill="white" font-size="11" font-weight="600">Brother</text>
-      <text x="200" y="441" text-anchor="middle" fill="#f5d0b0" font-size="10" font-style="italic">(unnamed)</text>
+      <text x="200" y="441" text-anchor="middle" fill="#f4e6e2" font-size="10" font-style="italic">(unnamed)</text>
 
       <!-- ELDEST DAUGHTER -->
-      <circle cx="450" cy="470" r="28" fill="#6b6358"/>
-      <text x="450" y="465" text-anchor="middle" fill="white" font-size="10" font-weight="600">Eldest</text>
-      <text x="450" y="479" text-anchor="middle" fill="#ddd" font-size="10" font-style="italic">Daughter</text>
-      <text x="450" y="491" text-anchor="middle" fill="#ccc" font-size="9">Joan &amp; Lynn's</text>
+      <circle cx="450" cy="470" r="28" fill="#4a4642"/>
+      <text x="450" y="465" text-anchor="middle" fill="#faf8f4" font-size="10" font-weight="600">Eldest</text>
+      <text x="450" y="479" text-anchor="middle" fill="#e8e0d0" font-size="10" font-style="italic">Daughter</text>
+      <text x="450" y="491" text-anchor="middle" fill="#e8e0d0" font-size="9">Joan &amp; Lynn's</text>
 
       <!-- SPRINKLES -->
-      <circle cx="310" cy="490" r="26" fill="#7a6b5a"/>
-      <text x="310" y="485" text-anchor="middle" fill="white" font-size="10" font-weight="600">Sprinkles</text>
-      <text x="310" y="500" text-anchor="middle" fill="#ddd" font-size="9" font-style="italic">younger daughter</text>
+      <circle cx="310" cy="490" r="26" fill="#4a4642"/>
+      <text x="310" y="485" text-anchor="middle" fill="#faf8f4" font-size="10" font-weight="600">Sprinkles</text>
+      <text x="310" y="500" text-anchor="middle" fill="#e8e0d0" font-size="9" font-style="italic">younger daughter</text>
 
       <!-- OLD WOMAN -->
-      <circle cx="80" cy="200" r="26" fill="#999"/>
-      <text x="80" y="194" text-anchor="middle" fill="white" font-size="10" font-weight="600">Old Woman</text>
-      <text x="80" y="208" text-anchor="middle" fill="#eee" font-size="9" font-style="italic">plane / hike</text>
+      <circle cx="80" cy="200" r="26" fill="#8a8480"/>
+      <text x="80" y="194" text-anchor="middle" fill="#faf8f4" font-size="10" font-weight="600">Old Woman</text>
+      <text x="80" y="208" text-anchor="middle" fill="#faf8f4" font-size="9" font-style="italic">plane / hike</text>
 
       <!-- Legend -->
-      <rect x="20" y="18" width="330" height="90" rx="3" fill="#1a1612" opacity="0.85"/>
-      <text x="35" y="38" fill="#f5f0e8" font-size="11" font-weight="600" letter-spacing="0.1em">RELATIONSHIP TYPE</text>
-      <circle cx="40" cy="54" r="5" fill="#8b4513"/>
-      <text x="52" y="58" fill="#c8bfaa" font-size="11">Family (blood)</text>
-      <circle cx="160" cy="54" r="5" fill="#c0392b"/>
-      <text x="172" y="58" fill="#c8bfaa" font-size="11">Romantic</text>
-      <circle cx="40" cy="76" r="5" fill="#2a4a6b"/>
-      <text x="52" y="80" fill="#c8bfaa" font-size="11">Stranger / chance</text>
-      <circle cx="160" cy="76" r="5" fill="#4a6741"/>
-      <text x="172" y="80" fill="#c8bfaa" font-size="11">Social / friend</text>
-      <line x1="35" y1="96" x2="55" y2="96" stroke="#aaa" stroke-width="1.5" stroke-dasharray="4,3"/>
-      <text x="60" y="100" fill="#c8bfaa" font-size="11">Absent / mediated</text>
+      <rect x="20" y="18" width="330" height="90" rx="3" fill="#1a1714" opacity="0.85"/>
+      <text x="35" y="38" fill="#faf8f4" font-size="11" font-weight="600" letter-spacing="0.1em">RELATIONSHIP TYPE</text>
+      <circle cx="40" cy="54" r="5" fill="#8b3a2a"/>
+      <text x="52" y="58" fill="#e8e0d0" font-size="11">Family (blood)</text>
+      <circle cx="160" cy="54" r="5" fill="#c8604a"/>
+      <text x="172" y="58" fill="#e8e0d0" font-size="11">Romantic</text>
+      <circle cx="40" cy="76" r="5" fill="#2a5f5a"/>
+      <text x="52" y="80" fill="#e8e0d0" font-size="11">Stranger / chance</text>
+      <circle cx="160" cy="76" r="5" fill="#7a5a20"/>
+      <text x="172" y="80" fill="#e8e0d0" font-size="11">Social / friend</text>
+      <line x1="35" y1="96" x2="55" y2="96" stroke="#8a8480" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="60" y="100" fill="#e8e0d0" font-size="11">Absent / mediated</text>
     </svg>
   </div>
 
@@ -504,11 +219,11 @@
   <p>The scatterplot maps each narrative event by its position in the text (sjuzhet, x-axis) and its chronological position in the story-world (fabula, y-axis). The dashed diagonal represents perfectly chronological narration. Points below the line are <strong>analepses</strong> (flashbacks); points above are <strong>prolepses</strong> (anticipations); points on or near the diagonal are <strong>isochronous</strong>.</p>
 
   <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:#1a1612"></div> Present action (in-flight/SF)</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#8b4513"></div> Internal analepsis (Louise's past)</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#2a4a6b"></div> Relayed analepsis (others' past)</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#4a6741"></div> Summary / iterative</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#c0392b"></div> Closing image / coda</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#1a1714"></div> Present action (in-flight/SF)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#8b3a2a"></div> Internal analepsis (Louise's past)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2a5f5a"></div> Relayed analepsis (others' past)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#7a5a20"></div> Summary / iterative</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c8604a"></div> Closing image / coda</div>
   </div>
 
   <div class="chart-container">
@@ -975,11 +690,11 @@ function initChart() {
   ];
 
   const colours = {
-    'present':          '#1a1612',
-    'analepsis-louise': '#8b4513',
-    'analepsis-relayed':'#2a4a6b',
-    'iterative':        '#4a6741',
-    'coda':             '#c0392b',
+    'present':          '#1a1714',
+    'analepsis-louise': '#8b3a2a',
+    'analepsis-relayed':'#2a5f5a',
+    'iterative':        '#7a5a20',
+    'coda':             '#c8604a',
   };
 
   const typeData = {};
@@ -996,7 +711,6 @@ function initChart() {
     typeData[e.type].push({ x: e.x, y: e.y, label: e.label, note: e.note });
   });
 
-  // Diagonal reference line
   const diagData = [{ x: 0, y: 0 }, { x: 18, y: 12 }];
 
   const datasets = [
@@ -1059,7 +773,6 @@ function initChart() {
                 '',
               ];
               if (d.note) {
-                // Word-wrap note at ~55 chars
                 const words = d.note.split(' ');
                 let line = '';
                 words.forEach(w => {
@@ -1071,10 +784,10 @@ function initChart() {
               return lines;
             }
           },
-          backgroundColor: '#1a1612',
-          titleColor: '#f5f0e8',
-          bodyColor: '#c8bfaa',
-          borderColor: '#8b4513',
+          backgroundColor: '#1a1714',
+          titleColor: '#faf8f4',
+          bodyColor: '#e8e0d0',
+          borderColor: '#8b3a2a',
           borderWidth: 1,
           padding: 12,
           titleFont: { family: "'Playfair Display', Georgia, serif", size: 13, weight: 'bold' },
@@ -1083,16 +796,16 @@ function initChart() {
       },
       scales: {
         x: {
-          title: { display: true, text: 'Sjuzhet Order (position in text →)', font: { family: "'Source Serif 4', serif", size: 12 }, color: '#2a2520' },
+          title: { display: true, text: 'Sjuzhet Order (position in text →)', font: { family: "'Source Serif 4', serif", size: 12 }, color: '#1a1714' },
           min: 0, max: 18,
           grid: { color: 'rgba(0,0,0,0.07)' },
-          ticks: { font: { family: "'Source Serif 4', serif", size: 11 }, color: '#6b6358' },
+          ticks: { font: { family: "'Source Serif 4', serif", size: 11 }, color: '#4a4642' },
         },
         y: {
-          title: { display: true, text: 'Fabula Order (chronological position ↑)', font: { family: "'Source Serif 4', serif", size: 12 }, color: '#2a2520' },
+          title: { display: true, text: 'Fabula Order (chronological position ↑)', font: { family: "'Source Serif 4', serif", size: 12 }, color: '#1a1714' },
           min: 0, max: 12,
           grid: { color: 'rgba(0,0,0,0.07)' },
-          ticks: { font: { family: "'Source Serif 4', serif", size: 11 }, color: '#6b6358' },
+          ticks: { font: { family: "'Source Serif 4', serif", size: 11 }, color: '#4a4642' },
         }
       }
     }
