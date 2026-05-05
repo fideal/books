@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Process of Elimination — Literary Analysis</title>
+<link rel="stylesheet" href="analysis.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  /* ── Process of Elimination specific overrides ── */
+  #diagram-wrap {
+    background: var(--paper2);
+    border: 1px solid var(--paper3);
+  }
+  svg#charsvg { background: var(--paper2); }
+  #detail .placeholder { color: var(--ink3); }
+
+  .chart-container {
+    background: var(--paper2);
+    border: 1px solid var(--paper3);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .analysis-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 24px; }
+  .analysis-card { border-top: none; border-left: 3px solid var(--rust-light); border-radius: 4px; }
+  .prose-block em { color: var(--rust); }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-label">Literary Analysis · Saïd Sayrafiezadeh · The New Yorker · May 4, 2026</div>
+  <h1>Process of Elimination</h1>
+  <p><em>A story of names, coincidence, and the bureaucracy of belonging</em></p>
+</header>
+<nav class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('characters',this)">Character Relationships</button>
+  <button class="tab-btn" onclick="showTab('fabula',this)">Fabula vs Sjuzhet</button>
+  <button class="tab-btn" onclick="showTab('analysis',this)">Plot Analysis</button>
+  <button class="tab-btn" onclick="showTab('questions',this)">Discussion Questions</button>
+  <button class="tab-btn" onclick="showTab('author',this)">Author</button>
+</nav>
+
+<!-- ══════════════════════════════ TAB I ══════════════════════════════ -->
+<div id="tab-characters" class="tab-content active">
+  <div class="section-label">Tab I</div>
+  <div class="section-title">Character Relationships</div>
+  <div id="legend"></div>
+  <div id="diagram-wrap"><svg id="charsvg" viewBox="0 0 1000 600"></svg></div>
+  <div id="detail"><div class="placeholder">Click a character node to see their description and connections.</div></div>
+  <div id="edge-legend"></div>
+</div>
+
+<!-- ══════════════════════════════ TAB II ══════════════════════════════ -->
+<div id="tab-fabula" class="tab-content">
+  <div class="section-label">Tab II</div>
+  <div class="section-title">Fabula vs. Sjuzhet</div>
+  <div class="prose-block">The story opens <em>mid-chronology</em> — on the morning of what will become the narrator's final shift, a day some six weeks into the job and roughly a month after both the Boston Marathon bombing and the tip jar theft. The sjuzhet then plunges backward through a dense cluster of analepses (covering the preceding six weeks and the narrator's childhood), before returning to the present and moving linearly forward through unemployment, the EEOC process, Starbucks, and the settlement. Points <em>below</em> the diagonal are analepses (flashbacks); points <em>above</em> are prolepses (flash-forwards); points <em>near</em> the diagonal are chronological.</div>
+  <div class="chart-legend">
+    <div class="chart-leg-item"><div class="chart-leg-dot" style="background:#8b3a2a"></div>Present Action (the final shift &amp; aftermath)</div>
+    <div class="chart-leg-item"><div class="chart-leg-dot" style="background:#2a5f5a"></div>Analepsis (flashback into the six weeks prior)</div>
+    <div class="chart-leg-item"><div class="chart-leg-dot" style="background:#7a5a20"></div>Prolepsis (flash-forward)</div>
+  </div>
+  <div class="chart-container"><canvas id="fabulaChart" height="420"></canvas></div>
+
+  <div class="section-label">Distortions Table</div>
+  <table>
+    <thead><tr><th>Event</th><th>Sjuzhet</th><th>Fabula</th><th>Type</th><th>Deferral — What is Withheld &amp; Why</th></tr></thead>
+    <tbody>
+      <tr><td>Tip theft accusation (morning of final shift)</td><td>1</td><td>14</td><td><span class="theme-tag">Present</span></td><td>Opens mid-chronology, deep into the fabula. Six weeks of context — the bombing, the name, the surveillance — is withheld from the opening, making the accusation feel as arbitrary and groundless as the narrator experiences it.</td></tr>
+      <tr><td>Tip jar went missing (analepsis)</td><td>2</td><td>7</td><td><span class="theme-tag" style="border-color:var(--teal);color:var(--teal)">Analepsis</span></td><td>The inciting crime surfaces in dialogue, not scene. Its perpetrator is permanently withheld — the central whodunnit of the story is never solved, enacting the impossibility of establishing innocence or guilt through coincidence alone.</td></tr>
+      <tr><td>Boston Marathon bombing referenced</td><td>3</td><td>8</td><td><span class="theme-tag" style="border-color:var(--teal);color:var(--teal)">Analepsis</span></td><td>The bombing's connection to Thompson's firing is the story's structuring implication — withheld as causation throughout. "These events were, of course, unrelated" is the sentence that makes us suspect they are not.</td></tr>
+      <tr><td>Narrator's name and family origin</td><td>4</td><td>1</td><td><span class="theme-tag" style="border-color:var(--teal);color:var(--teal)">Analepsis</span></td><td>The deepest contextual analepsis: the Uzbek great-grandfather, the accident of naming. Defers the question of what the name means now until the context of what the name has always meant is established.</td></tr>
+      <tr><td>First week in the basement</td><td>5</td><td>4</td><td><span class="theme-tag" style="border-color:var(--teal);color:var(--teal)">Analepsis</span></td><td>Introduces the "boss" dynamic and the manager's latent antipathy. Defers the firing scene — which also takes place in the basement — until we feel the weight of returning there.</td></tr>
+      <tr><td>Bombing day: watching TV in the office</td><td>6</td><td>8.5</td><td><span class="theme-tag" style="border-color:var(--teal);color:var(--teal)">Analepsis</span></td><td>The narrator's silence about pressure cookers is the story's most charged deferral of self-disclosure. What he does not say — and why — is the question the reader carries forward.</td></tr>
+      <tr><td>Flag installed / video camera</td><td>7</td><td>9</td><td><span class="theme-tag" style="border-color:var(--teal);color:var(--teal)">Analepsis</span></td><td>Surveillance installed in the name of patriotism becomes the mechanism of the narrator's exposure. The camera's purpose is deferred from security to accusation.</td></tr>
+      <tr><td>Boston stories circle / fabrication</td><td>8</td><td>10</td><td><span class="theme-tag" style="border-color:var(--teal);color:var(--teal)">Analepsis</span></td><td>The narrator invents memories of Boston he has never visited — and nearly believes them. Withholds the moment the fabrication is detected (the owner's stare). The invention of identity is deferred as betrayal.</td></tr>
+      <tr><td>Job interview flashback</td><td>9</td><td>3</td><td><span class="theme-tag" style="border-color:var(--teal);color:var(--teal)">Analepsis</span></td><td>Placed late in the sjuzhet's analeptic block; the parallel with the Starbucks interview is withheld until we can feel the irony. Same table corner, same milk and sugar — but everything is new.</td></tr>
+      <tr><td>FBI names Suspect One &amp; Two</td><td>10</td><td>11</td><td><span class="theme-tag" style="border-color:var(--teal);color:var(--teal)">Analepsis</span></td><td>The manhunt's resolution brings the narrative to the brink of the name-announcement. Tension mounted across four days is concentrated into the return to work on Friday.</td></tr>
+      <tr><td>"Tamerlan" named on TV — office goes silent</td><td>11</td><td>12</td><td><span class="theme-tag" style="border-color:var(--teal);color:var(--teal)">Analepsis</span></td><td>The story's crux, withheld until all the backstory is in place. The name spoken aloud collapses the space between coincidence and identity. Positioned at the end of the long analeptic block for maximum impact.</td></tr>
+      <tr><td>Sixth-grade flashback</td><td>12</td><td>0</td><td><span class="theme-tag" style="border-color:var(--teal);color:var(--teal)">Analepsis</span></td><td>The deepest analepsis: Tambourine, Timberland, Wonderland. Triggered by hearing his name on TV, the childhood wound resurfaces precisely as it is re-inflicted. The teacher's question — "Have you ever thought about changing your name to Tommy?" — hovers over the entire story.</td></tr>
+      <tr><td>Owner absent; narrator on extended break</td><td>13</td><td>14.5</td><td><span class="theme-tag">Present</span></td><td>The sjuzhet returns to the present. Speculative calm: perhaps the firing won't happen today. The respite defers the basement scene and allows a brief fantasy of continuation.</td></tr>
+      <tr><td>Sent to basement; fired</td><td>14</td><td>15</td><td><span class="theme-tag">Present</span></td><td>"We're going to make today your last day." The green notebook closes: "Management" facing him upside down. The premise is withheld — and never supplied.</td></tr>
+      <tr><td>Unemployment office; rejected</td><td>15</td><td>16</td><td><span class="theme-tag">Present</span></td><td>First institutional defeat. Justice foreclosed by a technicality. The "alternate narrative" begins forming in the waiting room — desire for retribution deferred into bureaucratic channel.</td></tr>
+      <tr><td>EEOC complaint filed</td><td>16</td><td>17</td><td><span class="theme-tag">Present</span></td><td>The narrator imagines himself "ascending from state to federal, from wronged to revenge." Resolution — and revelation — deferred across months of bureaucratic inertia.</td></tr>
+      <tr><td>Dzhokhar Tsarnaev sentenced to death (prolepsis)</td><td>17</td><td>20</td><td><span class="theme-tag" style="border-color:var(--gold);color:var(--gold)">Prolepsis</span></td><td>A forward-looking aside during the waiting period: "Eventually, he would be given a fair trial by a jury of his peers. After which he would be sentenced to death." A legal parallel to Thompson's case — one system delivers finality; the other delivers $800.</td></tr>
+      <tr><td>Starbucks hired and promoted to shift supervisor</td><td>18</td><td>18</td><td><span class="theme-tag">Present</span></td><td>Near-diagonal: chronological movement. The Starbucks interview mirrors the coffee shop interview precisely — same table corner, same milk and sugar. No premise needed for advancement either.</td></tr>
+      <tr><td>EEOC settlement; real owner revealed; $800 + apology</td><td>19</td><td>19</td><td><span class="theme-tag">Present</span></td><td>The terminal revelation: the "owner" was only the manager. A third narrative dissolves the second. "Starbucks was coming. Starbucks was going to swallow everything." Justice delivered; justice emptied.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════ TAB III ══════════════════════════════ -->
+<div id="tab-analysis" class="tab-content">
+  <div class="section-label">Tab III</div>
+  <div class="section-title">Narrative Analysis — Peter Brooks: Narrative Desire</div>
+  <div class="analysis-grid">
+    <div class="analysis-card">
+      <div class="analysis-card-title">Desire</div>
+      <div class="analysis-card-body">The story operates two interlocking desires simultaneously. <em>Thompson's desire</em> is compound: to hold his job, to be seen as himself rather than as his name's association, and eventually to extract retribution — "a government-issued check, once a week for the next twenty-six weeks." But beneath these practical desires is a deeper and permanently frustrated one: to belong. He has lived two states from Boston his whole life and never been. He fabricates the memories because the desire to belong to the collective grief is stronger than the truth of his exclusion. <em>The reader's desire</em> is forensic: is he guilty of stealing the tip jar? Was the firing discriminatory? The story is engineered so that neither question can be resolved. This double irresolution is structural, not accidental — the story's argument depends on the impossibility of settling either charge through evidence alone.<br><br>There is also a ghostly third desire that haunts the text: the desire to be named correctly — to have one's name mean oneself, rather than someone else's atrocity. This desire is inarticulate in the story. Thompson never states it. But it is what the sixth-grade teacher's question ("Have you ever thought about changing your name to Tommy?") and his mother's answer ("You should be proud") are both, inadequately, responding to.</div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Deferral</div>
+      <div class="analysis-card-body">Deferral in this story operates through three distinct registers. First, <em>evidential deferral</em>: the tip jar theft is never solved. The perpetrator is withheld permanently. This means Thompson's guilt or innocence cannot be established, and the reader — like the manager, like the EEOC — must decide on the basis of inference and suspicion rather than fact. Second, <em>causal deferral</em>: the story implies but never confirms that Thompson was fired because of his name. "These events were, of course, unrelated" introduces precisely the suspicion it denies. The manager's letter denies everything, admits nothing — and the denial cannot be disproved. Third, <em>structural deferral</em>: the revelation that the "owner" was only the manager is withheld until the final pages. This deferral is decisive. The alternate narrative Thompson constructs — in which his firing was personal, purposeful, and discriminatory — collapses not because it is disproved, but because its antagonist turns out to be an average middle manager navigating the same institutional precarity from the other side of the counter. What is withheld until the end is not the verdict but the frame of the trial.</div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">The Middle</div>
+      <div class="analysis-card-body">Brooks argues that the middle is the site of desire's greatest intensity — the narrative's resource of deferral, repetition, and elaboration. Sayrafiezadeh fills his middle with bureaucratic process: the unemployment office, the EEOC, the Starbucks. Each institution repeats the structure of the coffee shop (sit across a table, answer questions, perform eligibility) while transforming Thompson's relationship to power. The middle is also where the story performs its sharpest satirical observation: justice is not denied so much as <em>postponed indefinitely</em>. "The commission was backlogged. Never mind that the case counsellor appeared to have no other clients except for me." The middle's comedy is the comedy of dilation — each institutional visit extends the narrative and defers resolution by precisely the same mechanism: process.<br><br>The Starbucks interlude is the middle's most formally precise episode. The interview is described in language that mirrors the coffee shop interview word for word. This is the story's structural joke: Thompson has escaped one site of precarity by entering an identical one with better benefits. "If it weren't for the green apron and the twentysomething assistant manager and the fact that tip jars were not permitted, I could have been right back where I had been in April." The middle does not progress; it replicates.</div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">The Ending</div>
+      <div class="analysis-card-body">Brooks describes endings as the point at which accumulated narrative desire is satisfied, displaced, or exposed as impossible. This story performs all three at once, and the tonal result is ironic deflation rather than resolution. Thompson wins — formally. He receives $800 and a compulsory apology, both delivered by a man who turns out to have had far less power than Thompson attributed to him. The owner looks "uncomfortable and out of place, his power diminished, an average guy in a bad suit." Thompson feels "a sharp sense of remorse for having caused this ordeal." The alternate narrative of conspiracy and retribution collapses at the moment of its ostensible victory.<br><br>The final sentence — <em>"Starbucks was coming. Starbucks was going to swallow everything"</em> — refuses to let the resolution stand as meaningful. Thompson has achieved his petty justice; he works for the corporation that will erase the coffee shop; the system grinds on indifferently. Brooks' notion of the ending as the point at which "desire is shown to be futile" is given here its most sardonic American form. Justice, $800 at a time, doesn't change the system. It is the system.</div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Narrative Energy</div>
+      <div class="analysis-card-body">The story's forward energy — its libidinal economy, in Brooks' terms — derives from an unusual source: not suspense about outcomes, but uncertainty about the narrator himself. Thompson is neither reliable nor unreliable in the conventional sense; he is <em>interpretively motivated</em>. He knows his alternate narrative might not be true. He includes it anyway. He fabricates Boston memories and nearly believes them. He invokes "rights" without knowing what they are. He shifts "instinctively" into legalese. The reader is pulled forward not by wanting to know what happens next but by trying to decide whether this man is a victim of discrimination or of coincidence, and whether those are even distinguishable categories when the evidence is a name.<br><br>The story also generates energy through structural repetition — the interview scenes, the "I said yes to everything" formula, the recurring "I still hadn't heard back from any local retail businesses." Each repetition is a small deferral engine, sustaining the narrative by refusing to resolve. The green spiral notebook marked "Management" appears in the job interview, the bombing scene, the basement firing, and the settlement meeting — carrying the energy of institutional power across every encounter. The notebook is the story's most efficient symbol: it contains the records of a man who thought he was the owner and was only ever the manager.</div>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-top:8px;">Thematic Threads</div>
+  <table>
+    <thead><tr><th>Theme</th><th>Development in the Story</th></tr></thead>
+    <tbody>
+      <tr><td>The name as accusation</td><td>Thompson shares his first name with Tamerlan Tsarnaev by coincidence of ancestry. The story asks whether coincidence of naming can constitute cause for discrimination — and refuses to answer. The name becomes a structuring absence: the bombing is not mentioned to the manager, the name's resonance is never invoked explicitly, and the EEOC settlement carefully avoids confirming what everyone in the room understands.</td></tr>
+      <tr><td>Narrative construction of grievance</td><td>Thompson explicitly identifies the moment his "alternate narrative" forms — "at first dreamlike and then self-evident." He acknowledges it may not be true; he knows only that it is possible. The story tracks how a plausible narrative of wrongdoing is assembled from random events, and what happens when that narrative meets the bureaucracy designed to adjudicate it. The final revelation is that the antagonist of the alternate narrative was himself navigating institutional precarity from the other side.</td></tr>
+      <tr><td>Fabrication and belonging</td><td>Thompson invents Boston memories he has never lived — twice — and nearly believes them. The fabrication is not mere dishonesty but a symptom of exclusion: he cannot share the collective grief because he has never been to Boston despite living two states away his whole life. The invented memories are his attempt to claim membership in a community that his name has simultaneously made him suspect in.</td></tr>
+      <tr><td>Institutional machinery as comedy</td><td>Each institution Thompson enters (coffee shop, unemployment office, EEOC, Starbucks) replicates the same structure: sit across a table, perform eligibility, receive a verdict. The comedy is bureaucratic — justice is not denied but indefinitely processed. The EEOC counselor's repeated "I know this isn't easy" is the story's funniest line precisely because it is so adequately sincere and so inadequately comforting.</td></tr>
+      <tr><td>Surveillance and American innocence</td><td>The American flag partially covers the coffee shop window, tinting everything red, white, and blue. The video camera is installed after the bombing "to make everyone feel safe." These patriotic gestures frame Thompson's workspace with a surveillance apparatus that will be used against him. The flag-filtered light is the story's most compressed image: American belonging offered and withheld simultaneously.</td></tr>
+      <tr><td>The mirror structure of interviews</td><td>The coffee shop interview and the Starbucks interview are described in nearly identical language — same table corner, same milk and sugar, same checklist questions. The firing and the settlement meeting also mirror each other: both occur across a table, both feature the green notebook. The story is built on structural repetitions that expose the protagonist's inability to escape the conditions that constrain him, however much the surface details change.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-label">Prose Style</div>
+  <div class="analysis-card">
+    <div class="analysis-card-body">Sayrafiezadeh writes in a dry, observational first-person that belongs to a tradition of American social comedy running from Ring Lardner through early Carver: declarative sentences, understated irony, deadpan accumulation of humiliating detail. His narrator notices everything and interprets selectively — a combination that produces a distinctive effect of simultaneously reliable reporting and unreliable inference. The sentences are short to medium, precise, and occasionally punctuated by a longer elaboration that reveals the narrator's class anxiety or historical self-consciousness ("he had taken that fateful trip to Boston to visit Faneuil Hall Marketplace and had come back home inspired").<br><br>Repetition is the story's key formal device. "I said yes to everything. I said no to nothing" appears twice. "I still hadn't heard back from any of the local retail businesses" is a recurring refrain. The green spiral notebook recurs like a talisman. "Next guest, next guest" echoes through the coffee shop scenes. These repetitions are not lyrical (as in Li) but structural — they mark the machinery of precarity clicking through its cycles. The story's most characteristic effect is the long parenthetical that opens a subordinate clause and then elaborates far beyond what the main sentence requires, mimicking Thompson's tendency to contextualize and qualify rather than confront: "named after my great-grandfather on my mother's side (or was it my father's?), whom I had never met, and who had immigrated to the United States from what was then Turkestan and is now Uzbekistan, and which, either way, I would be hard pressed to locate on a map."</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ TAB IV ══════════════════════════════ -->
+<div id="tab-questions" class="tab-content">
+  <div class="section-label">Tab IV</div>
+  <div class="section-title">Discussion Questions</div>
+
+  <div class="q-group-title">Close Reading</div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>The story's opening sentence deliberately echoes the opening of Kafka's <em>The Trial</em>. Is this allusion incidental, or does the story invite a Kafkaesque reading?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">The echo is almost certainly deliberate. Kafka's novel opens: "Someone must have been telling lies about Josef K., for without having done anything wrong he was arrested one morning." Sayrafiezadeh's sentence maps almost exactly onto this template — an accusation without stated grounds, a proceeding that advances without premises ("No premise needed"), a protagonist who invokes rights without knowing what they are. But where Kafka's bureaucracy is existential and surreal, Sayrafiezadeh's is material and mundane: a Department of Labor waiting room with fluorescent lights and number 93. The Kafkaesque machinery in this story does not distort reality — it reproduces American institutional reality with documentary precision. The comedy and the horror occupy the same sentence because the sentence is accurate. This is a useful distinction for undergraduate discussion: where Kafka literalises the feeling of accusation into nightmare, Sayrafiezadeh demonstrates that the nightmare is already the literal.</div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>The phrase "I said yes to everything. I said no to nothing" appears twice in the story — once at the original job interview, once at the EEOC settlement. What is the effect of this exact repetition?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">The repetition marks Thompson's consistent posture toward institutional power: total compliance in exchange for access. At the interview, it signals desperation to pass a checklist of employability — self-starter, problem-solver, team player. At the settlement, it signals deflation: he accepts $800 without negotiation, just as he accepted any working condition at the interview. The repetition also exposes the story's structural irony: the person who said yes to everything at the interview has spent months pursuing retribution for what happened at that job. The compliance that secured the job is the same compliance that ends the grievance. He has learned nothing — or perhaps learned exactly this: that saying yes to everything is the only available mode of participation in institutional life, and that it doesn't protect you.</div>
+  </div>
+
+  <div class="q-group-title">Desire &amp; Character</div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>In the unemployment office, Thompson forms an "alternate narrative" connecting his firing to his name. He says he does not know if this narrative is true — only that it is possible. What does the story say about our need to narrativize our experience, and how does it complicate our sympathy for Thompson?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">This is the story's sharpest psychological observation. Thompson identifies the moment of the alternate narrative's formation precisely: "at first dreamlike and then self-evident." He acknowledges the narrative's uncertainty even as he commits to it. This is a precise diagnosis of how grievance operates: we do not require certainty, only plausibility — and plausibility, in Thompson's case, is genuinely available. The story then tests the narrative through the EEOC process: the counselor agrees with it. But the final revelation (the "owner" was only a manager) doesn't refute the alternate narrative so much as dissolve the frame in which it was meaningful. The reader has been constructing their own alternate narrative alongside Thompson's — deciding whether the firing was discriminatory, whether the accusation was racially/culturally motivated. The story implicates the reader in the same evidential problem it assigns to its protagonist. Our sympathy is neither fully validated nor fully withdrawn.</div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>Thompson fabricates memories of Boston he has never visited and feels he "might actually have done what I said I did." What does this fabrication reveal about his desire for belonging, and how does it relate to the story's larger themes?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">The fabrication is the story's thematic heart. Thompson cannot share the group's collective grief for Boston because he has never been there, despite living two states away his whole life. His exclusion from the memorial is a structural mirror of the exclusion enacted by his name: in both cases, he is adjacent to an identity he cannot claim. He patches together others' stories "to make it my own" — and the fabrication works too well. This is precisely what his name has done to him from the other direction: Tamerlan Tsarnaev's identity has been grafted onto Thompson's, unbidden and inescapable. He invents Boston memories for the same reason he will later construct an alternate narrative of his firing — because the real events leave him with no coherent, acceptable self to present. The fabrication is not dishonesty so much as a symptom of the condition the story is diagnosing: the pressure on a person whose name makes the true account of themselves implausible.</div>
+  </div>
+
+  <div class="q-group-title">Deferral &amp; Structure</div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>The story never reveals who stole the tip jar. The perpetrator is permanently withheld. What work does this irresolution perform in the story's argument?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">This is the story's most consequential structural choice, and it is precise rather than evasive. If we learned who stole the tip jar, the story would bifurcate into either a vindication narrative (Thompson is innocent, the firing was discriminatory) or a comic-irony narrative (Thompson is guilty, the firing was justified). Either resolution would allow the reader to settle the question of Thompson's character and move on. By withholding the answer permanently, the story refuses that consolation. We are in the same position as the manager, the EEOC, and Thompson himself: we must decide on the basis of coincidence, inference, and plausibility — which is exactly the epistemological condition the story is about. The unresolved whodunnit is not a plot hole; it is the plot. The story argues that guilt and innocence cannot be established when the charge is contaminated by association, and it enacts this argument formally by never supplying the evidence that would cut through the contamination.</div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>The story moves through three institutional sites — the coffee shop, the Department of Labor, and the EEOC — each of which mirrors the previous one in structure. What does this parallelism say about the relationship between individual grievance and institutional process?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">Each institution raises and then defeats Thompson's expectations in a distinct register. The coffee shop raises the expectation of belonging (he says yes to everything; he wants to be a team player) and defeats it with expulsion. The Department of Labor raises the expectation of procedural fairness and defeats it with a technicality ("you didn't work there long enough to qualify") — justice foreclosed by its own mechanisms. The EEOC raises the highest expectation — Thompson imagines himself "ascending from state to federal, from wronged to revenge" — and delivers the most technically satisfying outcome ($800, an apology) paired with the most destabilizing revelation (the "owner" was only the manager). The institutions do not escalate in justice so much as in irony. The parallelism suggests that no individual case can exceed the limits of the system processing it: every institution produces the same table, the same corner, the same milk and sugar.</div>
+  </div>
+
+  <div class="q-group-title">Endings &amp; Meaning</div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>The revelation that the "owner" was actually the manager — and that the real owner had no idea who Thompson was — upends the alternate narrative entirely. What does this do to the story's argument about power, grievance, and narrative truth?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">This is the story's most formally sophisticated move. The alternate narrative Thompson has spent months building casts the "owner" as an antagonist with power, property, and purposeful aversion. The settlement scene produces a third narrative: the "owner" was not an owner at all but a middle manager who had to take time off work to attend a federal mediation. He is "not the outsized entrepreneur that I had always thought him to be, but, rather, one of those fortunate employees who had worked long enough at the coffee shop to qualify to enroll in college courses." The irony is devastating: Thompson's supposed oppressor was in almost the same structural position — a worker, not a proprietor, navigating institutional power from below. The alternate narrative is not disproved; it is dissolved. And Thompson's remorse ("I felt a sharp sense of remorse for having caused this ordeal") is genuine, but it cannot undo the triplicate forms. The story suggests that the pursuit of individual justice against systemic discrimination may be most likely to harm the person just above you in the same hierarchy — not the actual owner of anything.</div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-q" onclick="toggleAccordion(this)">
+      <span>The story closes: "None of it mattered, of course. Starbucks was coming. Starbucks was going to swallow everything." How does this function as a final comment on justice, corporate power, and the individual's place within institutional systems?</span>
+      <span class="toggle">+</span>
+    </button>
+    <div class="accordion-a">The closing is among the most precisely ironic endings in recent American short fiction. Thompson has won: $800, an apology, a promotion at Starbucks. The compulsory apology ("as if we were children in the schoolyard") deflates the settlement to the level of a playground dispute. Then the final two sentences negate the individual victory entirely — not just the coffee shop, not just the manager's dignity, but <em>everything</em> will be consumed by the corporation Thompson now works for. He is both the beneficiary of the system and its agent. He will be the Starbucks that swallows the next coffee shop, the next Melissa, the next person who doesn't work long enough to qualify for anything. The manager's answer to Thompson's demand for justification — "No premise needed" — turns out to be the system's answer too, writ large. Starbucks needs no premise. Individual justice is achieved; structural justice is foreclosed. The question of whether Thompson was discriminated against is rendered simultaneously answered (he got his check) and irrelevant (it changes nothing about the conditions that produced the discrimination).</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ TAB V ══════════════════════════════ -->
+<div id="tab-author" class="tab-content">
+  <div class="section-label">Tab V</div>
+  <div class="section-title">Saïd Sayrafiezadeh</div>
+  <div class="author-bio-grid">
+    <div>
+      <div class="section-label">Biographical</div>
+      <table>
+        <tbody>
+          <tr><td>Place of birth</td><td>Hamburg, West Germany</td></tr>
+          <tr><td>Year of birth</td><td>1968</td></tr>
+          <tr><td>Current residence</td><td>New York City, USA</td></tr>
+          <tr><td>Education</td><td>Drama studies; associated with Carnegie Mellon School of Drama (details not fully confirmed)</td></tr>
+          <tr><td>Gender</td><td>Male</td></tr>
+          <tr><td>Marital status</td><td>Not publicly confirmed</td></tr>
+          <tr><td>Religion</td><td>Not publicly confirmed; Iranian father (Shia Muslim heritage), American Jewish mother</td></tr>
+          <tr><td>Heritage</td><td>Iranian-American; father Mahmoud Sayrafiezadeh was a member of the Socialist Workers Party</td></tr>
+          <tr><td>Academic position</td><td>Has taught creative writing at MFA programs; affiliated with New York University</td></tr>
+        </tbody>
+      </table>
+      <p class="caveat">* Education details and marital status not fully confirmed from public sources. Information compiled from published interviews and author notes.</p>
+    </div>
+    <div>
+      <div class="section-label">Biography</div>
+      <p>Saïd Sayrafiezadeh was born in Hamburg, West Germany in 1968 to an Iranian father, Mahmoud Sayrafiezadeh — a committed member of the Socialist Workers Party — and an American Jewish mother. His parents separated early, and he grew up primarily with his mother in Pittsburgh, Pennsylvania, a childhood shaped by economic precarity, political idealism, and the peculiar loneliness of the American left. His father's revolutionary commitments meant years of near-absence.</p>
+      <p>His memoir <em>When Skateboards Will Be Free</em> (2009) documents this childhood with sharp, unsentimental honesty. His fiction — collected in <em>Brief Encounters with the Enemy</em> (2013) and <em>American Estrangement</em> (2019) — ranges across class anxiety, military service, and the experience of feeling structurally excluded from the American identity one nominally inhabits. His work is persistently concerned with men who are peripheral to the systems that determine their lives.</p>
+      <p>He has been a regular contributor to <em>The New Yorker</em> for over a decade and has taught creative writing at MFA programs in New York. "Process of Elimination" — published in <em>The New Yorker</em>'s May 4, 2026 issue — represents his characteristic mode: dry, precise social realism in which a comedy of institutional failure masks a genuine diagnostic of American belonging and its preconditions.</p>
+    </div>
+  </div>
+
+  <div class="section-label">Body of Work</div>
+  <table>
+    <thead><tr><th>Year</th><th>Title</th><th>Form</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>2009</td><td>When Skateboards Will Be Free</td><td>Memoir</td><td>Coming-of-age account of growing up in the American far-left milieu of the Socialist Workers Party; received wide critical praise</td></tr>
+      <tr><td>2013</td><td>Brief Encounters with the Enemy</td><td>Story collection</td><td>Stories dealing with war, class, and masculine identity; PEN/O. Henry Prize Stories inclusion; named a notable book by multiple publications</td></tr>
+      <tr><td>2019</td><td>American Estrangement</td><td>Story collection</td><td>Published by W. W. Norton; extends his thematic preoccupations with class precarity and American self-invention</td></tr>
+      <tr><td>2026</td><td>"Process of Elimination"</td><td>Short story</td><td><em>The New Yorker</em>, May 4, 2026; the story under analysis</td></tr>
+    </tbody>
+  </table>
+  <p class="caveat">* Body of work compiled from public records. Sayrafiezadeh has also published extensively in <em>The New Yorker</em>, <em>The Paris Review</em>, <em>Ploughshares</em>, and other periodicals over two decades; individual stories not listed here.</p>
+
+  <div class="section-label">Awards &amp; Recognition</div>
+  <div style="margin-bottom:28px; line-height:2.4;">
+    <span class="award-badge">PEN/O. Henry Prize Stories (multiple inclusions)</span>
+    <span class="award-badge">Pushcart Prize nominee</span>
+    <span class="award-badge">Regular contributor, The New Yorker</span>
+    <span class="award-badge">Notable Book citations — Brief Encounters with the Enemy (2013)</span>
+  </div>
+  <p class="caveat">Award list compiled from available public records; completeness not guaranteed. Sayrafiezadeh's prize history is less extensively documented than his critical reputation warrants.</p>
+</div>
+
+<!-- ══════════════════════════════ JAVASCRIPT ══════════════════════════════ -->
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'fabula' && !window.chartBuilt) buildChart();
+}
+function toggleAccordion(btn) {
+  const ans = btn.nextElementSibling;
+  const toggle = btn.querySelector('.toggle');
+  const open = ans.classList.toggle('open');
+  toggle.textContent = open ? '−' : '+';
+}
+
+/* ── Character diagram ── */
+const GC = {
+  narrator:  { bg:"#f4e6e2", border:"#8b3a2a", text:"#1a1714", dot:"#8b3a2a" },
+  coworker:  { bg:"#e2efee", border:"#2a5f5a", text:"#1a1714", dot:"#2a5f5a" },
+  authority: { bg:"#f5edd8", border:"#7a5a20", text:"#1a1714", dot:"#7a5a20" },
+  absent:    { bg:"#f2ede4", border:"#8a8480", text:"#4a4642", dot:"#8a8480" },
+};
+const EC = { close:"#2a5f5a", conflict:"#c8604a", authority:"#7a5a20", ghost:"#8a8480" };
+
+const CHARS = [
+  { id:"thompson",   name:"Tamerlan Thompson",     role:"Narrator & protagonist",       group:"narrator",  x:50, y:50,
+    desc:"Twenty-six-year-old blond, blue-eyed lifelong New Englander who shares his first name with Boston Marathon bomber Tamerlan Tsarnaev by coincidence of ancestry. Named after a great-grandfather who emigrated from Turkestan (now Uzbekistan). Works as a barista for six weeks before being fired. Self-describes as a 'problem solver' and 'team player.' Instinctively shifts into legalese under threat." },
+  { id:"melissa",    name:"Melissa",               role:"Co-worker / trainer",          group:"coworker",  x:26, y:33,
+    desc:"Thompson's co-worker and trainer, a year into the job and angling for the college-enrollment perk that vests at two years. Speaks under her breath and avoids eye contact around the video camera. Sympathetic to Thompson but ultimately self-interested — she is the one who sends him downstairs with a request for napkins, where the manager is waiting." },
+  { id:"manager",    name:"The Manager",           role:"Antagonist (posing as owner)", group:"authority", x:72, y:28,
+    desc:"Referred to throughout as 'the owner' until the final settlement scene reveals he is only the manager. Sweaty polyester shirt, thinning hair, green spiral notebook marked 'Management.' Called Thompson 'boss' — which, on the surface, sounded chummy but which Thompson sensed was an aversion to saying his name. Fires Thompson in the basement with 'No premise needed.'" },
+  { id:"realowner",  name:"Real Owner",            role:"Actual proprietor (revealed)",  group:"authority", x:86, y:14,
+    desc:"Appears only in the EEOC settlement meeting — tall, trim, half the manager's age and weight, entirely flummoxed as to how the situation arose. A third narrative that dissolves both the narrator's alternate narrative and the manager's counter-narrative. No idea who Thompson is. His appearance destabilises everything the story has built." },
+  { id:"counselor",  name:"Case Counsellor",       role:"EEOC mediator",                group:"authority", x:72, y:72,
+    desc:"EEOC officer: tie, sleeves rolled up as if he means business, OSHA poster about keeping farmworkers hydrated on his wall. Warm and efficient. Repeats 'I know this isn't easy' with sincere inadequacy. Brokers the $800 settlement. Could have been Thompson's sixth-grade teacher — the same posture of empathetic authority that cannot ultimately change the conditions it is sympathising with." },
+  { id:"starbucks",  name:"Starbucks AM",          role:"New employer / promoter",       group:"authority", x:24, y:72,
+    desc:"Young assistant manager, a year or two older than Thompson but much further along in her career. Green apron, slacks, sensible shoes. The Starbucks interview mirrors the coffee shop interview almost exactly — same table corner, same milk and sugar — but everything is new and the bay window is bigger. Promotes Thompson to shift supervisor." },
+  { id:"tsarnaev",   name:"Tamerlan Tsarnaev",     role:"Namesake / shadow identity",   group:"absent",    x:88, y:50,
+    desc:"Chechen-American bomber who, with his younger brother Dzhokhar, carried out the April 15, 2013 Boston Marathon bombing — killing three people and injuring hundreds more. Born in the Soviet Union; pronounced dead in a Boston hospital after a four-day manhunt. Shares only his first name with the narrator — but that name becomes a spectral accusation that contaminates every professional interaction Thompson has in the weeks that follow." },
+  { id:"teacher",    name:"6th-Grade Teacher",     role:"Childhood memory",              group:"absent",    x:13, y:20,
+    desc:"Found Thompson hiding behind the jungle gym after he fled the classroom, unable to bear the name-mockery (Tambourine, Timberland, Wonderland). Knelt down, tousled his hair. Shared stories of his own difficult childhood. Sat side by side on the swings. His well-meant conclusion: 'Have you ever thought about changing your name to Tommy?' The advice that cannot be taken." },
+  { id:"mother",     name:"Mother",                role:"Absent voice / naming authority", group:"absent", x:13, y:78,
+    desc:"Told the young Thompson he should be proud of his name. 'You should be proud,' my mother had said, 'but that was only in theory.' Her counsel and the teacher's counsel are the two inadequate responses to Thompson's situation: pride, or erasure. The story finds no third option." },
+];
+
+const EDGES = [
+  { from:"thompson",  to:"melissa",   label:"trained by / confided in",     style:"close"     },
+  { from:"melissa",   to:"manager",   label:"long-term employee of",        style:"authority" },
+  { from:"thompson",  to:"manager",   label:"fired by",                     style:"conflict"  },
+  { from:"manager",   to:"realowner", label:"employed by (not owner)",      style:"authority" },
+  { from:"thompson",  to:"counselor", label:"filed EEOC complaint with",    style:"authority" },
+  { from:"manager",   to:"counselor", label:"summoned to mediation",        style:"authority" },
+  { from:"thompson",  to:"starbucks", label:"hired and promoted by",        style:"authority" },
+  { from:"tsarnaev",  to:"thompson",  label:"namesake / shadow accusation", style:"ghost"     },
+  { from:"teacher",   to:"thompson",  label:"childhood counsel / 'Tommy?'", style:"ghost"     },
+  { from:"mother",    to:"thompson",  label:"named / 'you should be proud'", style:"ghost"    },
+];
+
+const W=1000, H=600, NW=108, NH=42;
+const byId = Object.fromEntries(CHARS.map(c=>[c.id,c]));
+function pos(c){ return {x: c.x/100*W, y: c.y/100*H}; }
+
+const legendEl = document.getElementById('legend');
+[['narrator','Narrator'],['coworker','Co-worker'],['authority','Authority / Institution'],['absent','Absent / Ghost']].forEach(([k,l])=>{
+  legendEl.innerHTML += `<div class="leg-item" style="color:${GC[k].dot}"><div class="leg-dot" style="background:${GC[k].border}"></div>${l}</div>`;
+});
+const edgeLegEl = document.getElementById('edge-legend');
+[['close','Close / collegial'],['conflict','Conflict / adversarial'],['authority','Institutional power'],['ghost','Absent influence']].forEach(([k,l])=>{
+  edgeLegEl.innerHTML += `<div class="edge-leg"><div class="edge-line" style="background:${EC[k]}"></div>${l}</div>`;
+});
+
+const svg = document.getElementById('charsvg');
+const ns = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent){
+  const e = document.createElementNS(ns, tag);
+  Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));
+  if(parent) parent.appendChild(e);
+  return e;
+}
+const defs = el('defs',{},svg);
+Object.entries(EC).forEach(([k,color])=>{
+  const m = el('marker',{id:`arrow-${k}`,markerWidth:6,markerHeight:6,refX:5,refY:3,orient:'auto'},defs);
+  el('path',{d:'M0,0 L0,6 L6,3 z',fill:color,opacity:0.7},m);
+});
+const filt = el('filter',{id:'glow'},defs);
+el('feGaussianBlur',{stdDeviation:3,result:'coloredBlur'},filt);
+const feMerge = el('feMerge',{},filt);
+el('feMergeNode',{in:'coloredBlur'},feMerge);
+el('feMergeNode',{in:'SourceGraphic'},feMerge);
+
+const edgeGroup = el('g',{id:'edges'},svg);
+const nodeGroup = el('g',{id:'nodes'},svg);
+
+const edgeEls = EDGES.map((e,i)=>{
+  const f=pos(byId[e.from]), t=pos(byId[e.to]);
+  const mx=(f.x+t.x)/2, my=(f.y+t.y)/2;
+  const dx=t.x-f.x, dy=t.y-f.y, len=Math.sqrt(dx*dx+dy*dy)||1;
+  const nx=-dy/len*22, ny=dx/len*22;
+  const path=el('path',{d:`M${f.x},${f.y} Q${mx+nx},${my+ny} ${t.x},${t.y}`,fill:'none',stroke:EC[e.style],'stroke-width':1.4,'stroke-opacity':0.35,'marker-end':`url(#arrow-${e.style})`,style:'cursor:pointer'},edgeGroup);
+  const txt=el('text',{x:mx+nx,y:my+ny-7,'text-anchor':'middle','font-size':9,fill:EC[e.style],'font-family':"'Source Serif 4',Georgia,serif",opacity:0,style:'pointer-events:none'},edgeGroup);
+  txt.textContent=e.label;
+  path.addEventListener('mouseenter',()=>{path.setAttribute('stroke-width',2.5);path.setAttribute('stroke-opacity',0.9);txt.setAttribute('opacity',1);});
+  path.addEventListener('mouseleave',()=>{
+    const rel=activeChar&&(EDGES[i].from===activeChar||EDGES[i].to===activeChar);
+    path.setAttribute('stroke-width', rel?1.8:1.4);
+    path.setAttribute('stroke-opacity', activeChar?(rel?0.85:0.06):0.35);
+    txt.setAttribute('opacity',0);
+  });
+  return {path, txt, data:e};
+});
+
+let activeChar = null;
+const nodeEls = {};
+CHARS.forEach(c=>{
+  const {x:cx,y:cy}=pos(c); const gc=GC[c.group];
+  const g=el('g',{class:'node'},nodeGroup);
+  el('rect',{x:cx-NW/2,y:cy-NH/2,width:NW,height:NH,rx:5,fill:gc.bg,stroke:gc.border,'stroke-width':1.2},g);
+  const nameShort = c.name.length > 18 ? c.name.slice(0,17)+'…' : c.name;
+  const t1=el('text',{x:cx,y:cy-4,'text-anchor':'middle','font-size':11.5,'font-weight':'600',fill:gc.dot,'font-family':"'Playfair Display',serif"},g);
+  t1.textContent=nameShort;
+  const roleShort=c.role.length>22?c.role.slice(0,21)+'…':c.role;
+  const t2=el('text',{x:cx,y:cy+11,'text-anchor':'middle','font-size':8,fill:gc.text,opacity:0.75},g);
+  t2.textContent=roleShort;
+  nodeEls[c.id]={g};
+  g.style.cursor='pointer';
+  g.addEventListener('click',()=>selectChar(c.id));
+});
+
+function selectChar(id){
+  if(activeChar===id){activeChar=null;clearDetail();dimAll();return;}
+  activeChar=id; const c=byId[id];
+  const relEdges=EDGES.filter(e=>e.from===id||e.to===id);
+  const relIds=new Set(relEdges.flatMap(e=>[e.from,e.to]));
+  CHARS.forEach(ch=>{
+    nodeEls[ch.id].g.setAttribute('opacity',!relIds.has(ch.id)?0.18:1);
+    const rect=nodeEls[ch.id].g.querySelector('rect');
+    rect.setAttribute('stroke',ch.id===id?GC[ch.group].dot:GC[ch.group].border);
+    rect.setAttribute('stroke-width',ch.id===id?2.5:1.2);
+    nodeEls[ch.id].g.setAttribute('filter',ch.id===id?'url(#glow)':'');
+  });
+  edgeEls.forEach(({path,data})=>{
+    const related=data.from===id||data.to===id;
+    path.setAttribute('stroke-opacity',related?0.85:0.05);
+    path.setAttribute('stroke-width',related?1.9:1);
+  });
+  const gc=GC[c.group]; const det=document.getElementById('detail');
+  det.style.background=gc.bg; det.style.borderColor=gc.border;
+  const pills=relEdges.map(e=>{
+    const otherId=e.from===id?e.to:e.from; const other=byId[otherId];
+    const dir=e.from===id?'→':'←';
+    return `<span class="rel-pill" onclick="selectChar('${otherId}')" style="color:${EC[e.style]};border-color:${EC[e.style]}88">${dir} ${e.label} <strong>${other.name}</strong></span>`;
+  }).join('');
+  det.innerHTML=`<div style="flex:0 0 auto"><div class="char-name" style="color:${gc.dot};font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:600;margin-bottom:2px;">${c.name}</div><div class="char-role" style="font-size:12px;font-style:italic;opacity:0.8;">${c.role}</div></div><div style="flex:1 1 260px"><div class="char-desc" style="font-size:13px;line-height:1.65;margin-bottom:10px;">${c.desc}</div><div id="rels">${pills}</div></div>`;
+}
+function dimAll(){
+  CHARS.forEach(c=>{
+    nodeEls[c.id].g.setAttribute('opacity',1);
+    const rect=nodeEls[c.id].g.querySelector('rect');
+    rect.setAttribute('stroke',GC[c.group].border);
+    rect.setAttribute('stroke-width',1.2);
+    nodeEls[c.id].g.setAttribute('filter','');
+  });
+  edgeEls.forEach(({path})=>{path.setAttribute('stroke-opacity',0.35);path.setAttribute('stroke-width',1.4);});
+}
+function clearDetail(){
+  const det=document.getElementById('detail');
+  det.style.background='var(--paper2)'; det.style.borderColor='var(--paper3)';
+  det.innerHTML='<div class="placeholder">Click a character node to see their description and connections.</div>';
+}
+
+/* ── Fabula / Sjuzhet chart ── */
+window.chartBuilt = false;
+function buildChart(){
+  window.chartBuilt = true;
+  const colorMap = { present:'#8b3a2a', analepsis:'#2a5f5a', prolepsis:'#7a5a20' };
+  const events = [
+    {label:"Tip theft accusation (morning of final shift)",    sj:1,  fab:14,   type:'present',   note:"Opens mid-chronology. Six weeks of context withheld from the first line, making the accusation feel arbitrary and groundless — which is precisely how Thompson experiences it."},
+    {label:"Tip jar went missing (analepsis)",                 sj:2,  fab:7,    type:'analepsis', note:"The inciting crime surfaces in dialogue, not scene. Perpetrator permanently withheld — the central whodunnit is never resolved."},
+    {label:"Boston Marathon bombing referenced",               sj:3,  fab:8,    type:'analepsis', note:"'These events were, of course, unrelated.' The denial makes the connection. Two parallel clocks established: tip jar theft and the bombing."},
+    {label:"Narrator's name and family origin",                sj:4,  fab:1,    type:'analepsis', note:"Deep family analepsis. The Uzbek great-grandfather, the accident of naming. Establishes the full distance between the name and the person."},
+    {label:"First week in the basement",                       sj:5,  fab:4,    type:'analepsis', note:"Establishes the 'boss' dynamic and the manager's latent dislike. The basement setting deferred — it will return as the site of the firing."},
+    {label:"Bombing day: watching TV in office",               sj:6,  fab:8.5,  type:'analepsis', note:"The narrator's silence about pressure cookers is the story's most charged deferral. What he doesn't say — and why — haunts the rest."},
+    {label:"Flag installed / video camera",                    sj:7,  fab:9,    type:'analepsis', note:"Surveillance installed in the name of patriotism becomes the mechanism of the narrator's exposure. Purpose withheld: security or paranoia?"},
+    {label:"Boston stories circle / fabrication",              sj:8,  fab:10,   type:'analepsis', note:"Thompson invents memories of Boston he has never visited. Withholds the moment of detection — the owner's confirming stare."},
+    {label:"Job interview flashback",                          sj:9,  fab:3,    type:'analepsis', note:"Placed late in the analeptic block. The parallel with the Starbucks interview deferred until the contrast can be felt."},
+    {label:"FBI names Suspect One & Two",                      sj:10, fab:11,   type:'analepsis', note:"Four days after the bombing, the narrative accelerates toward the announcement. The name has not yet been spoken aloud."},
+    {label:"'Tamerlan' named on TV — office goes silent",      sj:11, fab:12,   type:'analepsis', note:"The story's crux. Held back until all the backstory is in place. The name spoken on air collapses the space between coincidence and identity."},
+    {label:"Sixth-grade flashback",                            sj:12, fab:0,    type:'analepsis', note:"The deepest analepsis. Tambourine, Timberland, Wonderland. Triggered by hearing his name on TV, the childhood wound resurfaces exactly when it is re-inflicted."},
+    {label:"Owner absent; narrator on extended break",         sj:13, fab:14.5, type:'present',   note:"Sjuzhet returns to the present. Speculative calm: maybe the firing won't happen today. Defers the basement scene."},
+    {label:"Sent to basement; fired",                          sj:14, fab:15,   type:'present',   note:"'We're going to make today your last day.' The green notebook closes. The premise is withheld — and never supplied."},
+    {label:"Unemployment office; rejected",                    sj:15, fab:16,   type:'present',   note:"'You didn't work there long enough to qualify.' First institutional defeat. The alternate narrative begins forming in the waiting room."},
+    {label:"EEOC complaint filed",                             sj:16, fab:17,   type:'present',   note:"'Ascending from state to federal, from wronged to revenge.' Resolution deferred across months of bureaucratic inertia."},
+    {label:"Dzhokhar Tsarnaev sentenced to death",             sj:17, fab:20,   type:'prolepsis', note:"A forward-looking aside. Legal parallel to Thompson's case: one system delivers finality; the other delivers $800."},
+    {label:"Starbucks hired and promoted",                     sj:18, fab:18,   type:'present',   note:"Near-diagonal: chronological. The interview mirrors the coffee shop interview in language and setting. No premise needed for advancement either."},
+    {label:"EEOC settlement; real owner revealed; $800",       sj:19, fab:19,   type:'present',   note:"The terminal revelation: the 'owner' was only the manager. A third narrative dissolves all the others. 'Starbucks was coming. Starbucks was going to swallow everything.'"},
+  ];
+  const datasets = ['present','analepsis','prolepsis'].map(type=>({
+    label: type === 'present' ? 'Present Action' : type === 'analepsis' ? 'Analepsis (flashback)' : 'Prolepsis (flash-forward)',
+    data: events.filter(e=>e.type===type).map(e=>({x:e.sj, y:e.fab, label:e.label, note:e.note})),
+    backgroundColor: colorMap[type],
+    borderColor: colorMap[type],
+    pointRadius: 8,
+    pointHoverRadius: 11,
+    pointStyle: 'circle',
+  }));
+  datasets.push({
+    label:'Chronological baseline',
+    data:[{x:0,y:0},{x:20,y:20}],
+    type:'line',
+    borderColor:'rgba(0,0,0,0.15)',
+    borderDash:[6,4],
+    borderWidth:1.5,
+    pointRadius:0,
+    fill:false,
+    tension:0,
+    order:10,
+  });
+  const ctx = document.getElementById('fabulaChart').getContext('2d');
+  new Chart(ctx,{
+    type:'scatter',
+    data:{datasets},
+    options:{
+      responsive:true,
+      maintainAspectRatio:true,
+      animation:{duration:600},
+      scales:{
+        x:{
+          title:{display:true,text:'Sjuzhet Order (position in text →)',color:'#8a8480',font:{family:"'Source Serif 4',serif",size:11}},
+          min:0, max:21,
+          grid:{color:'rgba(0,0,0,0.05)'},
+          ticks:{color:'#8a8480',stepSize:1,font:{size:10}}
+        },
+        y:{
+          title:{display:true,text:'Fabula Order (chronological ↑)',color:'#8a8480',font:{family:"'Source Serif 4',serif",size:11}},
+          min:-1, max:22,
+          grid:{color:'rgba(0,0,0,0.05)'},
+          ticks:{color:'#8a8480',stepSize:1,font:{size:10}}
+        }
+      },
+      plugins:{
+        legend:{
+          labels:{
+            color:'#4a4642',
+            font:{family:"'Source Serif 4',serif",size:11},
+            filter:item=>item.text!=='Chronological baseline',
+            usePointStyle:true
+          }
+        },
+        tooltip:{
+          backgroundColor:'#faf8f4',
+          borderColor:'#e8e0d0',
+          borderWidth:1,
+          titleColor:'#1a1714',
+          bodyColor:'#4a4642',
+          titleFont:{family:"'Playfair Display',serif",size:14},
+          bodyFont:{family:"'Source Serif 4',serif",size:13},
+          padding:12,
+          callbacks:{
+            title(items){ return items[0].raw.label||''; },
+            label(item){
+              const raw=item.raw;
+              if(!raw.label) return '';
+              return [`Sjuzhet: ${raw.x}  |  Fabula: ${raw.y}`, '', raw.note];
+            }
+          }
+        }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>
